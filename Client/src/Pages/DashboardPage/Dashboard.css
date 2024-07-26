@@ -1,0 +1,56 @@
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+form label {
+  margin-right: 10px;
+}
+
+form button {
+  padding: 10px 20px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: var(--primary-color-hover);
+}
+
+.chart-section {
+  padding: 20px;
+  width: 100%; /* Ensure the chart section takes full width */
+}
+
+.chart-section svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Add styles for charts to take full width */
+.chart-container {
+  width: 100%;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.chart-container button {
+  padding: 5px 10px;
+  margin: 5px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.chart-container button:hover {
+  background-color: var(--primary-color-hover);
+}

@@ -1,0 +1,175 @@
+/* Profile.css */
+
+/* Base styles for the profile component */
+.profile {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  font-family: Arial, sans-serif;
+}
+
+.profile.ar {
+  direction: rtl; /* Right-to-left for Arabic */
+  text-align: right;
+}
+
+.profile.en, .profile.En {
+  direction: ltr; /* Left-to-right for English */
+  text-align: left;
+}
+
+.profile h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.profile-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 20px;
+}
+
+.profile.ar .profile-img {
+  margin-left: 20px;
+  margin-right: 0;
+}
+
+.profile-details p {
+  margin: 5px 0;
+}
+
+.profile-edit {
+  border-top: 1px solid #ccc;
+  padding-top: 20px;
+}
+
+.profile-edit h2 {
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group input[type="password"],
+.form-group input[type="tel"],
+.form-group input[type="file"] {
+  /*width: calc(100% - 10px);*/
+  /*padding: 5px;*/
+  /*margin: 0 auto;*/
+  /*border: 1px solid #ccc;*/
+  /*border-radius: 5px;*/
+  width: 90%;
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 3px;
+  background-color: #fff;
+  transition: border-color 0.3s;
+  display: block;
+  box-sizing: border-box;
+}
+
+.img-preview {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 10px 0;
+}
+
+.btn {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+.btn.save-btn {
+  background-color: #28a745;
+}
+
+.btn.save-btn:hover {
+  background-color: #218838;
+}
+
+.btn.cancel-btn {
+  background-color: #dc3545;
+}
+
+.btn.cancel-btn:hover {
+  background-color: #c82333;
+}
+
+/* Light mode styles */
+.light-mode {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.light-mode .profile {
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+}
+
+.light-mode .profile-edit {
+  border-top: 1px solid #ccc;
+}
+
+.light-mode .btn {
+  background-color: #007bff;
+}
+
+.light-mode .btn:hover {
+  background-color: #0056b3;
+}
+
+/* Dark mode styles */
+.dark-mode {
+  background-color: #2c2c2c;
+  color: #ffffff;
+}
+
+.dark-mode .profile {
+  border: 1px solid #444;
+  background-color: #3c3c3c;
+}
+
+.dark-mode .profile-edit {
+  border-top: 1px solid #444;
+}
+
+.dark-mode .btn {
+  background-color: #0056b3;
+}
+
+.dark-mode .btn:hover {
+  background-color: #007bff;
+}

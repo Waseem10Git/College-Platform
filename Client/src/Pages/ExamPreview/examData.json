@@ -1,0 +1,13 @@
+{
+    "examName": "Medical Exam",
+    "questions": [
+      {
+        "id": 1,
+        "question": "What is the capital of France?",
+        "options": ["Paris", "London", "Berlin", "Rome"],
+        "correctAnswer": "Paris"
+      }
+
+    ]
+  }
+  

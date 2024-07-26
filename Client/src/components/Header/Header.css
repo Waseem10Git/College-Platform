@@ -1,0 +1,95 @@
+/* Header.css */
+
+/* Container styles */
+.header {
+  padding: 5px 20px;
+  background-color: #f7f7f7; /* Default background color */
+  color: #333; /* Default text color */
+  font-weight: bold;
+  transition: background-color 0.3s, color 0.3s; /* Smooth transition for background and text color */
+}
+
+.header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-block: 15px;
+  border-bottom: 2px solid #ccc;
+}
+/* Dark mode styles */
+.dark {
+  background-color: #161616; /* Dark mode background color */
+  color: #eee; /* Dark mode text color */
+}
+
+/* Light mode styles */
+.light {
+  background-color: #f7f7f7; /* Light mode background color */
+  color: #333; /* Light mode text color */
+}
+
+/* Logo styles */
+.logo {
+  cursor: pointer; /* Change cursor to pointer on hover */
+  display: flex;
+
+}
+
+.logo img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  filter: brightness(0.8); /* Reduce brightness for dark mode */
+}
+
+/* Header content styles */
+.header-content {
+  display: flex;
+  align-items: center;
+}
+
+/* Header item styles */
+.header-item {
+  margin: 0 3px;
+  cursor: pointer;
+  padding: 5px 10px;
+  transition: .3s;
+}
+
+/* Sign-in link styles */
+.header-item a {
+  color: inherit; /* Inherit color from parent */
+  text-decoration: none; /* Remove underline from link */
+}
+
+/* Change link color on hover */
+.header-item:hover {
+  color: #007bff; /* Change color on hover */
+}
+
+.header-item.primary {
+  border: 2px solid #007bff;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin-left: 15px;
+}
+.header-item.primary:hover {
+  background-color: #007bff;
+  color:white;
+  border-radius: 5px;
+  padding: 5px 10px;
+}
+
+.theme-toggle img {
+  width: 20px
+}
+
+.invert {
+  filter: invert(2);
+}
+
+@media (max-width: 767px) {
+  .header {
+   display: none;
+  }
+}

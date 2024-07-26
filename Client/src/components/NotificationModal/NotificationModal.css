@@ -1,0 +1,37 @@
+.notification-modal-overlay {
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.notification-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+    max-width: 500px;
+    width: 100%;
+}
+
+.notification-modal-content h2 {
+    margin-top: 0;
+}
+
+.notification-modal-content button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.notification-modal-content button:hover {
+    background-color: #0056b3;
+}

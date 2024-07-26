@@ -1,0 +1,30 @@
+/* Footer.css */
+
+/* Light mode styles */
+footer.light {
+  color: #007bff;
+  background-color: #f0f0f0;
+}
+
+/* Dark mode styles */
+footer.dark {
+  background-color: #007bff; /* Dark mode background color */
+  color: #eee; /* Dark mode text color */
+}
+
+footer {
+  text-align: center;
+  padding: 20px 0;
+  font-size: larger;
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+  bottom: 0;
+  width: 100%;
+}
+
+/* responsive */
+@media (max-width: 767px) {
+  .footer {
+    font-size:medium;
+  }
+}

@@ -1,0 +1,103 @@
+.courses-container {
+    padding: 20px;
+}
+
+.departments {
+    margin-bottom: 20px;
+}
+
+.departments button {
+    margin-right: 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.departments button:hover {
+    background-color: #0056b3;
+}
+
+.department-details {
+    margin-top: 20px;
+}
+
+.level {
+    margin-bottom: 20px;
+}
+
+.level h3 {
+    margin-top: 0;
+}
+
+.semester {
+    margin-bottom: 10px;
+}
+
+.semester h4 {
+    margin-bottom: 5px;
+}
+
+.course-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+.course-table th,
+.course-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.course-table th {
+    background-color: #f2f2f2;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.add-button,
+.delete-button {
+    width: 100px; /* Adjust width */
+    padding: 5px 10px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    text-align: center;
+    margin-right: 5px;
+}
+
+.add-button {
+    background-color: #28a745;
+}
+
+.add-button:hover {
+    background-color: #218838;
+}
+
+.delete-button {
+    background-color: #dc3545;
+}
+
+.delete-button:hover {
+    background-color: #c82333;
+}
+
+.department-header {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.department-levels {
+    margin-top: 20px;
+}
+
+.add-button-container {
+    margin-top: 20px;
+}

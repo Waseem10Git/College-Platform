@@ -1,0 +1,189 @@
+.accounts-container {
+  width: 100%;
+  flex-grow: 1 ;
+    background-color: #f8f8f8;
+    margin: 0 auto;
+  }
+
+  .accounts-container.dark {
+    background-color: #161616;
+  }
+  .accounts-container .container {
+    height: 100%;
+    display: flex;
+    gap: 5rem;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .account-section {
+    text-align: start;
+    align-self: stretch;
+    padding: 20px;
+    border-right: 2px solid #ccc;
+  }
+  .dark .account-section {
+    background-color: #161616;
+  }
+
+  .account-section h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .account-section ul {
+    list-style-type: none;
+    padding-top: 10px;
+  }
+  
+  .account-section ul li {
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #666;
+    transition: .3s;
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+  }
+  
+  .account-section ul li:hover, li.active {
+    background-color: #007bff;
+    color: white !important ;
+  }
+
+  .accounts-container main {
+    flex-grow: 1;
+  }
+  
+  .form-container {
+    margin-top: 20px;
+    width: 300px;
+  }
+  
+  form {
+    text-align: start;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  form label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #333;
+  }
+  
+  form input[type='text'],
+  form input[type='email'],
+  form input[type='password'],
+  form input[type='number'],
+  form select {
+    width: 90%;
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 3px;
+    background-color: #fff;
+    transition: border-color 0.3s;
+    display: block;
+    box-sizing: border-box;
+   
+  }
+  
+  form input[type='text']:focus,
+  form input[type='email']:focus,
+  form input[type='password']:focus,
+  form select:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+  
+  .accounts-container button {
+    width: 90%;
+    margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  border: 2px solid #007bff; /* Blue button color */
+  color: white;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+  }
+  
+  form button:hover {
+    background-color: transparent;
+    color: #007bff;
+  }
+  
+  .dark .accounts-container {
+    background-color: #161616; /* Dark gray */
+    color: #ffffff; /* White */
+}
+
+.dark .account-section {
+    border-color: #333333; /* Dark gray */
+    background-color: #161616; /* Darker gray */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.dark .account-section h2 {
+    color: #ffffff; /* White */
+}
+
+.dark .account-section ul li {
+    color: #cccccc; /* Light gray */
+}
+
+.dark form label {
+    color: #cccccc; /* Light gray */
+}
+
+.dark form input[type='text'],
+.dark form input[type='email'],
+.dark form input[type='password'],
+.dark form select, .dark form textarea {
+    background-color: #1c1c1c; /* Dark gray */
+    border-color: #555555; /* Medium gray */
+    color: #ffffff; /* White */
+}
+
+.dark form input[type='text']:focus,
+.dark form input[type='email']:focus,
+.dark form input[type='password']:focus,
+.dark form select:focus {
+    border-color: #ffffff; /* White */
+}
+
+  .dark #role {
+    background-color: #555; /* Darker background color in dark mode */
+    color: #fff; /* White text color in dark mode */
+    border-color: #ccc; /* Lighter border color in dark mode */
+}
+
+/* responsive */
+@media (max-width: 767px) {
+  .accounts-container .container {
+    gap: 1rem;
+  }
+  .account-section {
+    border : none
+  }
+  .accounts-container main {
+    width: 100%;
+  }
+  form input[type='text'],
+  form input[type='email'],
+  form input[type='password'],
+  form select {
+    width: 100%;
+  }
+  .accounts-container button {
+    width: 100%;
+  }
+}
