@@ -1,77 +1,46 @@
-// chapterModel.js
+// models/ChapterModel.js
 const conn = require('../config/db');
+const util = require('util');
+
+const queryAsync = util.promisify(conn.query).bind(conn);
 
 class ChapterModel {
-    static async getChaptersByCourse(courseCode) {
-        return new Promise((resolve, reject) => {
-            const query = 'SELECT id, chapter_name FROM chapters WHERE course_id = ?';
-            conn.query(query, [courseCode], (err, results) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(results);
-            });
-        });
+    static async getChaptersByCourseCode(courseCode) {
+        const query = 'SELECT id, chapter_name FROM chapters WHERE course_id = ?';
+        return await queryAsync(query, [courseCode]);
     }
 
-    static async checkCourse(courseCode) {
-        return new Promise((resolve, reject) => {
-            const query = 'SELECT * FROM courses WHERE course_code = ?';
-            conn.query(query, [courseCode], (err, results) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(results.length > 0);
-            });
-        });
+    static async checkCourseExists(courseCode) {
+        const query = 'SELECT * FROM courses WHERE course_code = ?';
+        const results = await queryAsync(query, [courseCode]);
+        return results.length > 0;
     }
 
-    static async insertChapter(courseCode, chapterName, chapterContent) {
-        return new Promise((resolve, reject) => {
-            const query = 'INSERT INTO chapters (course_id, chapter_name, chapter_content) VALUES (?, ?, ?)';
-            conn.query(query, [courseCode, chapterName, chapterContent], (err, results) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(results);
-            });
-        });
+    static async insertChapter(courseCode, fileName, fileContent) {
+        const query = 'INSERT INTO chapters (course_id, chapter_name, chapter_content) VALUES (?, ?, ?)';
+        return await queryAsync(query, [courseCode, fileName, fileContent]);
     }
 
     static async getChapterById(chapterId) {
-        return new Promise((resolve, reject) => {
-            const query = 'SELECT chapter_name, chapter_content FROM chapters WHERE id = ?';
-            conn.query(query, [chapterId], (err, results) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(results[0]);
-            });
-        });
+        const query = 'SELECT chapter_name, chapter_content FROM chapters WHERE id = ?';
+        const results = await queryAsync(query, [chapterId]);
+        return results.length > 0 ? results[0] : null;
     }
 
-    static async deleteChapter(chapterId) {
-        return new Promise((resolve, reject) => {
-            const query = 'DELETE FROM chapters WHERE id = ?';
-            conn.query(query, [chapterId], (err, results) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(results);
-            });
-        });
+    static async deleteChapterById(chapterId) {
+        const query = 'DELETE FROM chapters WHERE id = ?';
+        return await queryAsync(query, [chapterId]);
     }
 
-    static async updateChapter(chapterId, chapterName, chapterContent) {
-        return new Promise((resolve, reject) => {
-            const query = 'UPDATE chapters SET chapter_name = ?, chapter_content = ? WHERE id = ?';
-            conn.query(query, [chapterName, chapterContent, chapterId], (err, results) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(results);
-            });
-        });
+    static async updateChapter(chapterId, fileName, fileContent) {
+        const query = 'UPDATE chapters SET chapter_name = ?, chapter_content = ? WHERE id = ?';
+        return await queryAsync(query, [fileName, fileContent, chapterId]);
+    }
+
+    static async getChapterContentById(chapterId) {
+        const query = 'SELECT chapter_name, chapter_content FROM chapters WHERE id = ?';
+        const results = await queryAsync(query, [chapterId]);
+        return results.length > 0 ? results[0] : null;
     }
 }
 

@@ -5,7 +5,7 @@ import learningImage from "./images/learning.svg"
 import elearningImage from "./images/elearning.svg"
 import teamImage from "./images/team.svg"
 import collegeImage from "./images/college.svg"
-import axios from "axios";
+import axios from '../../api/axios';
 import { AuthContext } from '../../components/AuthContext/AuthContext';
 import {findByLabelText} from "@testing-library/react";
 

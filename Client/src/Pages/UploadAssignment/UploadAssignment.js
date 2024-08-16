@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../../api/axios';
 import './UploadAssignment.css';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
@@ -16,7 +16,7 @@ const UploadAssignment = ({ isDarkMode, language, userId }) => {
 
     useEffect(() => {
         // Fetch courses from backend on component mount
-        axios.get(`http://localhost:4001/api/instructor/${userId}/courses`)
+        axios.get(`/api/instructor/${userId}/courses`)
             .then(response => setCourses(response.data))
             .catch(error => console.error('Error fetching courses:', error));
     }, [userId]);
@@ -45,7 +45,7 @@ const UploadAssignment = ({ isDarkMode, language, userId }) => {
         formData.append('dueDate', adjustedDueDate);
 
         // Send POST request to backend to upload assignment
-        axios.post('http://localhost:4001/upload-assignment', formData)
+        axios.post('/api/upload-assignment', formData)
             .then(response => {
                 console.log('Assignment uploaded successfully:', response.data);
                 alert(language === 'En' ? 'Assignment uploaded successfully!' : 'تم رفع الواجب بنجاح!');

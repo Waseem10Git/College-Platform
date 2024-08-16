@@ -2,14 +2,14 @@ import {Link, useNavigate} from "react-router-dom";
 import moonIcon from "../Header/images/night.png";
 import sunIcon from "../Header/images/sun.png";
 import React from "react";
-import axios from "axios";
+import axios from '../../api/axios';
 
 
 function HeaderItems ({ language, auth, isDarkMode, name, toggleLanguage, toggleTheme, userId }) {
 
     const navigate = useNavigate();
     const handleSignOut = () => {
-        axios.get('http://localhost:4001/signOut')
+        axios.get('/api/auth/signOut')
             .then(res => {
                 navigate('/');
                 window.location.reload();

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '../../api/axios';
 import CourseSelect from './CourseSelect';
 import './ExamResults.css';
 import {StudentsAssignments, StudentsExams, StudentsInfo} from "../../components";
@@ -18,7 +18,7 @@ function ExamResults({ language, isDarkMode, Role, userId }) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`http://localhost:4001/api/instructor/${userId}/courses`);
+                const response = await axios.get(`/api/instructor/${userId}/courses`);
 
                 if (Array.isArray(response.data)) {
                     setCourses(response.data);
@@ -44,17 +44,17 @@ function ExamResults({ language, isDarkMode, Role, userId }) {
         setSelectedOption(option);
         setStudents([]);
         if (option === 'assignments') {
-            const response = await axios.get(`http://localhost:4001/assignments/${selectedCourse}`);
+            const response = await axios.get(`/api/assignments/${selectedCourse}`);
             setAssignments(response.data);
         } else if (option === 'exams') {
-            const response = await axios.get(`http://localhost:4001/api/exams/${selectedCourse}`);
+            const response = await axios.get(`/api/exams/${selectedCourse}`);
             setExams(response.data);
         }
     };
 
     const handleAssignmentSelect = (assignmentId) => {
         setSelectedAssignment(assignmentId);
-        axios.get(`http://localhost:4001/api/assignments/${assignmentId}/students`)
+        axios.get(`/api/assignments/${assignmentId}/students`)
             .then(response => {
                 setStudents(response.data);
             })
@@ -65,7 +65,7 @@ function ExamResults({ language, isDarkMode, Role, userId }) {
 
     const handleExamSelect = (examId) => {
         setSelectedExam(examId);
-        axios.get(`http://localhost:4001/api/exam-results/${examId}`)
+        axios.get(`/api/exam-results/${examId}`)
             .then(response => {
                 setStudents(response.data);
             })
@@ -75,7 +75,7 @@ function ExamResults({ language, isDarkMode, Role, userId }) {
     };
 
     const handleEnrollmentsSelect = () => {
-        axios.get(`http://localhost:4001/api/enrollments/${selectedCourse}/${userId}`)
+        axios.get(`/api/enrollments/${selectedCourse}/${userId}`)
             .then(response => {
                 setStudents(response.data);
             })

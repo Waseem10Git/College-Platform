@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import phoneIcon from "../Chapters/Imgs/phone-icon.png";
 import mailIcon from "../Chapters/Imgs/mail-icon.png";
 import dollarIcon from "../Chapters/Imgs/dollar-sign.png";
-import axios from "axios";
+import axios from '../../api/axios';
 
 export default function Course({ isDarkMode, Role  }) {
     const [allCourses, setAllCourses] = useState([]);
@@ -18,9 +18,9 @@ export default function Course({ isDarkMode, Role  }) {
                 console.log("Role: ",Role)
                 let response;
                 if (Role === 'student') {
-                    response = await axios.get(`http://localhost:4001/api/student/${userId}/courses`);
+                    response = await axios.get(`/api/student/${userId}/courses`);
                 } else if (Role === 'instructor') {
-                    response = await axios.get(`http://localhost:4001/api/instructor/${userId}/courses`);
+                    response = await axios.get(`/api/instructor/${userId}/courses`);
                 }
                 console.log('API response:', response.data); // Log the response
                 if (Array.isArray(response.data)) {

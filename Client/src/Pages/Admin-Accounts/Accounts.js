@@ -1,7 +1,6 @@
-//there is many updates in this page
 import React, { useState } from 'react';
 import './Accounts.css';
-import axios from "axios";
+import axios from '../../api/axios';
 
 const Accounts = ({ language, isDarkMode,relative,fixed }) => {
   const [selectedOption, setSelectedOption] = useState('add');
@@ -65,7 +64,7 @@ const Accounts = ({ language, isDarkMode,relative,fixed }) => {
     dataToUpdate.userID = formData.userID;
     let response;
     if (selectedOption === "update"){
-      axios.post(`http://localhost:4001/update-account`, dataToUpdate)
+      axios.post(`/api/update-account`, dataToUpdate)
           .then(res => {
             if (res.data.Status === "Success") {
               alert("Success");
@@ -80,7 +79,7 @@ const Accounts = ({ language, isDarkMode,relative,fixed }) => {
           });
       console.log('Submitted data to update:', dataToUpdate);
     }else {
-      axios.post(`http://localhost:4001/${selectedOption}-account`, { ...formData, departmentName })
+      axios.post(`/api/${selectedOption}-account`, { ...formData, departmentName })
           .then(res => {
             if (res.data.Status === "Success") {
               alert("Success");
@@ -104,13 +103,13 @@ const Accounts = ({ language, isDarkMode,relative,fixed }) => {
         <div className="account-section">
           <h2>{language === 'En' ? 'Manage Accounts' : 'اداره الحسابات'}</h2>
           <ul>
-            <li  className={selectedOption === "add" && "active"} onClick={() => {handleOptionClick('add') ; relative();} }  >
+            <li  className={selectedOption === "add" ? "active" : undefined} onClick={() => {handleOptionClick('add') ; relative();} }  >
               {language === 'En' ? 'Add Account' : 'إضافة حساب'}
             </li>
-            <li className={selectedOption === "update" && "active"} onClick={() => {handleOptionClick('update') ; relative()}} >
+            <li className={selectedOption === "update" ? "active" : undefined} onClick={() => {handleOptionClick('update') ; relative()}} >
               {language === 'En' ? 'Update Account' : 'تحديث حساب'}
             </li>
-            <li className={selectedOption === "delete" && "active"} onClick={() => {handleOptionClick('delete') ; fixed();}} >
+            <li className={selectedOption === "delete" ? "active" : undefined} onClick={() => {handleOptionClick('delete') ; fixed();}} >
               {language === 'En' ? 'Delete Account' : 'حذف حساب'}
             </li>
           </ul>

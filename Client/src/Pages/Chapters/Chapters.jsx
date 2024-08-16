@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import phoneIcon from "./Imgs/phone-icon.png";
 import mailIcon from "./Imgs/mail-icon.png";
 import dollarIcon from "./Imgs/dollar-sign.png";
-import axios from "axios";
+import axios from '../../api/axios';
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 
 export default function Chapters({ isDarkMode }) {
@@ -14,7 +14,7 @@ export default function Chapters({ isDarkMode }) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get("http://localhost:4001/instructor-courses");
+                const response = await axios.get("/api/instructor-courses");
                 setAllCourses(response.data);
             } catch (error) {
                 console.log("Error fetching data:", error);

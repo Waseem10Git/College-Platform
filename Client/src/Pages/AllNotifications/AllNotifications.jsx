@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import axios from 'axios';
+import axios from '../../api/axios';
 import "./AllNotificaions.css"
 import io from "socket.io-client";
 
@@ -11,7 +11,7 @@ function AllNotifications({ userId }) {
     useEffect(() => {
         const fetchNotifications = async () => {
             try {
-                const response = await axios.get(`http://localhost:4001/api/notifications/${userId}`);
+                const response = await axios.get(`/api/notifications/${userId}`);
                 if (response.data) {
                     const formattedNotifications = response.data.map(notif => ({
                         ...notif,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../../api/axios';
 
 const ChapterInstall = (props) => {
     const [chapterId, setChapterId] = useState(props.match.params.id); // Get chapter ID from URL parameter
@@ -8,7 +8,7 @@ const ChapterInstall = (props) => {
     useEffect(() => {
         const fetchChapterInfo = async () => {
             try {
-                const response = await axios.get(`/chapters/${chapterId}`);
+                const response = await axios.get(`/api/chapters/${chapterId}`);
                 setChapterInfo(response.data);
             } catch (error) {
                 console.error('Error fetching chapter information:', error);
@@ -19,7 +19,7 @@ const ChapterInstall = (props) => {
 
     const handleInstallClick = async () => {
         try {
-            const response = await axios.post(`/chapters/install/${chapterId}`);
+            const response = await axios.post(`/api/chapters/install/${chapterId}`);
             console.log('Chapter installation triggered:', response.data);
         } catch (error) {
             console.error('Error installing chapter:', error);

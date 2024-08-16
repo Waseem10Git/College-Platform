@@ -1,75 +1,44 @@
-// departmentModel.js
+// models/DepartmentModel.js
 const conn = require('../config/db');
+const util = require('util');
+
+const queryAsync = util.promisify(conn.query).bind(conn);
 
 class DepartmentModel {
-    static getAllDepartments() {
-        const sql = "SELECT * FROM departments_courses";
-        return new Promise((resolve, reject) => {
-            conn.query(sql, (err, result) => {
-                if (err) {
-                    console.error("Database error:", err);
-                    reject("Error fetching departments");
-                } else {
-                    resolve(result);
-                }
-            });
-        });
+    static async getAllDepartments() {
+        const query = "SELECT * FROM departments";
+        const results = await queryAsync(query);
+        return results;
     }
 
-    static addDepartment(department_name) {
-        const sql = 'INSERT INTO departments (department_name) VALUES (?)';
-        return new Promise((resolve, reject) => {
-            conn.query(sql, [department_name], (err, result) => {
-                if (err) {
-                    console.error("Database error:", err);
-                    reject("Error adding department");
-                } else {
-                    resolve(result);
-                }
-            });
-        });
+    static async addDepartment(department_name) {
+        const query = 'INSERT INTO departments (department_name) VALUES (?)';
+        const results = await queryAsync(query, [department_name]);
+        return results;
     }
 
-    static deleteDepartment(id) {
-        const sql = 'DELETE FROM departments WHERE department_id = ?';
-        return new Promise((resolve, reject) => {
-            conn.query(sql, [id], (err, result) => {
-                if (err) {
-                    console.error("Database error:", err);
-                    reject("Error deleting department");
-                } else {
-                    resolve(result);
-                }
-            });
-        });
+    static async updateDepartment(id, department_name) {
+        const query = 'UPDATE departments SET department_name = ? WHERE department_id = ?';
+        const results = await queryAsync(query, [department_name, id]);
+        return results;
     }
 
-    static addLevelToDepartment(department_id, level, semester) {
-        const sql = 'INSERT INTO departments_courses (department_id, level, semester) VALUES (?, ?, ?)';
-        return new Promise((resolve, reject) => {
-            conn.query(sql, [department_id, level, semester], (err, result) => {
-                if (err) {
-                    console.error("Database error:", err);
-                    reject("Error adding level to department");
-                } else {
-                    resolve(result);
-                }
-            });
-        });
+    static async deleteDepartment(id) {
+        const query = 'DELETE FROM departments WHERE department_id = ?';
+        const results = await queryAsync(query, [id]);
+        return results;
     }
 
-    static deleteLevelFromDepartment(department_id, level) {
-        const sql = 'DELETE FROM departments_courses WHERE department_id = ? AND level = ?';
-        return new Promise((resolve, reject) => {
-            conn.query(sql, [department_id, level], (err, result) => {
-                if (err) {
-                    console.error("Database error:", err);
-                    reject("Error deleting level from department");
-                } else {
-                    resolve(result);
-                }
-            });
-        });
+    static async addLevelToDepartment(department_id, level, semester) {
+        const query = 'INSERT INTO departments_courses (department_id, level, semester) VALUES (?, ?, ?)';
+        const results = await queryAsync(query, [department_id, level, semester]);
+        return results;
+    }
+
+    static async deleteLevelFromDepartment(department_id, level) {
+        const query = 'DELETE FROM departments_courses WHERE department_id = ? AND level = ?';
+        const results = await queryAsync(query, [department_id, level]);
+        return results;
     }
 }
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './ExamPreview.module.css';
-import axios from 'axios';
+import axios from '../../api/axios';
 import CourseSelect from '../ExamResults/CourseSelect';
 import ExamSelect from '../ExamResults/ExamSelect';
 import DatePicker from "react-datepicker";
@@ -21,7 +21,7 @@ function ExamPreviewPage({ isDarkMode, language, Role, userId }) {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:4001/api/instructor/${userId}/courses`);
+            const response = await axios.get(`/api/instructor/${userId}/courses`);
             if (Array.isArray(response.data)) {
                 setCourses(response.data);
             } else {
@@ -37,7 +37,7 @@ function ExamPreviewPage({ isDarkMode, language, Role, userId }) {
     }, [userId]);
 
     const handleCourseSelect = (courseId) => {
-        axios.get(`http://localhost:4001/api/exams/${courseId}`)
+        axios.get(`/api/exams/${courseId}`)
             .then(response => {
                 setExams(response.data);
             })
@@ -47,7 +47,7 @@ function ExamPreviewPage({ isDarkMode, language, Role, userId }) {
     };
 
     const fetchExamDetails = async (examId) => {
-        axios.get(`http://localhost:4001/api/exams-details/${examId}`)
+        axios.get(`/api/exams-details/${examId}`)
             .then(response => {
                 const details = response.data[0];
                 setExamDetails(details);
@@ -61,7 +61,7 @@ function ExamPreviewPage({ isDarkMode, language, Role, userId }) {
     }
 
     const fetchExamQuestions = async (examId) => {
-        await axios.get(`http://localhost:4001/api/exams-questions/${examId}`)
+        await axios.get(`/api/exams-questions/${examId}`)
             .then(response => {
                 setExamQuestions(response.data);
             })
@@ -71,7 +71,7 @@ function ExamPreviewPage({ isDarkMode, language, Role, userId }) {
     }
 
     const fetchExamAnswers = async (examId) => {
-        await axios.get(`http://localhost:4001/api/exams-answers/${examId}`)
+        await axios.get(`/api/exams-answers/${examId}`)
             .then(response => {
                 setExamAnswers(response.data);
             })
@@ -113,7 +113,7 @@ function ExamPreviewPage({ isDarkMode, language, Role, userId }) {
         };
         console.log("updated exam: ", updatedExam)
 
-        axios.put(`http://localhost:4001/api/exams/${selectedExamId}`, updatedExam)
+        axios.put(`/api/exams/${selectedExamId}`, updatedExam)
             .then(response => {
                 setExamDetails(response.data);
                 fetchExamDetails(selectedExamId);
@@ -150,7 +150,7 @@ function ExamPreviewPage({ isDarkMode, language, Role, userId }) {
     };
 
     const handleDeleteExam = () => {
-        axios.delete(`http://localhost:4001/api/exams/${selectedExamId}`)
+        axios.delete(`/api/exams/${selectedExamId}`)
             .then(response => {
                 setExamDetails({});
                 setEditMode(false);

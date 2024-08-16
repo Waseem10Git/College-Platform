@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../../api/axios';
 
 const CoursesView = ({ language }) => {
     const [courses, setCourses] = useState([]);
@@ -19,7 +19,7 @@ const CoursesView = ({ language }) => {
 
     const fetchCourses = async () => {
         try {
-            const response = await axios.get('http://localhost:4001/api/courses');
+            const response = await axios.get('/api/courses');
             setCourses(response.data);
         } catch (err) {
             console.log('Error fetching courses data: ', err);
@@ -40,7 +40,7 @@ const CoursesView = ({ language }) => {
         formData.append('image', image);
 
         try {
-            await axios.post('http://localhost:4001/api/courses', formData, {
+            await axios.post('/api/courses', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -66,7 +66,7 @@ const CoursesView = ({ language }) => {
         }
 
         try {
-            await axios.put(`http://localhost:4001/api/courses/${course.course_code}`, formData, {
+            await axios.put(`/api/courses/${course.course_code}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -86,7 +86,7 @@ const CoursesView = ({ language }) => {
 
     const deleteCourse = async (id) => {
         try {
-            await axios.delete(`http://localhost:4001/api/courses/${id}`);
+            await axios.delete(`/api/courses/${id}`);
             fetchCourses();
         } catch (err) {
             console.error('Error deleting course: ', err);

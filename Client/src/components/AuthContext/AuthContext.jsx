@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../../api/axios';
 
 export const AuthContext = createContext();
 
@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
 
     axios.defaults.withCredentials = true;
     useEffect(() => {
-        axios.get('http://localhost:4001')
+        axios.get('/')
             .then(res => {
                 console.log("Server response:", res.data);
                 if (res.data.Status === "Success") {

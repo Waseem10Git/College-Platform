@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../../api/axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -12,7 +12,7 @@ const InstructorsView = ({ language }) => {
 
     const fetchInstructorsCourses = async () => {
         try {
-            const response = await axios.get('http://localhost:4001/api/instructors-departments-courses');
+            const response = await axios.get('/api/instructors-departments-courses');
             setInstructorsCourses(response.data);
         } catch (err) {
             console.error('Error fetching instructors-courses data:', err);
@@ -22,7 +22,7 @@ const InstructorsView = ({ language }) => {
 
     useEffect(() => {
         fetchInstructorsCourses();
-        axios.get('http://localhost:4001/api/departments-courses')
+        axios.get('/api/departments-courses')
             .then(response => {
                 setDepartmentsCourses(response.data);
             })
@@ -31,7 +31,7 @@ const InstructorsView = ({ language }) => {
                 toast.error(language === 'En' ? 'Error fetching departments-courses data' : 'خطأ في جلب بيانات الأقسام والدورات');
             });
 
-        axios.get('http://localhost:4001/api/instructors')
+        axios.get('/api/instructors')
             .then(response => {
                 setInstructors(response.data);
             })
@@ -43,7 +43,7 @@ const InstructorsView = ({ language }) => {
 
     const handleAdd = async () => {
         try {
-            const response = await axios.post('http://localhost:4001/api/instructors-enrollments', {
+            const response = await axios.post('/api/instructors-enrollments', {
                 instructor_id: selectedInstructor,
                 department_course_ids: newDepartmentCourse
             });
@@ -66,7 +66,7 @@ const InstructorsView = ({ language }) => {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`http://localhost:4001/api/instructors-enrollments/${id}`);
+            await axios.delete(`/api/instructors-enrollments/${id}`);
             fetchInstructorsCourses();
             toast.success(language === 'En' ? 'Deleted successfully!' : 'تم الحذف بنجاح!');
         } catch (error) {

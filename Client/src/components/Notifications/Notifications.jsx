@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import io from 'socket.io-client';
-import axios from 'axios';
+import axios from '../../api/axios';
 import {MdNotificationsActive} from "react-icons/md";
 import NotificationPopover from '../NotificationPopover/NotificationPopover';
 import "./Notifications.css"
@@ -14,7 +14,7 @@ function Notifications({ userId }) {
 
     useEffect(() => {
         // Fetch unread notifications
-        axios.get(`http://localhost:4001/api/unread-notifications/${userId}`)
+        axios.get(`/api/unread-notifications/${userId}`)
             .then(response => {
                 if (response.data){
                     const formattedNotifications = response.data.map(notif => ({
@@ -64,7 +64,7 @@ function Notifications({ userId }) {
     };
 
     const markNotificationsAsRead = () => {
-        axios.post(`http://localhost:4001/api/mark-notifications-read/${userId}`)
+        axios.post(`/api/mark-notifications-read/${userId}`)
             .then(() => {
                 setUnreadNotifications([]);
             })

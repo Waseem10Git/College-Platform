@@ -1,4 +1,3 @@
-// AccountController.js
 const bcrypt = require('bcrypt');
 const userModel = require('../models/User');
 const saltRounds = 10; // Define your salt rounds

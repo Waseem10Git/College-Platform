@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './AdminCourses.css';
-import axios from "axios";
+import axios from '../../api/axios';
 import DepartmentsView from './DepartmentsView'
 import CoursesView from "./CoursesView";
 import InstructorsView from "./InstructorsView";
@@ -13,7 +13,7 @@ const AdminCourses = ({ isDarkMode, language }) => {
 
     const fetchDepartments = async () => {
         try {
-            const response = await axios.get('http://localhost:4001/api/departments');
+            const response = await axios.get('/api/departments');
             setDepartments(response.data);
         }catch (err) {
             console.log("Error fetching departments data: ", err);

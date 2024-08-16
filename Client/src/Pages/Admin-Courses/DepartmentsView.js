@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from "axios";
+import axios from '../../api/axios';
 
 const DepartmentsView = ({ language }) => {
     const [departments, setDepartments] = useState([]);
@@ -9,7 +9,7 @@ const DepartmentsView = ({ language }) => {
 
     const fetchDepartments = async () => {
         try {
-            const response = await axios.get('http://localhost:4001/api/departments');
+            const response = await axios.get('/api/departments');
             setDepartments(response.data);
         }catch (err) {
             console.log("Error fetching departments data: ", err);
@@ -22,7 +22,7 @@ const DepartmentsView = ({ language }) => {
     const addDepartment = (name) => {
         if (name && !departments.some(dep => dep.department_name === name)) {
             console.log("name: ", name)
-            axios.post('http://localhost:4001/api/departments', { department_name: name })
+            axios.post('/api/departments', { department_name: name })
                 .then(res => {
                     if (res.data.success) {
                         // setDepartments([...departments, { department_name: name }]);
@@ -35,7 +35,7 @@ const DepartmentsView = ({ language }) => {
     };
 
     const updateDepartment = (id, name) => {
-        axios.put(`http://localhost:4001/api/departments/${id}`, { department_name: name })
+        axios.put(`/api/departments/${id}`, { department_name: name })
             .then(res => {
                 if (res.data.success) {
                     // setDepartments(departments.map(dep => dep.id === id ? { ...dep, department_name: name } : dep));
@@ -48,7 +48,7 @@ const DepartmentsView = ({ language }) => {
     };
 
     const deleteDepartment = (id) => {
-        axios.delete(`http://localhost:4001/api/departments/${id}`)
+        axios.delete(`/api/departments/${id}`)
             .then(res => {
                 if (res.data.success) {
                     // setDepartments(departments.filter(dep => dep.id !== id));

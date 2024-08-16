@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import './MakeExam.css';
-import axios from 'axios';
+import axios from '../../api/axios';
 import moment from 'moment';
 
 const MakeExam = ({ language, isDarkMode, userId }) => {
@@ -20,7 +20,7 @@ const MakeExam = ({ language, isDarkMode, userId }) => {
 
   useEffect(() => {
     // Fetch courses when the component mounts
-    axios.get(`http://localhost:4001/api/courses/${userId}`)
+    axios.get(`/api/courses/${userId}`)
         .then(response => {
           setCourses(response.data);
           console.log(response.data);
@@ -96,7 +96,7 @@ const MakeExam = ({ language, isDarkMode, userId }) => {
 
     // Save the exam to the database
     try {
-      const response = await axios.post('http://localhost:4001/api/exams', {
+      const response = await axios.post('/api/exams', {
         exam_name: examName,
         duration: duration,
         start_at: startAtUTC
@@ -104,13 +104,13 @@ const MakeExam = ({ language, isDarkMode, userId }) => {
       const exam_id = response.data.exam_id;
 
       // Associate exam with instructor's course
-      await axios.post('http://localhost:4001/api/instructorsCoursesExams', {
+      await axios.post('/api/instructorsCoursesExams', {
         course_code: selectedCourse,
         instructor_id: userId,
         exam_id: exam_id
       });
 
-      await axios.post('http://localhost:4001/api/enrollmentsExams', {
+      await axios.post('/api/enrollmentsExams', {
         course_code: selectedCourse,
         instructor_id: userId,
         exam_id: exam_id
@@ -118,7 +118,7 @@ const MakeExam = ({ language, isDarkMode, userId }) => {
 
       // Save each question and its options to the database
       for (let question of questions) {
-        const questionResponse = await axios.post('http://localhost:4001/api/questions', {
+        const questionResponse = await axios.post('/api/questions', {
           exam_id,
           question_text: question.question,
           points: points,
@@ -127,7 +127,7 @@ const MakeExam = ({ language, isDarkMode, userId }) => {
 
         if (question.type === 'MCQ') {
           for (let i = 0; i < question.options.length; i++) {
-            await axios.post('http://localhost:4001/api/answers', {
+            await axios.post('/api/answers', {
               question_id,
               answer_text: question.options[i],
               is_correct: i === question.correctAnswer,

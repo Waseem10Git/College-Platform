@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import {NavBar, Footer, Header, MobileHeader, PublicUser, AdminUser, StudentInstructorUser, InstructorUser} from './components/index'
 import {Quiz, FileUpload, Home, Contact, SignIn, Accounts, MakeExam, ExamPreview, ExamResults, ExamResultDetails, TakeExam, ChapterUpload, ChapterInstall, AdminCourses, Course, DashboardPage, Profile, UploadAssignment, Assignments, AllNotifications} from './Pages/index'
 
-import axios from "axios";
+import axios from './api/axios';
 
 function App() {
 
@@ -48,7 +48,7 @@ function App() {
 
   axios.defaults.withCredentials = true;
   useEffect(() => {
-    axios.get('http://localhost:4001')
+    axios.get('/api/auth')
         .then(res => {
           console.log("Server response:", res.data); // Log the server response
           if (res.data.Status === "Success") {

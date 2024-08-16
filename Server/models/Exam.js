@@ -1,59 +1,144 @@
-// examModel.js
 const conn = require('../config/db');
-
 class ExamModel {
-    static associateExamWithCourse(course_code, instructor_id, exam_id) {
-        const sql = "INSERT INTO instructors_courses_exams (instructors_courses_id, exam_id) VALUES ((SELECT id FROM instructors_courses WHERE course_id = ? and instructor_id = ?), ?)";
-        return new Promise((resolve, reject) => {
-            conn.query(sql, [course_code, instructor_id, exam_id], (err, result) => {
-                if (err) {
-                    console.error("Database error:", err);
-                    reject("Error associating exam with instructor's course");
-                } else {
-                    resolve(result);
-                }
-            });
-        });
-    }
-
-    static createExam(exam_name, duration, start_at) {
+    static async createExam(exam_name, duration, start_at) {
         const sql = "INSERT INTO exams (exam_name, duration, start_at) VALUES (?, ?, ?)";
+
         return new Promise((resolve, reject) => {
             conn.query(sql, [exam_name, duration, start_at], (err, result) => {
                 if (err) {
-                    console.error("Database error:", err);
-                    reject("Error inserting exam");
-                } else {
-                    resolve(result.insertId);
+                    return reject("Database error: " + err.message);
                 }
+                resolve(result.insertId);
             });
         });
     }
 
-    static addQuestion(exam_id, question_text, points) {
-        const sql = 'INSERT INTO questions (exam_id, question_text, points) VALUES (?, ?, ?)';
+    static getExamsByCourse(courseId) {
         return new Promise((resolve, reject) => {
-            conn.query(sql, [exam_id, question_text, points], (err, result) => {
+            const sql = `
+            SELECT e.exam_id AS examId, e.exam_name AS examName
+            FROM exams AS e
+            INNER JOIN instructors_courses_exams AS ice ON e.exam_id = ice.exam_id
+            INNER JOIN instructors_courses AS ic ON ice.instructors_courses_id = ic.id
+            INNER JOIN departments_courses AS dc ON ic.department_course_id = dc.id
+            WHERE dc.course_id = ?
+          `;
+            conn.query(sql, [courseId], (err, results) => {
                 if (err) {
-                    console.error("Database error:", err);
-                    reject("Error adding question");
-                } else {
-                    resolve(result.insertId);
+                    return reject(err);
                 }
+                resolve(results);
             });
         });
     }
 
-    static addAnswer(question_id, answer_text, is_correct) {
-        const sql = 'INSERT INTO answers (question_id, answer_text, is_correct) VALUES (?, ?, ?)';
+    static getExamDetails(courseId) {
         return new Promise((resolve, reject) => {
-            conn.query(sql, [question_id, answer_text, is_correct], (err, result) => {
+            const sql = `
+            SELECT exam_name, duration, start_at 
+            FROM exams 
+            WHERE exam_id = ?
+          `;
+            conn.query(sql, [courseId], (err, results) => {
                 if (err) {
-                    console.error("Database error:", err);
-                    reject("Error adding answer");
-                } else {
-                    resolve(result.insertId);
+                    return reject(err);
                 }
+                resolve(results);
+            });
+        });
+    }
+
+    static getExamQuestions(examId) {
+        return new Promise((resolve, reject) => {
+            const sql = `
+            SELECT e.exam_id, q.question_id, q.question_text, q.points
+            FROM exams as e 
+            INNER JOIN questions as q ON e.exam_id = q.exam_id
+            WHERE e.exam_id = ?
+          `;
+            conn.query(sql, [examId], (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(results);
+            });
+        });
+    }
+
+    static getExamAnswers(examId) {
+        return new Promise((resolve, reject) => {
+            const sql = `
+            SELECT q.question_id, a.answer_id, a.answer_text, a.is_correct 
+            FROM exams as e
+            INNER JOIN questions as q ON e.exam_id = q.exam_id
+            INNER JOIN answers as a ON q.question_id = a.question_id
+            WHERE e.exam_id = ?
+          `;
+            conn.query(sql, [examId], (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(results);
+            });
+        });
+    }
+
+    static updateExam(examId, examName, duration, startAt) {
+        return new Promise((resolve, reject) => {
+            const sql = `
+            UPDATE exams 
+            SET exam_name = ?, duration = ?, start_at = ? 
+            WHERE exam_id = ?
+          `;
+            conn.query(sql, [examName, duration, startAt, examId], (err, result) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(result);
+            });
+        });
+    }
+
+    static updateQuestion(question) {
+        return new Promise((resolve, reject) => {
+            const sql = `
+            UPDATE questions 
+            SET question_text = ?, points = ? 
+            WHERE question_id = ?
+          `;
+            conn.query(sql, [question.question_text, question.points, question.question_id], (err, result) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(result);
+            });
+        });
+    }
+
+    static updateOption(option) {
+        return new Promise((resolve, reject) => {
+            const sql = `
+            UPDATE answers 
+            SET answer_text = ?, is_correct = ? 
+            WHERE answer_id = ?
+          `;
+            conn.query(sql, [option.answer_text, option.is_correct, option.answer_id], (err, result) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(result);
+            });
+        });
+    }
+
+    static deleteExam(examId) {
+        return new Promise((resolve, reject) => {
+            const sql = 'DELETE FROM exams WHERE exam_id = ?';
+            conn.query(sql, [examId], (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(results);
             });
         });
     }

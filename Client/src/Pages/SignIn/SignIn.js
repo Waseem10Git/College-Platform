@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import './SignIn.css';
-import axios from "axios";
+import axios from '../../api/axios';
 import { useNavigate } from "react-router-dom";
 
 const SignIn = ({ language, isDarkMode }) => {
@@ -13,7 +13,7 @@ const SignIn = ({ language, isDarkMode }) => {
     axios.defaults.withCredentials = true;
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post(`http://localhost:4001/signIn`, formData)
+        axios.post(`/api/auth/signIn`, formData)
             .then(res => {
                 if (res.data.Status === "Success") {
                     navigate('/');

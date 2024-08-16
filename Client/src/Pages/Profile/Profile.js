@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Profile.css';
-import axios from "axios";
+import axios from '../../api/axios';
 
 const Profile = ({ isDarkMode, language, userId }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -13,7 +13,7 @@ const Profile = ({ isDarkMode, language, userId }) => {
 
   const fetchUserData = async () => {
     try {
-      const response = await axios.get(`http://localhost:4001/user/${userId}`);
+      const response = await axios.get(`/api/user/${userId}`);
       setUserData(response.data);
       console.log(response.data);
     } catch (err) {
@@ -59,7 +59,7 @@ const Profile = ({ isDarkMode, language, userId }) => {
     }
 
     try {
-      const response = await axios.put('http://localhost:4001/user/update', formData, {
+      const response = await axios.put('/api/user/update', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
