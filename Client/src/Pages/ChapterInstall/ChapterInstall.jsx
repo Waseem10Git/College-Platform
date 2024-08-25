@@ -26,7 +26,6 @@ const ChapterInstall = (props) => {
         }
     };
 
-    // Return statement with conditional rendering
     return (
         <div>
             {chapterInfo ? (

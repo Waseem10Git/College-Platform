@@ -1,7 +1,6 @@
 import React, { useState} from 'react';
 import './ExamResultDetails.css';
 import quizData from './quizData ';
-import {TableExamResult} from "../../components";
 
 const ExamResultDetails = ({ isDarkMode }) => {
   const [selectedCourseId, setSelectedCourseId] = useState('');

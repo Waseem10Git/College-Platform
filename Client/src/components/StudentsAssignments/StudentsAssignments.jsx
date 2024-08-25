@@ -1,6 +1,5 @@
 import {useNavigate} from "react-router-dom";
 
-
 function StudentsAssignments({ students, assignmentId, language }) {
     const navigate = useNavigate();
 

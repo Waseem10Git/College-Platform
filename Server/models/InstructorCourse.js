@@ -33,6 +33,24 @@ class InstructorCourseModel {
         });
     }
 
+    static getInstructorCourseId(userId, selectedCourse) {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT IC.id, C.course_name 
+                FROM instructors_courses as IC
+                INNER JOIN departments_courses as DC ON IC.department_course_id = DC.id
+                INNER JOIN courses as C ON DC.course_id = C.course_code
+                WHERE IC.instructor_id = ? AND DC.course_id = ?
+            `;
+            conn.query(query, [userId, selectedCourse], (error, result) => {
+                if (error) {
+                    return reject(error);
+                }
+                resolve(result);
+            });
+        });
+    }
+
     static getAllInstructorCourses() {
         return new Promise((resolve, reject) => {
             const sql = "SELECT * FROM instructors_courses";

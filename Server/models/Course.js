@@ -40,7 +40,7 @@ class CourseModel {
     static getAllCoursesForStudent(studentId) {
         return new Promise((resolve, reject) => {
             const query = `
-                SELECT C.course_code, C.course_name, C.description
+                SELECT C.course_code, C.course_name, C.description, C.image
                 FROM courses AS C 
                 INNER JOIN departments_courses AS DC ON C.course_code = DC.course_id
                 INNER JOIN instructors_courses AS IC ON DC.id = IC.department_course_id
@@ -59,7 +59,7 @@ class CourseModel {
     static getAllCoursesForInstructor(instructorId) {
         return new Promise((resolve, reject) => {
             const query = `
-                SELECT C.course_code, C.course_name, C.description 
+                SELECT C.course_code, C.course_name, C.description, C.image
                 FROM instructors_courses AS IC 
                 INNER JOIN departments_courses as DC ON IC.department_course_id = DC.id
                 INNER JOIN courses AS C ON C.course_code = DC.course_id 
@@ -90,7 +90,7 @@ class CourseModel {
     static getCoursesByInstructorId(instructorId) {
         return new Promise((resolve, reject) => {
             const query = `
-            SELECT C.course_code, C.course_name 
+            SELECT C.course_code, C.course_name
             FROM courses as C
             INNER JOIN departments_courses as DC ON C.course_code = DC.course_id
             INNER JOIN instructors_courses as IC ON IC.department_course_id = DC.id
@@ -207,18 +207,6 @@ class CourseModel {
         });
     }
 
-    // static async deleteCourse(courseCode) {
-    //     const query = 'DELETE FROM courses WHERE course_code = ?';
-    //
-    //     return new Promise((resolve, reject) => {
-    //         conn.query(query, [courseCode], (err, result) => {
-    //             if (err) {
-    //                 return reject("Error deleting course from the database.");
-    //             }
-    //             resolve(result);
-    //         });
-    //     });
-    // }
 }
 
 module.exports = CourseModel;

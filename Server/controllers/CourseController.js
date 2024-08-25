@@ -23,7 +23,13 @@ class CourseController {
     static async getAllCoursesForStudent(req, res) {
         try {
             const studentId = req.params.id;
-            const courses = await CourseModel.getAllCoursesForStudent(studentId);
+            const results = await CourseModel.getAllCoursesForStudent(studentId);
+            const courses = results.map(course => ({
+                course_code: course.course_code,
+                course_name: course.course_name,
+                description: course.description,
+                image: course.image ? course.image.toString('base64') : null
+            }));
             return res.json(courses);
         } catch (err) {
             return res.status(500).json({ message: "Server Error in GET data: /api/student/:id/courses" });
@@ -33,7 +39,13 @@ class CourseController {
     static async getAllCoursesForInstructor(req, res) {
         try {
             const instructorId = req.params.id;
-            const courses = await CourseModel.getAllCoursesForInstructor(instructorId);
+            const results = await CourseModel.getAllCoursesForInstructor(instructorId);
+            const courses = results.map(course => ({
+                course_code: course.course_code,
+                course_name: course.course_name,
+                description: course.description,
+                image: course.image ? course.image.toString('base64') : null
+            }));
             return res.json(courses);
         } catch (err) {
             return res.status(500).json({ message: "Server Error in GET data: /api/instructor/:id/courses" });
@@ -92,7 +104,13 @@ class CourseController {
 
     static async getAllCourses(req, res) {
         try {
-            const courses = await CourseModel.getAllCourses();
+            const results = await CourseModel.getAllCourses();
+            const courses = results.map(course => ({
+                course_code: course.course_code,
+                course_name: course.course_name,
+                description: course.description,
+                image: course.image ? course.image.toString('base64') : null
+            }));
             return res.status(200).json(courses);
         } catch (error) {
             console.error("Error fetching courses:", error);

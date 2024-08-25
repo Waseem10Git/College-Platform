@@ -1,4 +1,7 @@
 const AssignmentModel = require('../models/Assignment');
+const NotificationModel = require('../models/Notification');
+const NotificationController = require('../controllers/NotificationController');
+const InstructorCourseModel = require('../models/InstructorCourse')
 const fs = require('fs');
 const path = require('path');
 const conn = require('../config/db');
@@ -7,17 +10,21 @@ class AssignmentController {
     static async uploadAssignment(req, res) {
         const { selectedCourse, userId, assignmentName, assignmentDescription, dueDate } = req.body;
         const assignmentFile = req.file;
-        const filePath = path.join(__dirname, assignmentFile.path);
-        const fileData = fs.readFileSync(filePath);
+        const filePath = assignmentFile.path;
 
         try {
+            if (!fs.existsSync(filePath)) {
+                return res.status(404).json({ error: 'File not found' });
+            }
+            const fileData = fs.readFileSync(filePath);
+
             conn.beginTransaction(async (err) => {
                 if (err) {
                     console.error('Transaction Error:', err);
                     return res.status(500).json({ error: 'Transaction Error' });
                 }
 
-                const result = await AssignmentModel.getInstructorCourseId(userId, selectedCourse);
+                const result = await InstructorCourseModel.getInstructorCourseId(userId, selectedCourse);
 
                 if (result.length === 0) {
                     return conn.rollback(() => {
@@ -39,7 +46,7 @@ class AssignmentController {
                 await AssignmentModel.associateAssignmentWithCourse(instructor_course_id, assignmentId);
 
                 const notificationMessage = `New Assignment added: ${courseName}`;
-                await AssignmentModel.createNotification(instructor_course_id, notificationMessage);
+                await NotificationModel.createNotification(instructor_course_id, notificationMessage);
 
                 conn.commit((err) => {
                     if (err) {
@@ -50,8 +57,8 @@ class AssignmentController {
                     }
 
                     // Emit notification event
-                    io.emit('notification', { userId, message: notificationMessage });
-                    console.log('Assignment uploaded successfully');
+                    const notificationController = new NotificationController();
+                    notificationController.emitNotification(userId, notificationMessage);
                     res.json({ message: 'Assignment uploaded successfully' });
 
                     // Cleanup: delete the temporary file after storing in database

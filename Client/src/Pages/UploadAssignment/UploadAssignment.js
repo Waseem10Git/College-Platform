@@ -4,7 +4,6 @@ import './UploadAssignment.css';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
-import coursesData from './coursesData'; // Assuming this contains initial courses data
 
 const UploadAssignment = ({ isDarkMode, language, userId }) => {
     const [selectedCourse, setSelectedCourse] = useState('');
@@ -31,8 +30,6 @@ const UploadAssignment = ({ isDarkMode, language, userId }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        // Prepare form data for file upload
         const formData = new FormData();
         formData.append('selectedCourse', selectedCourse);
         formData.append('assignmentName', assignmentName);
@@ -40,11 +37,9 @@ const UploadAssignment = ({ isDarkMode, language, userId }) => {
         formData.append('assignmentFile', assignmentFile);
         formData.append('userId', userId);
 
-        // Add 3 hours to the selected due date
         const adjustedDueDate = dueDate ? moment(dueDate).format() : '';
         formData.append('dueDate', adjustedDueDate);
 
-        // Send POST request to backend to upload assignment
         axios.post('/api/upload-assignment', formData)
             .then(response => {
                 console.log('Assignment uploaded successfully:', response.data);
@@ -130,13 +125,20 @@ const UploadAssignment = ({ isDarkMode, language, userId }) => {
                             </label>
                             <DatePicker
                                 selected={dueDate}
-                                onChange={date => setDueDate(date)}
+                                onChange={(date) => setDueDate(date)}
                                 showTimeSelect
                                 dateFormat="Pp"
                                 className="input-field"
                                 minDate={new Date()}
+                                minTime={
+                                    dueDate && dueDate.toDateString() === new Date().toDateString()
+                                        ? new Date()  // If today, set minTime to now
+                                        : new Date(new Date().setHours(0, 0, 0, 0))  // If another day, set minTime to start of day
+                                }
+                                maxTime={new Date(new Date().setHours(23, 59, 59, 999))} // Max time is the end of the day
                                 required
                             />
+
                         </div>
                         <button type="submit">
                             {language === 'En' ? 'Upload' : 'رفع'}

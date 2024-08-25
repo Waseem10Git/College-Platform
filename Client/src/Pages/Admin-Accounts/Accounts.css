@@ -1,8 +1,9 @@
 .accounts-container {
+  min-height: 100vh;
   width: 100%;
-  flex-grow: 1 ;
-    background-color: #f8f8f8;
-    margin: 0 auto;
+  flex-grow: 1;
+  background-color: #f8f8f8;
+  margin: 0 auto;
   }
 
   .accounts-container.dark {
@@ -83,9 +84,11 @@
   form input[type='email'],
   form input[type='password'],
   form input[type='number'],
-  form select {
+  form .form-group input[type='file'],
+  form .form-group .form-select {
     width: 90%;
     padding: 10px;
+    margin: 0;
     border: 2px solid #ccc;
     border-radius: 3px;
     background-color: #fff;
@@ -98,6 +101,7 @@
   form input[type='text']:focus,
   form input[type='email']:focus,
   form input[type='password']:focus,
+  form input[type='file']:focus,
   form select:focus {
     border-color: #007bff;
     outline: none;

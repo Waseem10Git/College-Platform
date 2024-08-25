@@ -1,9 +1,6 @@
 import "./Course.css";
-import {Link, useNavigate, useParams} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import phoneIcon from "../Chapters/Imgs/phone-icon.png";
-import mailIcon from "../Chapters/Imgs/mail-icon.png";
-import dollarIcon from "../Chapters/Imgs/dollar-sign.png";
 import axios from '../../api/axios';
 
 export default function Course({ isDarkMode, Role  }) {
@@ -18,9 +15,9 @@ export default function Course({ isDarkMode, Role  }) {
                 console.log("Role: ",Role)
                 let response;
                 if (Role === 'student') {
-                    response = await axios.get(`/api/student/${userId}/courses`);
+                    response = await axios.get(`/api/student/${userId}/courses`, {responseType: "json"});
                 } else if (Role === 'instructor') {
-                    response = await axios.get(`/api/instructor/${userId}/courses`);
+                    response = await axios.get(`/api/instructor/${userId}/courses`, {responseType: "json"});
                 }
                 console.log('API response:', response.data); // Log the response
                 if (Array.isArray(response.data)) {
@@ -37,7 +34,7 @@ export default function Course({ isDarkMode, Role  }) {
 
     const handleCourseClick = (courseCode) => {
         console.log(courseCode)
-        navigate(`/ChapterUpload/${courseCode}`); // Navigate to chapters page with course ID
+        navigate(`/ChapterUpload/${courseCode}/${userId}`); // Navigate to chapters page with course ID
     };
 
     return (
@@ -48,25 +45,23 @@ export default function Course({ isDarkMode, Role  }) {
                         <div key={index} className="courses-card"
                              onClick={() => handleCourseClick(item.course_code)}>
                             <div className="image">
-                                <img src={item.imgUrl} alt={item.course_name}/>
+                                <img src={`data:image/jpeg;base64,${item.image}`} alt={item.course_name}
+                                     style={{width: '100px', height: 'auto'}}/>
                             </div>
                             <div className="content">
                                 <div className="flex">
-                                    <div>
+                                <div>
                                         <h3>{item.course_name}</h3>
                                         <h4>{item.first_name + " " + item.last_name}</h4>
                                     </div>
                                     <div className="price">
-                                        {/*<img src={dollarIcon} alt="Dollar Icon"/>*/}
                                         <h3>{item.course_code} EPL</h3>
                                     </div>
                                 </div>
                                 <div className="info-group">
-                                    {/*<img src={phoneIcon} alt="Phone Icon"/>*/}
                                     <p>{item.phone}</p>
                                 </div>
                                 <div className="info-group">
-                                    {/*<img src={mailIcon} alt="Mail Icon"/>*/}
                                     <p>{item.email}</p>
                                 </div>
                             </div>

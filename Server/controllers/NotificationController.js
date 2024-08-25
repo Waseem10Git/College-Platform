@@ -5,6 +5,15 @@ class NotificationController {
         this.io = io;
     }
 
+    async emitNotification(userId, message) {
+        try {
+            this.io.emit('notification', {userId, message});
+            console.log(`Notification sent to user ${userId}: ${message}`);
+        } catch (err) {
+            console.error('Error creating notification:', err);
+        }
+    }
+
     async getNotifications(req, res) {
         try {
             const { id } = req.params;

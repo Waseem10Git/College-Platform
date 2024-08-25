@@ -6,7 +6,6 @@ const Profile = ({ isDarkMode, language, userId }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  // const [phone, setPhone] = useState('');
   const [image, setImage] = useState('https://via.placeholder.com/100');
   const [imageFile, setImageFile] = useState(null);
   const [userData, setUserData] = useState('');
@@ -32,10 +31,6 @@ const Profile = ({ isDarkMode, language, userId }) => {
   const handleConfirmPasswordChange = (e) => {
     setConfirmPassword(e.target.value);
   };
-
-  // const handlePhoneChange = (e) => {
-  //   setPhone(e.target.value);
-  // };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -89,7 +84,6 @@ const Profile = ({ isDarkMode, language, userId }) => {
             <p><strong>{language === 'En' ? 'Email:' : 'البريد الإلكتروني:'}</strong> {userData.email}</p>
             <p><strong>{language === 'En' ? 'Role:' : 'الدور:'}</strong> {userData.role}</p>
             <p><strong>{language === 'En' ? 'Code:' : 'الرمز:'}</strong> {userData.id}</p>
-            {/*<p><strong>{language === 'En' ? 'Phone:' : 'رقم الهاتف:'}</strong> {phone}</p>*/}
           </div>
         </div>
         {!isEditing ? (
@@ -119,16 +113,6 @@ const Profile = ({ isDarkMode, language, userId }) => {
                     placeholder={language === 'En' ? 'Enter new password again to confirm' : 'أدخل كلمة مرور جديدة'}
                 />
               </div>
-              {/*<div className="form-group">*/}
-              {/*  <label htmlFor="phone">{language === 'En' ? 'Phone' : 'رقم الهاتف'}</label>*/}
-              {/*  <input*/}
-              {/*      type="tel"*/}
-              {/*      id="phone"*/}
-              {/*      value={phone}*/}
-              {/*      onChange={handlePhoneChange}*/}
-              {/*      placeholder={language === 'En' ? 'Enter phone number' : 'أدخل رقم الهاتف'}*/}
-              {/*  />*/}
-              {/*</div>*/}
               <div className="form-group">
                 <label htmlFor="image">{language === 'En' ? 'Profile Image' : 'صورة الملف الشخصي'}</label>
                 <input

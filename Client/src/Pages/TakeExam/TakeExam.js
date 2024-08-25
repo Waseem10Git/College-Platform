@@ -3,7 +3,7 @@ import './TakeExam.css';
 import axios from '../../api/axios';
 import CourseSelect from '../ExamResults/CourseSelect';
 import ExamSelect from '../ExamResults/ExamSelect';
-import {NotificationModal} from '../../components'; // Ensure this is the correct path to your NotificationModal component
+import {NotificationModal} from '../../components';
 
 const TakeExam = ({ isDarkMode, language, Role, userId }) => {
   const [selectedQuizId, setSelectedQuizId] = useState('');

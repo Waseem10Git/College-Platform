@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../../api/axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import phoneIcon from "../Chapters/Imgs/phone-icon.png";
-import mailIcon from "../Chapters/Imgs/mail-icon.png";
-import dollarIcon from "../Chapters/Imgs/dollar-sign.png";
 import { UploadFile, ConfirmDelete } from "../../components";
 import uploadLabel from "../FileUpload/images/uploadLabel.png";
 import "./ChapterUpload.css"
@@ -17,7 +14,7 @@ const ChapterUpload = ({ isDarkMode, language, Role }) => {
     const [deletionVisible, setDeletionVisible] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
     const [isMeetingStarted, setIsMeetingStarted] = useState(false);
-    const { courseCode } = useParams();
+    const { courseCode, userId } = useParams();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -30,17 +27,18 @@ const ChapterUpload = ({ isDarkMode, language, Role }) => {
             }
         };
         fetchData();
-    }, [courseCode]);
+    }, [courseCode, userId]);
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
-        setErrorMessage(''); // Clear previous error message when a new file is selected
+        setErrorMessage('');
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData();
         formData.append('file', file);
+        formData.append('userId', userId);
 
         try {
             await axios.post(`/api/courses/${courseCode}/chapters`, formData, {

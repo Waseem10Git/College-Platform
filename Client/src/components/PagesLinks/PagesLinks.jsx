@@ -81,8 +81,6 @@ function PagesLinks ({ language, Role, relative, fixed, userId }) {
                     <Link to="/Dashboard" onClick={fixed}>{language === 'En' ? 'Dashboard' : 'لوحات المعلومات'}</Link>
                 </li>
             </> : null}
-            {/*{Role && <li className={pathName === "/ChapterUpload" && "active"}><Link to="/ChapterUpload" onClick={fixed}>{language === 'En' ? 'Chapters Upload' : ' رفع المحاضرات'}</Link></li>}*/}
-            {/*{Role && <li className={pathName === "/ChapterInstall" && "active"}><Link to="/ChapterInstall" onClick={fixed}>{language === 'En' ? 'Chapters Install' : 'تنزيل المحاضرات'}</Link></li>}*/}
         </ul>
     )
 }

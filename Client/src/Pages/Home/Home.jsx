@@ -1,13 +1,9 @@
-import {useEffect, useState, useContext} from 'react';
 import './Home.css';
 import { Link } from 'react-router-dom';
 import learningImage from "./images/learning.svg"
 import elearningImage from "./images/elearning.svg"
 import teamImage from "./images/team.svg"
 import collegeImage from "./images/college.svg"
-import axios from '../../api/axios';
-import { AuthContext } from '../../components/AuthContext/AuthContext';
-import {findByLabelText} from "@testing-library/react";
 
 const Home = ({ language, isDarkMode, name, auth }) => {
 

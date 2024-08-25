@@ -3,8 +3,8 @@ const express = require('express');
 const asyncHandler = require('express-async-handler');
 const router = express.Router();
 const UserController = require('../controllers/UserController');
-const upload = require('../middlewares/upload');  // Assuming you have an upload middleware
-const { verifyUser, isAdmin } = require('../middlewares/auth');  // Assuming you have auth middlewares
+const upload = require('../middlewares/upload');
+const { verifyUser, isAdmin } = require('../middlewares/auth');
 
 router.get('/user/:id', verifyUser, asyncHandler(UserController.getUser));
 router.put('/user/update', verifyUser, upload.single('image'), asyncHandler(UserController.updateUser));
@@ -14,5 +14,6 @@ router.get('/students', verifyUser, isAdmin, asyncHandler(UserController.getAllS
 router.post('/add-account', asyncHandler(UserController.addAccount));
 router.post('/update-account', asyncHandler(UserController.updateAccount));
 router.post('/delete-account', asyncHandler(UserController.deleteAccount));
+router.post('/upload-accounts', upload.single('file'), asyncHandler(UserController.uploadAccounts));
 
 module.exports = router;

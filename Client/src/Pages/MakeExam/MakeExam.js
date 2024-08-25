@@ -19,7 +19,6 @@ const MakeExam = ({ language, isDarkMode, userId }) => {
   const [startAt, setStartAt] = useState(null);
 
   useEffect(() => {
-    // Fetch courses when the component mounts
     axios.get(`/api/courses/${userId}`)
         .then(response => {
           setCourses(response.data);
@@ -99,7 +98,9 @@ const MakeExam = ({ language, isDarkMode, userId }) => {
       const response = await axios.post('/api/exams', {
         exam_name: examName,
         duration: duration,
-        start_at: startAtUTC
+        start_at: startAtUTC,
+        selectedCourse: selectedCourse,
+        userId: userId
       });
       const exam_id = response.data.exam_id;
 
@@ -135,6 +136,7 @@ const MakeExam = ({ language, isDarkMode, userId }) => {
           }
         }
       }
+
       alert('Exam Added: Success');
       resetAllData();
     } catch (error) {
@@ -173,6 +175,12 @@ const MakeExam = ({ language, isDarkMode, userId }) => {
                 dateFormat="Pp"
                 className="input-field"
                 minDate={new Date()}
+                minTime={
+                  startAt && startAt.toDateString() === new Date().toDateString()
+                      ? new Date()  // If today, set minTime to now
+                      : new Date(new Date().setHours(0, 0, 0, 0))
+                }
+                maxTime={new Date(new Date().setHours(23, 59, 59, 999))}
                 required
             />
           </div>

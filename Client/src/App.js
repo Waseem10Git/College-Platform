@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import {NavBar, Footer, Header, MobileHeader, PublicUser, AdminUser, StudentInstructorUser, InstructorUser} from './components/index'
-import {Quiz, FileUpload, Home, Contact, SignIn, Accounts, MakeExam, ExamPreview, ExamResults, ExamResultDetails, TakeExam, ChapterUpload, ChapterInstall, AdminCourses, Course, DashboardPage, Profile, UploadAssignment, Assignments, AllNotifications} from './Pages/index'
+import {FileUpload, Home, Contact, SignIn, Accounts, MakeExam, ExamPreview, ExamResults, ExamResultDetails, TakeExam, ChapterUpload, ChapterInstall, AdminCourses, Course, DashboardPage, Profile, UploadAssignment, Assignments, AllNotifications} from './Pages/index'
 
 import axios from './api/axios';
 
@@ -105,7 +105,7 @@ function App() {
 
         <Routes>
           <Route
-            path="/ChapterUpload/:courseCode"
+            path="/ChapterUpload/:courseCode/:userId"
             element={
               <StudentInstructorUser Role={role}>
                 <ChapterUpload

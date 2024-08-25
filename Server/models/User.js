@@ -89,11 +89,11 @@ class UserModel {
         });
     }
 
-    static addAccount({ firstName, middleName, lastName, email, password, role, departmentName }) {
+    static addAccount({ userID, firstName, middleName, lastName, email, password, role, departmentName }) {
         return new Promise((resolve, reject) => {
             const sql = `
-                INSERT INTO users (first_name, middle_name, last_name, email, password, role, department_id)
-                VALUES (?, ?, ?, ?, ?, ?, (SELECT department_id FROM departments WHERE department_name = ?))
+                INSERT INTO users (id, first_name, middle_name, last_name, email, password, role, department_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, (SELECT department_id FROM departments WHERE department_name = ?))
             `;
 
             bcrypt.hash(password.toString(), 10, (err, hash) => {
@@ -101,8 +101,7 @@ class UserModel {
                     return reject("Error hashing password");
                 }
 
-                const values = [firstName, middleName, lastName, email, hash, role, departmentName];
-
+                const values = [userID, firstName, middleName, lastName, email, hash, role, departmentName];
                 conn.query(sql, values, (err, result) => {
                     if (err) {
                         return reject("Error inserting data");

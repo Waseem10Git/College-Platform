@@ -1,15 +1,13 @@
-// import "./Course.css";
-import React, { useEffect, useState } from "react";
-
+import { useEffect, useState } from "react";
 import phoneIcon from "./Imgs/phone-icon.png";
 import mailIcon from "./Imgs/mail-icon.png";
 import dollarIcon from "./Imgs/dollar-sign.png";
 import axios from '../../api/axios';
-import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import { useNavigate } from "react-router-dom";
 
 export default function Chapters({ isDarkMode }) {
     const [allCourses, setAllCourses] = useState([]);
-    const navigate = useNavigate(); // Initialize navigate hook
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -24,14 +22,14 @@ export default function Chapters({ isDarkMode }) {
     }, []);
 
     const handleCourseClick = (courseId) => {
-        navigate(`/chapters/${courseId}`); // Navigate to chapters page with course ID
+        navigate(`/chapters/${courseId}`);
     };
 
     return (
         <div className={`courses-container ${isDarkMode && "dark"}`}>
             <div className="courses">
                 {allCourses.map((item, index) => (
-                    <div key={index} className="courses-card" onClick={() => handleCourseClick(item.id)}> {/* Bind onClick handler */}
+                    <div key={index} className="courses-card" onClick={() => handleCourseClick(item.id)}>
                         <div className="image">
                             <img src={item.imgUrl} alt={item.course_name} />
                         </div>

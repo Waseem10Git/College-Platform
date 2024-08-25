@@ -1,6 +1,6 @@
-// controllers/UserController.js
 const bcrypt = require('bcrypt');
 const UserModel = require('../models/User');
+const XLSX = require('xlsx');
 const saltRounds = 10;
 
 class UserController {
@@ -76,9 +76,9 @@ class UserController {
 
     static async addAccount(req, res) {
         try {
-            const { firstName, middleName, lastName, email, password, role, departmentName } = req.body;
+            const { userID, firstName, middleName, lastName, email, password, role, departmentName } = req.body;
 
-            await UserModel.addAccount({ firstName, middleName, lastName, email, password, role, departmentName });
+            await UserModel.addAccount({ userID, firstName, middleName, lastName, email, password, role, departmentName });
 
             return res.status(200).json({ Status: "Success" });
         } catch (error) {
@@ -109,6 +109,39 @@ class UserController {
             return res.status(200).json({ Status: "Success" });
         } catch (error) {
             console.error("Error deleting account:", error);
+            return res.status(500).json({ Status: "Error", Error: error });
+        }
+    }
+
+    static async uploadAccounts(req, res) {
+        try {
+            console.log(req.file);
+            const filePath = req.file.path;
+            const workbook = XLSX.readFile(filePath);
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+            const allData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+            const header = allData[0]; // First row as headers
+            const data = allData.slice(1);
+            console.log(header);
+
+            // Process the JSON data
+            for (const account of data) {
+                await UserModel.addAccount({
+                    userID: account[0],
+                    firstName: account[1],
+                    middleName: account[2],
+                    lastName: account[3],
+                    email: account[4],
+                    password: account[5],
+                    role: account[6],
+                    departmentName: account[7]
+                });
+            }
+
+            return res.status(200).json({ Status: "Success" });
+        } catch (error) {
+            console.error("Error uploading accounts:", error);
             return res.status(500).json({ Status: "Error", Error: error });
         }
     }

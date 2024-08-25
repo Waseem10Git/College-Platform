@@ -1,6 +1,19 @@
 const conn = require('../config/db');
 
 class NotificationModel {
+
+    static createNotification(instructor_course_id, notificationMessage) {
+        return new Promise((resolve, reject) => {
+            const query = 'INSERT INTO notifications (instructor_course_id, message, is_read) VALUES (?, ?, 0)';
+            conn.query(query, [instructor_course_id, notificationMessage], (error) => {
+                if (error) {
+                    return reject(error);
+                }
+                resolve();
+            });
+        });
+    }
+
     static getNotifications(studentId) {
         return new Promise((resolve, reject) => {
             const sql = `

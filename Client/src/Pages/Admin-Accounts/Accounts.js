@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import './Accounts.css';
 import axios from '../../api/axios';
+import * as XLSX from 'xlsx';
 
 const Accounts = ({ language, isDarkMode,relative,fixed }) => {
-  const [selectedOption, setSelectedOption] = useState('add');
-  const [departmentName, setDepartmentName] = useState('')
+  const [selectedOption, setSelectedOption] = useState('upload');
+  const [departmentName, setDepartmentName] = useState('');
+  const [file, setFile] = useState(null);
   const [formData, setFormData] = useState({
     firstName: '',
     middleName:'',
@@ -43,6 +45,40 @@ const Accounts = ({ language, isDarkMode,relative,fixed }) => {
     
     setSelectedOption(option);
     resetFormData();
+  };
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleFileUpload = async () => {
+    if (!file) {
+      alert('Please select a file first.');
+      return;
+    }
+
+    // Create a FormData object
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      // Send the file directly to the backend
+      const response = await axios.post('/api/upload-accounts', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.data.Status === "Success") {
+        alert("Accounts added successfully");
+        resetFormData();
+      } else {
+        alert("Failed to add accounts");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Failed to add accounts");
+    }
   };
 
   const handleInputChange = (e) => {
@@ -103,23 +139,49 @@ const Accounts = ({ language, isDarkMode,relative,fixed }) => {
         <div className="account-section">
           <h2>{language === 'En' ? 'Manage Accounts' : 'اداره الحسابات'}</h2>
           <ul>
-            <li  className={selectedOption === "add" ? "active" : undefined} onClick={() => {handleOptionClick('add') ; relative();} }  >
+            <li className={selectedOption === "upload" ? "active" : undefined} onClick={() => {
+              handleOptionClick('upload');
+              relative();
+            }}>
+              {language === 'En' ? 'Upload Accounts' : 'رفع الحسابات'}
+            </li>
+            <li className={selectedOption === "add" ? "active" : undefined} onClick={() => {
+              handleOptionClick('add');
+              relative();
+            }}>
               {language === 'En' ? 'Add Account' : 'إضافة حساب'}
             </li>
-            <li className={selectedOption === "update" ? "active" : undefined} onClick={() => {handleOptionClick('update') ; relative()}} >
+            <li className={selectedOption === "update" ? "active" : undefined} onClick={() => {
+              handleOptionClick('update');
+              relative()
+            }}>
               {language === 'En' ? 'Update Account' : 'تحديث حساب'}
             </li>
-            <li className={selectedOption === "delete" ? "active" : undefined} onClick={() => {handleOptionClick('delete') ; fixed();}} >
+            <li className={selectedOption === "delete" ? "active" : undefined} onClick={() => {
+              handleOptionClick('delete');
+              fixed();
+            }}>
               {language === 'En' ? 'Delete Account' : 'حذف حساب'}
             </li>
           </ul>
         </div>
-      <main>
-      {selectedOption && (
-       
-          <form onSubmit={handleSubmit}>
-            {selectedOption === 'add' && (
-                <>
+        <main>
+          {selectedOption && (
+
+              <form onSubmit={handleSubmit}>
+                {selectedOption === 'upload' && (
+                    <div className={"form-group"}>
+                      <input type="file" accept=".xlsx" onChange={handleFileChange} />
+                      <button type="button" onClick={handleFileUpload}>{language === 'En' ? 'Upload' : 'رفع'}</button>
+                    </div>
+                )}
+                {selectedOption === 'add' && (
+                    <>
+                      <div className="form-group">
+                        <label htmlFor="id">{language === 'En' ? 'ID:' : ':الرقم التعريفي'}</label>
+                    <input type="text" id="id" name="id" required value={formData.userID}
+                           onChange={event => setFormData({...formData, userID: parseInt(event.target.value)})}/>
+                  </div>
                   <div className="form-group">
                     <label htmlFor="first-name">{language === 'En' ? 'First Name:' : 'الاسم الأول:'}</label>
                     <input type="text" id="first-name" name="first-name" required value={formData.firstName}
@@ -147,7 +209,7 @@ const Accounts = ({ language, isDarkMode,relative,fixed }) => {
                   </div>
                   <div className="form-group">
                     <label htmlFor="role">{language === 'En' ? 'Role:' : 'الدور:'}</label>
-                    <select id="role" name="role" required value={formData.role}
+                    <select className={"form-select"} id="role" name="role" required value={formData.role}
                             onChange={event => setFormData({...formData, role: event.target.value})}>
                       <option value="">{language === 'En' ? 'Select Role' : 'حدد الدور'}</option>
                       {/*<option value="admin">{language === 'En' ? 'Admin' : 'مسؤل'}</option>*/}
@@ -157,7 +219,7 @@ const Accounts = ({ language, isDarkMode,relative,fixed }) => {
                   </div>
                   {formData.role==="student" ? (<div className="form-group">
                     <label htmlFor="department">{language === 'En' ? 'Department:' : 'القسم:'}</label>
-                    <select id={"department"} name={"department"} required value={departmentName}
+                    <select className={"form-select"} id={"department"} name={"department"} required value={departmentName}
                             onChange={event => setDepartmentName(event.target.value)}>
                       <option value="">{language === 'En' ? 'Select Department' : 'حدد القسم'}</option>
                       <option value="IS">{language === 'En' ? 'IS' : 'نظم المعلومات'}</option>
@@ -167,7 +229,7 @@ const Accounts = ({ language, isDarkMode,relative,fixed }) => {
                     </select>
                   </div>) : (<div className="form-group">
                     <label htmlFor="department">{language === 'En' ? 'Department:' : 'القسم:'}</label>
-                    <select id={"department"} name={"department"} required value={departmentName}
+                    <select className={"form-select"} id={"department"} name={"department"} required value={departmentName}
                             onChange={event => setDepartmentName(event.target.value)}>
                       <option value="">{language === 'En' ? 'Select Department' : 'حدد القسم'}</option>
                       <option value="Not In Department">{language === 'En' ? 'Not In Department' : 'ليس لديه قسم'}</option>
@@ -175,8 +237,8 @@ const Accounts = ({ language, isDarkMode,relative,fixed }) => {
                   </div>)}
                   <button type="submit">{language === 'En' ? 'Add' : 'إضافة'}</button>
                 </>
-            )}
-            {selectedOption === 'update' && (
+                )}
+                {selectedOption === 'update' && (
                 <>
                   <div className="form-group">
                     <label htmlFor="userID">{language === 'En' ? 'According user ID:' : 'تبقا لمعرف المستخدم:'}</label>
@@ -211,7 +273,7 @@ const Accounts = ({ language, isDarkMode,relative,fixed }) => {
                   <button type="submit">{language === 'En' ? 'Update' : 'تحديث'}</button>
                 </>
             )}
-            {selectedOption === 'delete' && (
+                {selectedOption === 'delete' && (
                 <>
                   <div className="form-group">
                     <label htmlFor="deleteUserID">{language === 'En' ? 'User ID:' : ' الرقم التعريفي الخاص بالمستخدم:'}</label>

@@ -8,7 +8,7 @@ const CoursesView = ({ language }) => {
         name: '',
         description: ''
     });
-    const [image, setImage] = useState(null);
+    const [image, setImage] = useState('');
     const [editingCourse, setEditingCourse] = useState(null);
     const [updatedCourse, setUpdatedCourse] = useState({
         id: '',
@@ -19,8 +19,11 @@ const CoursesView = ({ language }) => {
 
     const fetchCourses = async () => {
         try {
-            const response = await axios.get('/api/courses');
+            const response = await axios.get('/api/courses', {
+                responseType: 'json'
+            });
             setCourses(response.data);
+            setImage(response.data.image);
         } catch (err) {
             console.log('Error fetching courses data: ', err);
         }
@@ -37,6 +40,7 @@ const CoursesView = ({ language }) => {
         for (const key in course) {
             formData.append(key, course[key]);
         }
+        console.log('image', image);
         formData.append('image', image);
 
         try {
@@ -62,7 +66,7 @@ const CoursesView = ({ language }) => {
             formData.append(key, course[key]);
         }
         if (updatedImage) {
-            formData.append('file', updatedImage);
+            formData.append('image', updatedImage);
         }
 
         try {
@@ -210,7 +214,7 @@ const CoursesView = ({ language }) => {
                         {editingCourse === course.course_code ? (
                             <input
                                 type="text"
-                                value={updatedCourse.name}
+                                value={updatedCourse.course_name}
                                 onChange={(e) => setUpdatedCourse({...updatedCourse, name: e.target.value})}
                             />
                         ) : (
@@ -232,10 +236,11 @@ const CoursesView = ({ language }) => {
                         {editingCourse === course.course_code ? (
                             <input
                                 type="file"
+                                accept="image/*"
                                 onChange={handleUpdatedImageChange}
                             />
                         ) : (
-                            <img src={`/uploads/${course.image}`} alt={course.course_name}
+                            <img src={`data:image/jpeg;base64,${course.image}`} alt={course.course_name}
                                  style={{width: '100px', height: 'auto'}}/>
                         )}
                     </td>

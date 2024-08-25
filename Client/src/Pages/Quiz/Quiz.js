@@ -10,7 +10,6 @@ const Quiz = ({isDarkMode}) => {
   const [score, setScore] = useState(0);
 
   useEffect(() => {
-    // Load questions from JSON file
     fetch('quizQuestions.json')
       .then(response => response.json())
       .then(data => setQuestions(data))

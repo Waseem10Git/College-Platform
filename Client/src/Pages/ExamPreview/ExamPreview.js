@@ -224,8 +224,15 @@ function ExamPreviewPage({ isDarkMode, language, Role, userId }) {
                                         dateFormat="Pp"
                                         className="input-field"
                                         minDate={new Date()}
+                                        minTime={
+                                            startAt && startAt.toDateString() === new Date().toDateString()
+                                                ? new Date()  // If today, set minTime to now
+                                                : new Date(new Date().setHours(0, 0, 0, 0))  // If another day, set minTime to start of day
+                                        }
+                                        maxTime={new Date(new Date().setHours(23, 59, 59, 999))} // Max time is the end of the day
                                         required
                                     />
+
                                 </div>
                                 {examQuestions.map((question, questionIndex) => {
                                     const answersForQuestion = examAnswers.filter(

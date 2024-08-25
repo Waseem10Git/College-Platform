@@ -1,13 +1,8 @@
-import React, {useState, useEffect} from 'react'
-import {useLocation, useNavigate} from 'react-router-dom'
-import { Link } from 'react-router-dom'
+import React, {useState} from 'react'
 import "./MobileHeader.css"
 import logo from "../Header/images/logo.jpg"
 import menu from "./images/menu.png"
-import moonIcon from "../Header/images/night.png"
-import sunIcon from "../Header/images/sun.png"
-import { Notification, PagesLinks, HeaderItems } from "../index"
-import axios from "axios";
+import { PagesLinks, HeaderItems } from "../index"
 import Notifications from "../Notifications/Notifications";
 
 const MobileHeader = ({ language, toggleLanguage, isDarkMode, toggleTheme, Role, userId, auth, name }) => {

@@ -15,7 +15,6 @@ function StudentsExams({ students, examId, language }) {
                             <th>{language === 'En' ? 'Score' : 'النتيجة'}</th>
                             <th>{language === 'En' ? 'Submitted' : 'تم'}</th>
                             <th>{language === 'En' ? 'View / Edit Score' : 'عرض / تعديل النتيجة'}</th>
-                            {/*tack me to new page inside it view and handle score*/}
                         </tr>
                         </thead>
                         <tbody>
