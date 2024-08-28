@@ -34,7 +34,6 @@ class AssignmentController {
                 }
 
                 const instructor_course_id = result[0].id;
-                const courseName = result[0].course_name;
                 const assignmentId = await AssignmentModel.insertAssignment(
                     assignmentName,
                     assignmentDescription,
@@ -45,9 +44,6 @@ class AssignmentController {
 
                 await AssignmentModel.associateAssignmentWithCourse(instructor_course_id, assignmentId);
 
-                const notificationMessage = `New Assignment added: ${courseName}`;
-                await NotificationModel.createNotification(instructor_course_id, notificationMessage);
-
                 conn.commit((err) => {
                     if (err) {
                         return conn.rollback(() => {
@@ -56,9 +52,6 @@ class AssignmentController {
                         });
                     }
 
-                    // Emit notification event
-                    const notificationController = new NotificationController();
-                    notificationController.emitNotification(userId, notificationMessage);
                     res.json({ message: 'Assignment uploaded successfully' });
 
                     // Cleanup: delete the temporary file after storing in database

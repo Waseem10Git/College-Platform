@@ -93,7 +93,6 @@ const MakeExam = ({ language, isDarkMode, userId }) => {
 
     const startAtUTC = moment(startAt).format();
 
-    // Save the exam to the database
     try {
       const response = await axios.post('/api/exams', {
         exam_name: examName,
@@ -103,6 +102,7 @@ const MakeExam = ({ language, isDarkMode, userId }) => {
         userId: userId
       });
       const exam_id = response.data.exam_id;
+      console.log('exam id: ', exam_id);
 
       // Associate exam with instructor's course
       await axios.post('/api/instructorsCoursesExams', {
@@ -110,7 +110,7 @@ const MakeExam = ({ language, isDarkMode, userId }) => {
         instructor_id: userId,
         exam_id: exam_id
       });
-
+      // Associate exam with students enrollment in course
       await axios.post('/api/enrollmentsExams', {
         course_code: selectedCourse,
         instructor_id: userId,
@@ -136,6 +136,13 @@ const MakeExam = ({ language, isDarkMode, userId }) => {
           }
         }
       }
+
+      const notificationMessage = `New Exam Added for course `;
+      await axios.post(`/api/send-notification`, {
+        userId: userId,
+        courseCode: selectedCourse,
+        message: notificationMessage
+      });
 
       alert('Exam Added: Success');
       resetAllData();

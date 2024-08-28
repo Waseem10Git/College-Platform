@@ -14,7 +14,7 @@ const UploadAssignment = ({ isDarkMode, language, userId }) => {
     const [courses, setCourses] = useState([]);
 
     useEffect(() => {
-        // Fetch courses from backend on component mount
+        // Fetch courses
         axios.get(`/api/instructor/${userId}/courses`)
             .then(response => setCourses(response.data))
             .catch(error => console.error('Error fetching courses:', error));
@@ -55,6 +55,17 @@ const UploadAssignment = ({ isDarkMode, language, userId }) => {
                 console.error('Error uploading assignment:', error);
                 alert(language === 'En' ? 'Failed to upload assignment!' : 'فشل في رفع الواجب!');
             });
+
+        const notificationMessage = `New Assignment Uploaded for course `;
+        axios.post(`/api/send-notification`, {
+            userId: userId,
+            courseCode: selectedCourse,
+            message: notificationMessage
+        }).then(response => {
+            console.log('send notification {New Assignment Uploaded} for students');
+        }).catch(error => {
+            console.log('Error sending notification to students');
+        });
     };
 
     return (

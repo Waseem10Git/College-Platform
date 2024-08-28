@@ -65,7 +65,7 @@ app.use('/api', examResultRoutes);
 app.use('/api', examRoutes);
 app.use('/api', instructorCourseExamRoutes);
 app.use('/api', instructorCourseRoutes);
-app.use('/api', notificationRoutes(notificationController)); // Pass the controller
+app.use('/api', notificationRoutes(notificationController));
 app.use('/api', questionRoutes);
 app.use('/api', studentAnswerRoutes);
 app.use('/api', studentAssignmentRoutes);

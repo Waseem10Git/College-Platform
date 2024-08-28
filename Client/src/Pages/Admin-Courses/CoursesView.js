@@ -1,5 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import axios from '../../api/axios';
+import defaultImage from './Default_Course_Image.jpeg';
+
+const getDefaultImageFile = async () => {
+    const response = await fetch(defaultImage);
+    const blob = await response.blob();
+    return new File([blob], "Default_Course_Image.jpeg", { type: blob.type });
+};
 
 const CoursesView = ({ language }) => {
     const [courses, setCourses] = useState([]);
@@ -8,7 +15,7 @@ const CoursesView = ({ language }) => {
         name: '',
         description: ''
     });
-    const [image, setImage] = useState('');
+    const [image, setImage] = useState(null);
     const [editingCourse, setEditingCourse] = useState(null);
     const [updatedCourse, setUpdatedCourse] = useState({
         id: '',
@@ -16,6 +23,7 @@ const CoursesView = ({ language }) => {
         description: ''
     });
     const [updatedImage, setUpdatedImage] = useState(null);
+    const fileInputRef = useRef(null);
 
     const fetchCourses = async () => {
         try {
@@ -41,7 +49,14 @@ const CoursesView = ({ language }) => {
             formData.append(key, course[key]);
         }
         console.log('image', image);
-        formData.append('image', image);
+        if (!image || image === defaultImage) {
+            const defaultImageFile = await getDefaultImageFile();
+            console.log('def: ', defaultImageFile);
+            formData.append('image', defaultImageFile);
+        } else {
+            console.log('img: ', image)
+            formData.append('image', image);
+        }
 
         try {
             await axios.post('/api/courses', formData, {
@@ -55,6 +70,8 @@ const CoursesView = ({ language }) => {
                 name: '',
                 description: ''
             });
+            setImage(null);
+            fileInputRef.current.value = '';
         } catch (err) {
             console.error('Error adding course: ', err);
         }
@@ -201,6 +218,7 @@ const CoursesView = ({ language }) => {
                         id="courseImage"
                         accept="image/*"
                         onChange={handleImageChange}
+                        ref={fileInputRef}
                     />
                 </td>
                 <td>

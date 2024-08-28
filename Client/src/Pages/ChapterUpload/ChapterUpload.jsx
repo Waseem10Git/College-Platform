@@ -17,15 +17,16 @@ const ChapterUpload = ({ isDarkMode, language, Role }) => {
     const { courseCode, userId } = useParams();
     const navigate = useNavigate();
 
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`/api/courses/${courseCode}/chapters`);
+            setChapters(response.data);
+        } catch (error) {
+            console.log('Error fetching data:', error);
+        }
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(`/api/courses/${courseCode}/chapters`);
-                setChapters(response.data);
-            } catch (error) {
-                console.log('Error fetching data:', error);
-            }
-        };
         fetchData();
     }, [courseCode, userId]);
 
@@ -47,10 +48,17 @@ const ChapterUpload = ({ isDarkMode, language, Role }) => {
                 }
             });
             alert('Chapter uploaded successfully');
-            setFile(null); // Clear file input
-            // Refresh the chapters list
-            const response = await axios.get(`/api/courses/${courseCode}/chapters`);
-            setChapters(response.data);
+            setFile(null);
+
+            const notificationMessage = `New Chapter uploaded for course `;
+            await axios.post(`/api/send-notification`, {
+                userId: userId,
+                courseCode: courseCode,
+                message: notificationMessage
+            });
+
+            fetchData();
+
         } catch (error) {
             if (error.response && error.response.data && error.response.data.message) {
                 setErrorMessage(error.response.data.message);
@@ -81,9 +89,7 @@ const ChapterUpload = ({ isDarkMode, language, Role }) => {
         try {
             await axios.delete(`/api/chapters/${chapterId}`);
             alert('Chapter deleted successfully');
-            // Refresh the chapters list
-            const response = await axios.get(`/api/courses/${courseCode}/chapters`);
-            setChapters(response.data);
+            fetchData();
         } catch (error) {
             console.error('Error deleting chapter', error);
         }

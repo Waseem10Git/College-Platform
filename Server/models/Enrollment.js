@@ -100,6 +100,20 @@ class EnrollmentModel {
             });
         });
     }
+
+    static getStudentsForInstructorCourse(instructorCourseId) {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT student_id FROM enrollments WHERE instructor_course_id = ?
+            `;
+            conn.query(query, [instructorCourseId], (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(results);
+            });
+        });
+    }
 }
 
 module.exports = EnrollmentModel;

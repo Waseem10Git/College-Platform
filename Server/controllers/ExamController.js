@@ -1,67 +1,13 @@
 const ExamModel = require('../models/Exam');
 const conn = require('../config/db');
-const InstructorCourseModel = require("../models/InstructorCourse");
-const AssignmentModel = require("../models/Assignment");
-const NotificationModel = require("../models/Notification");
-const NotificationController = require("./NotificationController");
 
 class ExamController {
-    // static async createExam(req, res) {
-    //     const { exam_name, duration, start_at } = req.body;
-    //
-    //     try {
-    //         // Create a new exam
-    //         const exam_id = await ExamModel.createExam(exam_name, duration, start_at);
-    //
-    //         res.json({ exam_id });
-    //     } catch (error) {
-    //         console.error('Error inserting exam:', error);
-    //         res.json({ Error: "Error inserting exam" });
-    //     }
-    // }
-
     static async createExam(req, res) {
-        const { exam_name, duration, start_at, selectedCourse, userId } = req.body;
+        const { exam_name, duration, start_at } = req.body;
 
         try {
-            conn.beginTransaction(async (err) => {
-                if (err) {
-                    console.error('Transaction Error:', err);
-                    return res.status(500).json({ error: 'Transaction Error' });
-                }
-
-                const result = await InstructorCourseModel.getInstructorCourseId(userId, selectedCourse);
-                console.log(result)
-
-                if (result.length === 0) {
-                    return conn.rollback(() => {
-                        console.error('No matching instructor_course_id found');
-                        res.status(404).json({ error: 'No matching instructor_course_id found' });
-                    });
-                }
-
-                const instructor_course_id = result[0].id;
-                const courseName = result[0].course_name;
-
-                await ExamModel.createExam(exam_name, duration, start_at);
-
-                const notificationMessage = `New Exam added: ${courseName}`;
-                await NotificationModel.createNotification(instructor_course_id, notificationMessage);
-
-                conn.commit((err) => {
-                    if (err) {
-                        return conn.rollback(() => {
-                            console.error('Transaction commit failed:', err);
-                            res.status(500).json({ error: 'Transaction commit failed' });
-                        });
-                    }
-
-                    // Emit notification event
-                    const notificationController = new NotificationController();
-                    notificationController.emitNotification(userId, notificationMessage);
-                    res.json({ message: 'Exam added successfully' });
-                });
-            });
+            const exam_id = await ExamModel.createExam(exam_name, duration, start_at);
+            res.json({ message: 'Exam added successfully', exam_id });
         } catch (error) {
             console.error('Error inserting exam:', error);
             res.json({ Error: "Error inserting exam" });

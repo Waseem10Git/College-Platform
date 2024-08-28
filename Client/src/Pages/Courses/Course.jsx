@@ -45,24 +45,19 @@ export default function Course({ isDarkMode, Role  }) {
                         <div key={index} className="courses-card"
                              onClick={() => handleCourseClick(item.course_code)}>
                             <div className="image">
-                                <img src={`data:image/jpeg;base64,${item.image}`} alt={item.course_name}
-                                     style={{width: '100px', height: 'auto'}}/>
+                                <img src={`data:image/jpeg;base64,${item.image}`} alt={item.course_name}/>
                             </div>
                             <div className="content">
+                                <div className={"course-name"}>
+                                    <h3>{item.course_name}</h3>
+                                </div>
                                 <div className="flex">
-                                <div>
-                                        <h3>{item.course_name}</h3>
-                                        <h4>{item.first_name + " " + item.last_name}</h4>
+                                    <div>
+                                        <h4>Level 2</h4>
                                     </div>
                                     <div className="price">
-                                        <h3>{item.course_code} EPL</h3>
+                                        <h3>{item.course_code}</h3>
                                     </div>
-                                </div>
-                                <div className="info-group">
-                                    <p>{item.phone}</p>
-                                </div>
-                                <div className="info-group">
-                                    <p>{item.email}</p>
                                 </div>
                             </div>
                         </div>
