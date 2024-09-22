@@ -1,10 +1,12 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
+const env = require('dotenv');
+
+env.config();
+
+const connectionOptions = mysql.createConnection(process.env.MYSQL_URL);
 
 const conn = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "college_platform",
+    ...connectionOptions.config,
     timezone: 'UTC',
     flags: ['--max_allowed_packet=64M']
 });
