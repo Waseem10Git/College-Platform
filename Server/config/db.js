@@ -4,9 +4,9 @@ const env = require('dotenv');
 env.config();
 
 // Use the environment variable for the database connection URL
-const conn = mysql.createConnection(process.env.RAILWAY_MYSQL_URL);
-
 console.log('MYSQL URL: ', process.env.RAILWAY_MYSQL_URL);
+
+const conn = mysql.createConnection(process.env.RAILWAY_MYSQL_URL);
 
 
 // Database connection with error handling
