@@ -1,4 +1,4 @@
-const NotificationModel = require('../models/notification');
+const NotificationModel = require('../models/Notification');
 const InstructorCourseModel = require("../models/InstructorCourse");
 const EnrollmentModel = require("../models/Enrollment");
 const conn = require("../config/db");
