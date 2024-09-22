@@ -2,7 +2,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const express = require('express');
 const bodyParser = require('body-parser');
-const https = require('https');
+const http = require('http');
 const { Server } = require('socket.io');
 const conn = require('./config/db');
 // const createTables = require('./config/createTables');
@@ -31,7 +31,7 @@ const studentMeetingRoutes = require('./routes/studentMeetingRoutes');
 const userRoutes = require('./routes/userRoutes');
 
 const app = express();
-const server = https.createServer(app);
+const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: '*',
@@ -76,9 +76,9 @@ app.use('/api', studentExamStatusRoutes);
 app.use('/api', studentMeetingRoutes);
 app.use('/api', userRoutes);
 
-const port = process.env.PORT || 4001;
-server.listen(port, "0.0.0.0", () => {
-    console.log(`Server is running on port ${port}`);
+// const port = process.env.PORT || 4001;
+server.listen(4001, "0.0.0.0", () => {
+    console.log(`Server is running on port ${4001}`);
 });
 
 io.on('connection', (socket) => {

@@ -3,7 +3,7 @@ import axios from '../../api/axios';
 import "./AllNotificaions.css"
 import io  from "socket.io-client";
 
-const socket = io("wss://college-platform-production.up.railway.app/socket.io", {
+const socket = io("http://localhost:4001", {
     withCredentials: true,
     transports: ['websocket', 'polling'],
     secure: true
