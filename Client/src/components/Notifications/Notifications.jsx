@@ -1,11 +1,11 @@
 import React, {useEffect, useRef, useState} from 'react';
-import io from 'socket.io-client';
+import { io } from 'socket.io-client';
 import axios from '../../api/axios';
 import {MdNotificationsActive} from "react-icons/md";
 import NotificationPopover from '../NotificationPopover/NotificationPopover';
 import "./Notifications.css"
 
-const socket = io("https://your-railway-backend-url.com", {
+const socket = io("https://college-platform-production.up.railway.app", {
     withCredentials: true,
     transports: ['websocket', 'polling'],
     secure: true

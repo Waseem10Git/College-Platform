@@ -34,7 +34,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: ["http://localhost:3000", "https://college-platform.netlify.app"], // Allow localhost for development and your Netlify app for production
+        origin: '*',
         methods: ['GET', 'POST'],
         credentials: true
     }
