@@ -40,7 +40,11 @@ class authController {
     }
 
     static async signOut(req, res) {
-        res.clearCookie('authToken');
+        res.clearCookie('authToken', {
+            httpOnly: true,
+                secure: true,
+                sameSite: 'None'
+        });
         return res.json({ Status: "Success" });
     }
 }
