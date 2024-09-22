@@ -77,8 +77,8 @@ app.use('/api', studentMeetingRoutes);
 app.use('/api', userRoutes);
 
 
-server.listen(process.env.PORT || 4001, () => {
-    console.log(`Server is running on port ${process.env.PORT || 4001}`);
+server.listen(process.env.MYSQLPORT || 4001, () => {
+    console.log(`Server is running on port ${process.env.MYSQLPORT || 4001}`);
 });
 
 io.on('connection', (socket) => {

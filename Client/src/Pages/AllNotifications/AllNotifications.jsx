@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import axios from '../../api/axios';
 import "./AllNotificaions.css"
-import { io } from "socket.io-client";
+import io  from "socket.io-client";
 
-const socket = io("wss://college-platform-production.up.railway.app/socket.io", {
+const socket = io("https://college-platform-production.up.railway.app/", {
     withCredentials: true,
     transports: ['websocket', 'polling'],
     secure: true
