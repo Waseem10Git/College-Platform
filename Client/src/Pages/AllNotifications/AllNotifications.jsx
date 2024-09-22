@@ -3,7 +3,12 @@ import axios from '../../api/axios';
 import "./AllNotificaions.css"
 import io from "socket.io-client";
 
-const socket = io('http://localhost:4001');
+const socket = io("https://your-railway-backend-url.com", {
+    withCredentials: true,
+    transports: ['websocket', 'polling'],
+    secure: true
+});
+
 
 function AllNotifications({ userId }) {
     const [notifications, setNotifications] = useState([]);

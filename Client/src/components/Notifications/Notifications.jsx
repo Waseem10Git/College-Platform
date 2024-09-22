@@ -5,7 +5,12 @@ import {MdNotificationsActive} from "react-icons/md";
 import NotificationPopover from '../NotificationPopover/NotificationPopover';
 import "./Notifications.css"
 
-const socket = io('http://localhost:4001');
+const socket = io("https://your-railway-backend-url.com", {
+    withCredentials: true,
+    transports: ['websocket', 'polling'],
+    secure: true
+});
+
 
 function Notifications({ userId }) {
     const [unreadNotifications, setUnreadNotifications] = useState([]);

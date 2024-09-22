@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const http = require('http');
 const { Server } = require('socket.io');
 const conn = require('./config/db');
-const createTables = require('./config/createTables');
+// const createTables = require('./config/createTables');
 
 const NotificationController = require('./controllers/NotificationController');
 const answerRoutes = require('./routes/answerRoutes');
@@ -34,14 +34,15 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: '*',  // Allow all origins for CORS
-        methods: ['GET', 'POST']
+        origin: ["http://localhost:3000", "https://college-platform.netlify.app"], // Allow localhost for development and your Netlify app for production
+        methods: ['GET', 'POST'],
+        credentials: true
     }
 });
 
 app.use(express.json());
 app.use(cors({
-    origin: ["http://localhost:3000"],
+    origin: ["http://localhost:3000", "https://college-platform.netlify.app"],
     methods: ["POST", "GET", 'DELETE', 'PUT'],
     credentials: true
 }));
@@ -75,30 +76,12 @@ app.use('/api', studentExamStatusRoutes);
 app.use('/api', studentMeetingRoutes);
 app.use('/api', userRoutes);
 
-// Database connection and table creation
-conn.connect(err => {
-    if (err) {
-        console.error('Database connection failed: ', err.stack);
-        return;
-    }
-    console.log('Connected to MySQL database.');
 
-    // Create tables and start the server after successful table creation
-    createTables()
-        .then(() => {
-            console.log('All tables created successfully');
-            // Start server only if tables are created successfully
-            server.listen(4001, () => {
-                console.log('Server is running on port 4001');
-            });
-        })
-        .catch(err => {
-            console.error('Error creating tables: ', err);
-            process.exit(1);  // Exit process in case of failure
-        });
+server.listen(process.env.PORT || 4001, () => {
+    console.log(`Server is running on port ${process.env.PORT || 4001}`);
 });
 
-io.on('connection', socket => {
+io.on('connection', (socket) => {
     console.log('A user connected');
 
     socket.on('disconnect', () => {

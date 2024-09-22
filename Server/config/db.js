@@ -3,10 +3,16 @@ const env = require('dotenv');
 
 env.config();
 
-const conn = mysql.createConnection('mysql://root:HxsnpogUcXIOlgTVXQgRIiUXlLCLLYxU@mysql-ow2_.railway.internal:3306/railway');
-conn.connect(function (err){
-    if(err) throw err;
-    console.log("Connected To Database :)");
+// Use the environment variable for the database connection URL
+const conn = mysql.createConnection(process.env.RAILWAY_MYSQL_URL);
+
+// Database connection with error handling
+conn.connect(function (err) {
+    if (err) {
+        console.error('Database connection failed: ', err.stack);
+        return;
+    }
+    console.log("Connected to the MySQL database.");
 });
 
 module.exports = conn;
