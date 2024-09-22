@@ -13,7 +13,7 @@ const SignIn = ({ language, isDarkMode }) => {
     axios.defaults.withCredentials = true;
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post(`/api/auth/signIn`, formData)
+        axios.post(`/api/auth/signIn`, formData, {withCredentials: true})
             .then(res => {
                 if (res.data.Status === "Success") {
                     navigate('/');

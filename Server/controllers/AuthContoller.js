@@ -21,7 +21,12 @@ class authController {
                 if (match) {
                     const { first_name: firstName, role, id } = results[0];
                     const token = jwt.sign({ firstName, role, id }, jwtSecretKey, { expiresIn: "5d" });
-                    res.cookie('token', token);
+                    res.cookie('authToken', token, {
+                        httpOnly: true,    // Ensures cookie is accessible only via HTTP (not JS)
+                        secure: true,      // Ensures cookie is sent over HTTPS
+                        sameSite: 'None',  // Allows cross-origin requests to include the cookie
+                        maxAge: 24 * 60 * 60 * 1000  // Cookie expiry (1 day)
+                    });
                     return res.json({ Status: "Success" });
                 } else {
                     return res.json({ Error: "Password not matched" });
