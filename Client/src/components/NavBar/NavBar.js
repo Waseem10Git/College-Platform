@@ -1,4 +1,4 @@
-import './NavBar.css';
+import styles from './NavBar.module.css';
 import PagesLinks from "../PagesLinks/PagesLinks";
 const NavBar = ({
     language,
@@ -14,8 +14,8 @@ const NavBar = ({
 
 
     return (
-        <div className={`navbar ${isDarkMode ? 'dark-mode-navbar' : 'navbar'}`}>
-            <div className='container'>
+        <div className={`${styles.navbar} ${isDarkMode ? styles.darkModeNavbar : styles.navbar}`}>
+            <div className={styles.container}>
                 <PagesLinks
                     language={language}
                     Role={Role}

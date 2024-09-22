@@ -51,13 +51,13 @@
   }
   
   /* No Results Message */
-  .no-results {
+  .noResults {
     color: #999;
     margin-top: 20px;
   }
   
   /* Container for the selectors */
-  .select-container {
+  .selectContainer {
     margin-bottom: 20px;
   }
   

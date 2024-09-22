@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import './SignIn.css';
+import styles from './SignIn.module.css';
 import axios from '../../api/axios';
 import { useNavigate } from "react-router-dom";
 
@@ -30,21 +30,14 @@ const SignIn = ({ language, isDarkMode }) => {
     };
 
   return (
-    <div className={`signin ${isDarkMode ? 'dark' : 'light'}`}>
-      <div className='form-container'>
+    <div className={`${styles.signIn} ${isDarkMode ? styles.dark : styles.light}`}>
+      <div className={styles.formContainer}>
       <h2>{language === 'En' ? 'Sign In' : 'تسجيل الدخول'}</h2>
       <form onSubmit={handleSubmit}>
         <input type="text" id="email" placeholder={language === 'En' ? 'Email:' : ' الايميل:'} name="username"
                onChange={event => setFormData({...formData, email: event.target.value})}/>
         <input type="password" id="password" placeholder={language === 'En' ? 'Password:' : 'كلمة المرور:'} name="password"
                onChange={event => setFormData({...formData, password: event.target.value})}/>
-        <div className="remember-forgot">
-          <div className="remember">
-            <input type="checkbox" id="remember" name="remember" />
-            <label htmlFor="remember">{language === 'En' ? 'Remember me' : 'تذكرني'}</label>
-          </div>
-          <a href="_blank" className="forgot-password">{language === 'En' ? 'Forgot password?' : 'نسيت كلمة المرور؟'}</a>
-        </div>
         <button type="submit">{language === 'En' ? 'Sign In' : 'تسجيل الدخول'}</button>
       </form>
       </div>

@@ -1,8 +1,8 @@
 import {Link, useNavigate} from "react-router-dom";
 import moonIcon from "../Header/images/night.png";
 import sunIcon from "../Header/images/sun.png";
-import React from "react";
 import axios from '../../api/axios';
+import styles from '../Header/Header.module.css'
 
 
 function HeaderItems ({ language, auth, isDarkMode, name, toggleLanguage, toggleTheme, userId }) {
@@ -17,25 +17,25 @@ function HeaderItems ({ language, auth, isDarkMode, name, toggleLanguage, toggle
     };
 
     return (
-      <div className="header-content">
-        <div className="header-item theme-toggle" id={"username"}>
+      <div className={styles.headerContent}>
+        <div className={`${styles.headerItem} ${styles.themeToggle}`} id={"username"}>
           <Link to={`/Profile/${userId}`}>{auth ? name : null}</Link>
         </div>
         <div
-          className="header-item language"
+          className={`${styles.headerItem} language`}
           onClick={toggleLanguage}
           style={{ cursor: "pointer" }}
         >
           {language === "En" ? "En" : "عربي"}
         </div>
-        <div className="header-item theme-toggle" onClick={toggleTheme}>
+        <div className={`${styles.headerItem} ${styles.themeToggle}`} onClick={toggleTheme}>
           {isDarkMode ? (
-            <img src={moonIcon} className="invert" alt="moon icon" />
+            <img src={moonIcon} className={styles.invert} alt="moon icon" />
           ) : (
             <img src={sunIcon} alt="sun icon" />
           )}
         </div>
-        <div className="header-item primary" id="link">
+        <div className={`${styles.headerItem} ${styles.primary}`} id="link">
           {auth ? (
             <Link to="/SignIn" onClick={handleSignOut}>
               {language === "En" ? "Sign Out" : "تسجيل الخروج"}

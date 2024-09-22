@@ -1,0 +1,87 @@
+.signIn {
+ flex-grow: 1;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+}
+
+.formContainer {
+  width: 100% !important;
+  max-width: 400px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 15px 0 cadetblue;
+  margin: 35px 0;
+}
+
+.signIn.dark {
+  background-color: #161616;
+  color: #fff;
+}
+
+.signIn.light {
+  background-color: #f7f7f7;
+  color: #333;
+}
+
+.signIn h2 {
+  text-align: center;
+}
+
+.signIn.dark h2 {
+  color: #fff;
+}
+
+.signIn form {
+  margin-top: 20px;
+  border:none;
+}
+
+.signIn input[type="text"],
+.signIn input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 0 auto 10px auto;
+  box-sizing: border-box;
+  border: 2px solid #ccc !important;
+}
+
+.signIn.dark input[type="text"],
+.signIn.dark input[type="password"] {
+  background: #2c2c2c;
+  color: #ccc;
+}
+
+.signIn.dark input[type="text"]::placeholder,
+.signIn.dark input[type="password"]::placeholder {
+  color: #ccc;
+}
+
+.signIn input:focus {
+  border: 2px solid #007bff !important;
+  outline: none;
+}
+
+.signIn button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  border: 2px solid #007bff;
+  color: white;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.signIn button:hover {
+  background-color: transparent;
+  color: #007bff;
+}
+
+.signIn label {
+  margin-bottom: 0;
+}

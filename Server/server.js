@@ -4,6 +4,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const http = require('http');
 const { Server } = require('socket.io');
+const conn = require('./config/db');
+const createTables = require('./config/createTables');
 
 const NotificationController = require('./controllers/notificationController');
 const answerRoutes = require('./routes/answerRoutes');
@@ -73,8 +75,27 @@ app.use('/api', studentExamStatusRoutes);
 app.use('/api', studentMeetingRoutes);
 app.use('/api', userRoutes);
 
-server.listen(4001, () => {
-    console.log('Server is running on port 4001');
+// Database connection and table creation
+conn.connect(err => {
+    if (err) {
+        console.error('Database connection failed: ', err.stack);
+        return;
+    }
+    console.log('Connected to MySQL database.');
+
+    // Create tables and start the server after successful table creation
+    createTables()
+        .then(() => {
+            console.log('All tables created successfully');
+            // Start server only if tables are created successfully
+            server.listen(4001, () => {
+                console.log('Server is running on port 4001');
+            });
+        })
+        .catch(err => {
+            console.error('Error creating tables: ', err);
+            process.exit(1);  // Exit process in case of failure
+        });
 });
 
 io.on('connection', socket => {

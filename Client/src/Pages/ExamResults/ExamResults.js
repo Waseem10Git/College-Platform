@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from '../../api/axios';
 import CourseSelect from './CourseSelect';
-import './ExamResults.css';
+import styles from './ExamResults.module.css';
 import {StudentsAssignments, StudentsExams, StudentsInfo} from "../../components";
 import allNotifications from "../AllNotifications/AllNotifications";
 
@@ -89,7 +89,7 @@ function ExamResults({ language, isDarkMode, Role, userId }) {
     return (
         <div className={isDarkMode ? 'dark-mode' : 'light-mode'}>
             <h1>{language === 'En' ? 'Exam Results' : 'نتائج الامتحانات'}</h1>
-            <div className="select-container">
+            <div className={styles.selectContainer}>
                 <CourseSelect courses={courses} onSelect={handleCourseSelect} language={language} />
                 {selectedCourse && (
                     <select onChange={(e) => handleOptionSelect(e.target.value)} value={selectedOption}>

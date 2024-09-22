@@ -1,22 +1,22 @@
 import React from 'react';
-import './Contact.css'
+import styles from './Contact.module.css'
 
 const ContactPage = ({ language, isDarkMode }) => {
   return (
-    <div className={`contact-page ${isDarkMode ? 'dark' : 'light'}`}>
-    <div className="contact-container">
+    <div className={`${styles.contactPage} ${isDarkMode ? styles.dark : styles.light}`}>
+    <div className={styles.contactContainer}>
       <h2>{language === 'En' ? 'Contact Us' : 'اتصل بنا'}</h2>
-      <form className="contact-form">
-        <div className="form-group">
+      <form className={styles.contactForm}>
+        <div className={styles.formGroup}>
           <input type="text" id="name"  placeholder={language === 'En' ? 'Name' : 'الاسم'} name="name" />
         </div>
-        <div className="form-group">
+        <div className={styles.formGroup}>
           <input type="email" id="email" placeholder={language === 'En' ? 'Email' : 'البريد الإلكتروني'} name="email" />
         </div>
-        <div className="form-group">
+        <div className={styles.formGroup}>
           <textarea id="message" placeholder={language === 'En' ? 'Message' : 'الرسالة'} name="message"></textarea>
         </div>
-        <div className='buttonContainer'>
+        <div className={styles.buttonContainer}>
           <button type="submit">{language === 'En' ? 'Submit' : 'إرسال'}</button>
         </div>
         

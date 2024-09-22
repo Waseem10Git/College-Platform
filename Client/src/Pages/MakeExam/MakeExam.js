@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import './MakeExam.css';
+import styles from './MakeExam.module.css';
 import axios from '../../api/axios';
 import moment from 'moment';
 
@@ -152,107 +152,130 @@ const MakeExam = ({ language, isDarkMode, userId }) => {
   };
 
   return (
-      <div className={`exam-page ${isDarkMode ? 'dark' : 'light'}`}>
-        <div className="exam-container">
-          <h1 className="exam-heading">{language === 'En' ? 'Exam Creation' : 'إنشاء الامتحان'}</h1>
-          <div className="input-wrapper">
-            <label className="input-label">{language === 'En' ? 'Exam Name:' : 'اسم الامتحان'}</label>
-            <input
-                type="text"
-                value={examName}
-                onChange={(e) => setExamName(e.target.value)}
-                className="input-field"
-            />
-          </div>
-          <div className="input-wrapper">
-            <label className="input-label">{language === 'En' ? 'Duration:' : 'مدة الامتحان'}</label>
-            <input
-                type="number"
-                value={duration}
-                onChange={(e) => setDuration(parseInt(e.target.value))}
-                className="input-field"
-            />
-          </div>
-          <div className="input-wrapper">
-            <label className="input-label">{language === 'En' ? 'Start At:' : 'تاريخ البدء'}</label>
-            <DatePicker
-                selected={startAt}
-                onChange={(date) => setStartAt(date)}
-                showTimeSelect
-                dateFormat="Pp"
-                className="input-field"
-                minDate={new Date()}
-                minTime={
-                  startAt && startAt.toDateString() === new Date().toDateString()
-                      ? new Date()  // If today, set minTime to now
-                      : new Date(new Date().setHours(0, 0, 0, 0))
-                }
-                maxTime={new Date(new Date().setHours(23, 59, 59, 999))}
-                required
-            />
-          </div>
-          <div className="input-wrapper">
-            <label className="input-label">{language === 'En' ? 'Select Course:' : 'اختر الدورة'}</label>
-            <select
-                value={selectedCourse}
-                onChange={(e) => setSelectedCourse(e.target.value)}
-                className="select-field"
-            >
-              <option value="">{language === 'En' ? 'Select a course' : 'اختر دورة'}</option>
-              {courses.map(course => (
-                  <option key={course.course_code} value={course.course_code}>
-                    {course.course_name}
+      <div className={`${styles.examPage} ${isDarkMode ? styles.dark : styles.light}`}>
+        <div className={styles.examContainer}>
+          <h1 className={styles.examHeading}>{language === 'En' ? 'Exam Creation' : 'إنشاء الامتحان'}</h1>
+
+          <div>
+            {/* First row: Exam Name and Duration */}
+            <div className={styles.inputRow}>
+              <div className={styles.inputWrapper}>
+                <label className={styles.inputLabel}>
+                  {language === 'En' ? 'Exam Name:' : 'اسم الامتحان'}
+                </label>
+                <input
+                    type="text"
+                    value={examName}
+                    onChange={(e) => setExamName(e.target.value)}
+                    className={styles.inputField}
+                />
+              </div>
+              <div className={styles.inputWrapper}>
+                <label className={styles.inputLabel}>
+                  {language === 'En' ? 'Duration:' : 'مدة الامتحان'}
+                </label>
+                <input
+                    type="number"
+                    value={duration}
+                    onChange={(e) => setDuration(parseInt(e.target.value))}
+                    className={styles.inputField}
+                />
+              </div>
+            </div>
+
+            {/* Second row: Start At and Select Course */}
+            <div className={styles.inputRow}>
+              <div className={styles.inputWrapper}>
+                <label className={styles.inputLabel}>
+                  {language === 'En' ? 'Start At:' : 'تاريخ البدء'}
+                </label>
+                <DatePicker
+                    selected={startAt}
+                    onChange={(date) => setStartAt(date)}
+                    showTimeSelect
+                    dateFormat="Pp"
+                    className={`${styles.inputField} ${styles.customDatePickerWidth}`}
+                    minDate={new Date()}
+                    minTime={
+                      startAt && startAt.toDateString() === new Date().toDateString()
+                          ? new Date()
+                          : new Date(new Date().setHours(0, 0, 0, 0))
+                    }
+                    maxTime={new Date(new Date().setHours(23, 59, 59, 999))}
+                    required
+                />
+              </div>
+              <div className={styles.inputWrapper}>
+                <label className={styles.inputLabel}>
+                  {language === 'En' ? 'Select Course:' : 'اختر الدورة'}
+                </label>
+                <select
+                    value={selectedCourse}
+                    onChange={(e) => setSelectedCourse(e.target.value)}
+                    className={styles.inputField}
+                >
+                  <option value="">
+                    {language === 'En' ? 'Select a course' : 'اختر دورة'}
                   </option>
-              ))}
-            </select>
+                  {courses.map(course => (
+                      <option key={course.course_code} value={course.course_code}>
+                        {course.course_name}
+                      </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
-          <hr className="horizontal-line" />
-          <div className="input-wrapper">
-            <label className="input-label">{language === 'En' ? 'Question:' : 'السؤال'}</label>
+
+
+          <hr className={styles.horizontalLine}/>
+
+          <div className={styles.inputWrapper}>
+            <label className={styles.inputLabel}>{language === 'En' ? 'Question:' : 'السؤال'}</label>
             <input
                 type="text"
                 value={newQuestion}
                 onChange={(e) => setNewQuestion(e.target.value)}
-                className="input-field"
+                className={styles.inputField}
             />
           </div>
-          <div className="select-wrapper">
-            <label className="select-label">{language === 'En' ? 'Question Type:' : 'نوع السؤال'}:</label>
+          <div className={styles.selectWrapper}>
+            <label className={styles.selectLabel}>{language === 'En' ? 'Question Type:' : 'نوع السؤال'}:</label>
             <select
                 value={questionType}
                 onChange={(e) => setQuestionType(e.target.value)}
-                className="select-field"
+                className={styles.selectField}
             >
               <option value="MCQ">{language === 'En' ? 'MCQ' : 'إختر من المتعدد'}</option>
               <option value="Essay">{language === 'En' ? 'Essay' : 'مقالي'}</option>
             </select>
           </div>
           {questionType === 'MCQ' && (
-              <div className="options-section">
+              <div className={styles.optionsSection}>
                 {options.map((option, index) => (
-                    <div key={index} className="option-item">
-                      <label className="option-label">{alphabet[index]}</label>
+                    <div key={index} className={styles.optionItem}>
+                      <label className={styles.optionLabel}>{alphabet[index]}</label>
                       <input
                           type="text"
                           value={option.value}
                           onChange={(e) => handleOptionChange(index, e.target.value)}
-                          className="option-input"
+                          className={styles.optionInput}
                       />
-                      <button onClick={() => handleDeleteOption(index)} className="delete-button">X</button>
+                      <button onClick={() => handleDeleteOption(index)} className={styles.deleteButton}>X</button>
                     </div>
                 ))}
                 <button onClick={handleAddOption}
-                        className="add-option-button">{language === 'En' ? 'Add option' : 'أضف إخيار'}</button>
+                        className={styles.addOptionButton}>{language === 'En' ? 'Add option' : 'أضف إخيار'}</button>
               </div>
           )}
           {questionType === 'MCQ' && (
-              <div className="correct-answer-section">
+              <div className={styles.correctAnswerSection}>
                 <label
-                    className="correct-answer-label">{language === 'En' ? 'Correct Answer:' : 'الإجابة الصحيحة'}</label>
+                    className={styles.correctAnswerLabel}>{language === 'En' ? 'Correct Answer:' : 'الإجابة الصحيحة'}</label>
                 <select
                     value={correctAnswer}
                     onChange={(e) => setCorrectAnswer(e.target.value)}
-                    className="correct-answer-select"
+                    className={styles.correctAnswerSelect}
                 >
                   {options.map((_, index) => (
                       <option key={index} value={alphabet[index]}>{alphabet[index]}</option>
@@ -260,48 +283,50 @@ const MakeExam = ({ language, isDarkMode, userId }) => {
                 </select>
               </div>
           )}
-          <div className="input-wrapper">
-            <label className="input-label">{language === 'En' ? 'Point:' : 'الدرجة:'}</label>
+          <div className={styles.inputWrapper}>
+            <label className={styles.inputLabel}>{language === 'En' ? 'Point:' : 'الدرجة:'}</label>
             <input
                 type="number"
                 value={points}
                 onChange={(e) => setPoints(parseInt(e.target.value))}
-                className="input-field"
+                className={styles.inputField}
             />
           </div>
           <button onClick={handleQuestionSubmit}
-                  className="add-question-button">{language === 'En' ? 'Add Question' : 'أضف سؤال'}</button>
-          <h2 className="added-questions-heading">{language === 'En' ? 'Questions added:' : ':الاساله المضافه'}</h2>
-          <ul className="added-questions-list">
+                  className={styles.addQuestionButton}>{language === 'En' ? 'Add Question' : 'أضف سؤال'}</button>
+          <h2 className={styles.addedQuestionsHeading}>{language === 'En' ? 'Questions added:' : ':الاساله المضافه'}</h2>
+          <ul className={styles.addedQuestionsList}>
             {questions.map((question, index) => (
-                <li key={index} className="question-item">
+                <li key={index} className={styles.questionItem}>
                   <div className='content'>
-                    <div className='question'>
+                    <div className={styles.question}>
                       <strong> {index + 1}:</strong> {question.question}
                     </div>
                     {question.type === 'MCQ' && (
                         <div>
-                          <strong className="options-heading">{language === 'En' ? 'Options:' : ':إختيار'}</strong>
-                          <ul className="options-list">
+                          <strong
+                              className={styles.optionsHeading}>{language === 'En' ? 'Options:' : ':إختيار'}</strong>
+                          <ul className={styles.optionsList}>
                             {question.options.map((option, optionIndex) => (
-                                <li key={optionIndex} className="option-item">{alphabet[optionIndex]}: {option}</li>
+                                <li key={optionIndex}
+                                    className={styles.optionItem}>{alphabet[optionIndex]}: {option}</li>
                             ))}
                           </ul>
                           <strong
-                              className="correct-answer-heading">{language === 'En' ? 'Correct Answer:' : 'الإجابة الصحيحة'}
+                              className={styles.correctAnswerHeading}>{language === 'En' ? 'Correct Answer:' : 'الإجابة الصحيحة'}
                           </strong> {question.correctAnswer !== '' ? alphabet[question.correctAnswer] : 'Not Set'}
                         </div>
                     )}
                     <strong
                         className={"question-point"}>{language === 'En' ? 'Point:' : 'الدرجة:'}</strong> {question.points}
-                    {index !== questions.length - 1 && <hr className="horizontal-line" />}
+                    {index !== questions.length - 1 && <hr className={styles.horizontalLine}/>}
                   </div>
-                  <button onClick={() => handleDeleteQuestion(index)} className="delete-question-button">X</button>
+                  <button onClick={() => handleDeleteQuestion(index)} className={styles.deleteQuestionButton}>X</button>
                 </li>
             ))}
           </ul>
           <button onClick={handleExamSubmit}
-                  className="submit-exam-button">{language === 'En' ? 'Submit Exam' : 'أرسل الامتحان'}</button>
+                  className={styles.submitExamButton}>{language === 'En' ? 'Submit Exam' : 'أرسل الامتحان'}</button>
         </div>
       </div>
   );

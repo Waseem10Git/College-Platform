@@ -1,104 +1,145 @@
 /* MakeExam container */
-.exam-page {
+.examPage {
   flex: 1;
   display: flex;
   align-items: center;
   background: #f8f8f8;
   padding-block: 2rem;
 }
-.exam-page.dark {
+.examPage.dark {
   background: #161616;
+  color: #eeeeee;
 }
 
-.dark .input-field, .dark .select-field, .dark .correct-answer-select {
+.dark input[type="text"], .dark input[type="number"], .dark select, .dark .selectField, .dark .correctAnswerSelect, .dark .datePicker {
   background: #1c1c1c;
   color: white;
 }
 
-.exam-container {
-  text-align: start;
-  width: 100%;
-    max-width: 600px;
+.examContainer {
+    text-align: start;
+    width: 100%;
+    max-width: 800px;
     margin: 0 auto;
     padding: 20px;
     border-radius: 5px;
-    box-shadow: 0px 0px 60px -20px #555;
-  }
-
-  .dark .exam-container {
-    box-shadow: none;
-    background-color: #1c1c1c;
   }
   
   /* Heading */
-  .exam-heading {
+  .examHeading {
     font-size: 24px;
     margin-bottom: 20px;
     text-align: center;
   }
+
+  .dark .examHeading {
+    color: #eeeeee;
+  }
   
   /* Input wrapper */
-  .input-wrapper {
+  .inputWrapper {
     margin-bottom: 10px;
   }
   
   /* Input label */
-  .input-label {
+  .inputLabel {
     font-weight: bold;
+  }
+
+  .dark .inputLabel {
+    color: #eeeeee;
   }
   
   /* Input field */
-  .input-field {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
+  /*.inputField {*/
+  /*  width: 100%;*/
+  /*  padding: 8px;*/
+  /*  margin-top: 5px;*/
+  /*  border: 1px solid #ccc;*/
+  /*  border-radius: 5px;*/
+  /*}*/
   
   /* Select wrapper */
-  .select-wrapper {
+  .selectWrapper {
     margin-bottom: 10px;
   }
   
   /* Select label */
-  .select-label {
+  .selectLabel {
     font-weight: bold;
   }
-  
+
+  .dark .selectLabel {
+    color: #eeeeee;
+  }
+
+.inputRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+/* Input wrapper to take up equal space */
+.inputWrapper {
+  flex: 1;
+}
+
   /* Select field */
-  .select-field {
+  .selectField, .correctAnswerSelect, input[type="text"], input[type="number"], select, .datePicker{
     width: 100%;
+    font-size: 0.9rem;
     padding: 8px;
-    margin-top: 5px;
+    margin: 5px 0;
     border: 1px solid #ccc;
     border-radius: 5px;
   }
-  
+
+.customDatePickerWidth {
+  width: 370px !important;
+}
+
+  .selectField:focus, .correctAnswerSelect:focus, select:focus, input[type="text"]:focus, input[type="number"]:focus, .datePicker:focus{
+    border: 1px solid #007bff !important;
+    outline: none;
+    box-shadow: 0 0 5px #007bff;
+  }
+
+input[type="number"]:focus {
+  border: 1px solid #007bff !important;
+  outline: none;
+  box-shadow: 0 0 5px #007bff;
+}
+
+.inputWrapper .inputLabel {
+  display: block;
+  margin-bottom: 5px;
+}
+
   /* Options section */
-  .options-section {
+  .optionsSection {
     margin-bottom: 20px;
   }
   
   /* Options label */
-  .options-label {
+  .optionsLabel {
     font-weight: bold;
   }
   
   /* Option item */
-  .option-item {
+  .optionItem {
     margin-top: 5px;
     display: flex;
     align-items: center;
   }
   
   /* Option label */
-  .option-label {
+  .optionLabel {
     font-weight: bold;
+    margin-right: 5px;
   }
   
   /* Option input */
-  .option-input {
+  .optionInput {
     flex-grow: 1;
     padding: 8px;
     margin-left: 10px;
@@ -108,8 +149,8 @@
   }
   
   /* Delete button */
-  .delete-button {
-    margin: 0;
+  .deleteButton {
+    margin: 0 0 0 5px;
     background-color: #ff5757;
     color: #fff;
     border: none;
@@ -118,36 +159,26 @@
     cursor: pointer;
   }
   
-  .delete-button:hover {
+  .deleteButton:hover {
     background-color: #ff0000;
   }
   
-  /* Add option button */
-  .add-option-button {
-    background-color: #4caf50;
-    color: #fff;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .add-option-button:hover {
-    background-color: #45a049;
-  }
-  
   /* Correct answer section */
-  .correct-answer-section {
+  .correctAnswerSection {
     margin-bottom: 20px;
   }
   
   /* Correct answer label */
-  .correct-answer-label {
+  .correctAnswerLabel {
     font-weight: bold;
+  }
+
+  .dark .correctAnswerLabel {
+    color: #eeeeee;
   }
   
   /* Correct answer select */
-  .correct-answer-select {
+  .correctAnswerSelect {
     width: 100%;
     padding: 8px;
     margin-top: 5px;
@@ -156,8 +187,8 @@
   }
   
   /* Add question button */
-  .add-question-button {
-    background-color: #2196f3;
+  .addQuestionButton, .submitExamButton, .addOptionButton{
+    background-color: #007bff;
     color: #fff;
     border: none;
     padding: 8px 12px;
@@ -165,29 +196,34 @@
     cursor: pointer;
   }
   
-  .add-question-button:hover {
-    background-color: #0b7dda;
+  .addQuestionButton:hover {
+    background-color: #0353a9;
   }
   
   /* Added questions heading */
-  .added-questions-heading {
+  .addedQuestionsHeading {
     font-size: 1.5rem;
+    font-weight: 600;
     margin-top: 20px;
     margin-bottom: 20px;
   }
+
+  .dark .addedQuestionsHeading {
+    color: #eeeeee;
+  }
   
   /* Added questions list */
-  .added-questions-list {
+  .addedQuestionsList {
     list-style: none;
   }
 
-  .question-item .question {
+  .questionItem .question {
     font-size: 1.3rem;
     font-weight: 600;
   }
   
   /* Question item */
-  .question-item {
+  .questionItem {
     margin-top: 10px;
     display: flex;
     align-items: start;
@@ -195,23 +231,23 @@
   }
   
   /* Options heading */
-  .options-heading {
+  .optionsHeading {
     font-weight: bold;
   }
   
   /* Options list */
-  .options-list {
+  .optionsList {
     list-style-type: none;
     padding-left: 0;
   }
   
   /* Correct answer heading */
-  .correct-answer-heading {
+  .correctAnswerHeading {
     font-weight: bold;
   }
   
   /* Delete question button */
-  .delete-question-button {
+  .deleteQuestionButton {
     margin: 0;
     background-color: #ff5757;
     color: #fff;
@@ -221,25 +257,25 @@
     cursor: pointer;
   }
   
-  .delete-question-button:hover {
+  .deleteQuestionButton:hover {
     background-color: #ff0000;
   }
   
   /* Horizontal line */
-  .horizontal-line {
+  .horizontalLine {
     border-top: 1px solid #ccc;
     margin-top: 20px;
     margin-bottom: 20px;
   }
   
   /* Light mode styles */
-.exam-container.light {
+.examContainer.light {
   background-color: #fff; /* Light mode background color */
   color: #333; /* Light mode text color */
 }
 
 /* Dark mode styles */
-.exam-container.dark {
+.examContainer.dark {
   background-color: #333; /* Dark mode background color */
   color: #eee; /* Dark mode text color */
 }

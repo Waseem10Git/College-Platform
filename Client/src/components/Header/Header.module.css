@@ -1,5 +1,3 @@
-/* Header.css */
-
 /* Container styles */
 .header {
   padding: 5px 20px;
@@ -43,13 +41,13 @@
 }
 
 /* Header content styles */
-.header-content {
+.headerContent {
   display: flex;
   align-items: center;
 }
 
 /* Header item styles */
-.header-item {
+.headerItem {
   margin: 0 3px;
   cursor: pointer;
   padding: 5px 10px;
@@ -57,30 +55,30 @@
 }
 
 /* Sign-in link styles */
-.header-item a {
+.headerItem a {
   color: inherit; /* Inherit color from parent */
   text-decoration: none; /* Remove underline from link */
 }
 
 /* Change link color on hover */
-.header-item:hover {
+.headerItem:hover {
   color: #007bff; /* Change color on hover */
 }
 
-.header-item.primary {
+.headerItem.primary {
   border: 2px solid #007bff;
   border-radius: 5px;
   padding: 5px 10px;
   margin-left: 15px;
 }
-.header-item.primary:hover {
+.headerItem.primary:hover {
   background-color: #007bff;
   color:white;
   border-radius: 5px;
   padding: 5px 10px;
 }
 
-.theme-toggle img {
+.themeToggle img {
   width: 20px
 }
 

@@ -1,5 +1,5 @@
 import {Link} from 'react-router-dom';
-import './Header.css';
+import styles from './Header.module.css';
 import logo from './images/logo.jpg';
 import { HeaderItems, Notifications } from ".."
 
@@ -17,10 +17,10 @@ const Header = ({
 }) => {
 
   return (
-    <header className={`header ${isDarkMode ? 'dark' : 'light'}`}>
-      <div className='container'>
+    <header className={`${styles.header} ${isDarkMode ? styles.dark : styles.light}`}>
+      <div className={styles.container}>
         <Link to="/">
-        <div className="logo">
+        <div className={styles.logo}>
           <img src={logo} alt="Logo" />
         </div>
         </Link>

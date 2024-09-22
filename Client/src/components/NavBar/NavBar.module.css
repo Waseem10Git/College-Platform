@@ -1,4 +1,4 @@
-/* NavBar.css */
+/* NavBar.module.css */
 /* Light mode styles */
 .navbar {
   background-color: #f7f7f7;
@@ -28,7 +28,7 @@
   position: relative; /* For positioning child elements */
 }
 
-.navbar ul li:hover, .li.active {
+.navbar ul li:hover, li.active {
   background-color: #007bff;
 }
 
@@ -37,22 +37,34 @@
 }
 
 /* Dark mode styles */
-.dark-mode-navbar {
+.darkModeNavbar {
   background-color: #161616;
 }
 
-.dark-mode-navbar ul li a {
+.darkModeNavbar ul li a {
   color: #f0f0f0;
 }
 
+.dropdownContainer {
+  float: left;
+  overflow: hidden;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: white;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
 
-.dropdown-content, .dropdown-content-course {
+.dropdownContent, .dropdownContentCourse {
 
   background-color: #f0f0f0;
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   padding: 10px;
   border-radius: 5px;
-  z-index: 20; /* High enough to stay on top */
+  z-index: 1; /* High enough to stay on top */
   flex-direction: column;
   gap: 10px;
   min-width: 160px;

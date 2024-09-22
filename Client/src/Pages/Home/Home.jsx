@@ -1,17 +1,17 @@
-import './Home.css';
+import styles from './Home.module.css'; // Import the CSS Module
 import { Link } from 'react-router-dom';
-import learningImage from "./images/learning.svg"
-import elearningImage from "./images/elearning.svg"
-import teamImage from "./images/team.svg"
-import collegeImage from "./images/college.svg"
+import learningImage from "./images/learning.svg";
+import ELearningImage from "./images/elearning.svg";
+import teamImage from "./images/team.svg";
+import collegeImage from "./images/college.svg";
 
 const Home = ({ language, isDarkMode, name, auth }) => {
 
   return (
-      <div className={`home ${isDarkMode ? 'dark' : 'light'}`}>
-        <section className="welcome-section">
-          <div className='container'>
-            <div className='content'>
+      <div className={`${styles.home} ${isDarkMode ? styles.dark : styles.light}`}>
+        <section className={styles.welcomeSection}>
+          <div className={styles.container}>
+            <div className={styles.content}>
               <h2>{language === 'En' ? `Welcome ${name} to Our Educational Platform` : `مرحبًا ${name} بك في منصتنا التعليمية`}</h2>
               <p>
                 {language === 'En'
@@ -24,19 +24,19 @@ const Home = ({ language, isDarkMode, name, auth }) => {
                     : 'انضم إلى آلاف الطلاب الذين بدأوا رحلتهم نحو النجاح بالفعل.'}
               </p>
               {auth ? null :
-                  (<button className="cta-button">
-                <Link to="/SignIn">{language === 'En' ? 'Get Started' : 'ابدأ الآن'}</Link>
-              </button>)}
+                  (<button className={styles.ctaButton}>
+                    <Link to="/SignIn">{language === 'En' ? 'Get Started' : 'ابدأ الآن'}</Link>
+                  </button>)}
             </div>
-            <div className='image'>
+            <div className={styles.image}>
               <img src={learningImage} alt="learning"/>
             </div>
           </div>
         </section>
 
-        <section className="about-section">
-          <div className="container">
-            <div className="content">
+        <section className={styles.aboutSection}>
+          <div className={styles.container}>
+            <div className={styles.content}>
               <h2>{language === 'En' ? 'About Our Platform' : 'عن منصتنا'}</h2>
               <p>
                 {language === 'En'
@@ -44,15 +44,15 @@ const Home = ({ language, isDarkMode, name, auth }) => {
                     : 'تقدم منصتنا مجموعة واسعة من الدورات التي يقدمها أعضاء هيئة التدريس المحترمين. يمكن للطلاب الوصول إلى مواد الدورة وإكمال الواجبات وأداء الاختبارات. بالإضافة إلى ذلك، يمكن للمحاضرين إجراء محاضرات مباشرة باستخدام نظام المؤتمرات المرئية لدينا.'}
               </p>
             </div>
-            <div className="image">
-              <img src={elearningImage} alt="E-Learning" />
+            <div className={styles.image}>
+              <img src={ELearningImage} alt="E-Learning" />
             </div>
           </div>
         </section>
 
-        <section className="team-section">
-          <div className="container">
-            <div className="content">
+        <section className={styles.teamSection}>
+          <div className={styles.container}>
+            <div className={styles.content}>
               <h2>{language === 'En' ? 'Our Team' : 'فريق العمل'}</h2>
               <p>
                 {language === 'En'
@@ -60,15 +60,15 @@ const Home = ({ language, isDarkMode, name, auth }) => {
                     : 'نحن فريق P R E M I U M متخصصون في تطوير منصات تعليمية للكليات والجامعات المصرية.'}
               </p>
             </div>
-            <div className="image">
+            <div className={styles.image}>
               <img src={teamImage} alt="Team" />
             </div>
           </div>
         </section>
 
-        <section className="college-info">
-          <div className="container">
-            <div className='content'>
+        <section className={styles.collegeInfo}>
+          <div className={styles.container}>
+            <div className={styles.content}>
               <h2>{language === 'En' ? 'College Information' : 'معلومات الكلية'}</h2>
               <p>
                 {language === 'En'
@@ -86,7 +86,7 @@ const Home = ({ language, isDarkMode, name, auth }) => {
                     : 'نحن نقدم مجموعة متنوعة من الدورات التي يقدمها مدرسون متخصصون تغطي مجالات مختلفة في علوم الحاسب ونظم المعلومات.'}
               </p>
             </div>
-            <div className="image">
+            <div className={styles.image}>
               <img src={collegeImage} alt="College" />
             </div>
           </div>

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../../api/axios';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { UploadFile, ConfirmDelete } from "../../components";
 import uploadLabel from "../FileUpload/images/uploadLabel.png";
-import "./ChapterUpload.css"
+import styles from "./ChapterUpload.module.css"
 
 const ChapterUpload = ({ isDarkMode, language, Role }) => {
     const [file, setFile] = useState(null);
@@ -13,9 +13,7 @@ const ChapterUpload = ({ isDarkMode, language, Role }) => {
     const [uploadingVisible, setUploadingVisible] = useState(false);
     const [deletionVisible, setDeletionVisible] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
-    const [isMeetingStarted, setIsMeetingStarted] = useState(false);
     const { courseCode, userId } = useParams();
-    const navigate = useNavigate();
 
     const fetchData = async () => {
         try {
@@ -137,15 +135,6 @@ const ChapterUpload = ({ isDarkMode, language, Role }) => {
         }
     };
 
-    const handleStartMeeting = () => {
-        // Navigate to the meeting details screen and set the state to auto-click the join button
-        navigate(`/Live/${courseCode}`, { state: { autoJoin: true } });
-    };
-
-    const handleJoinMeeting = () => {
-        navigate(`/Live/${courseCode}`, { state: { autoJoin: true } });
-    };
-
     return (
         <div className={`course-view ${isDarkMode ? 'dark-mode' : 'light-mode'} ${language.toLowerCase()}`}
              onDragOver={handleDragOver}
@@ -169,31 +158,16 @@ const ChapterUpload = ({ isDarkMode, language, Role }) => {
                             />
                         </div>
                     </div>
-                    <button
-                        className={`btn start-meeting ${isMeetingStarted ? 'green' : 'red'}`}
-                        onClick={handleStartMeeting}
-                    >
-                        {language === 'En' ? (!isMeetingStarted ? 'Start Online Meeting' : 'End Online Meeting') :
-                            (!isMeetingStarted ? 'ابدأ ألإجتماع عبر الإنترنت' : 'أنهاء الإجتماع عبر الانترنت')
-                        }
-                    </button>
                 </>
-
-            ) : (
-                <>
-                    <button className="btn join-meeting" onClick={handleJoinMeeting}>
-                        {language === 'En' ? 'Join Online Meeting' : 'إنضم إلى اجتماع عبر الإنترنت'}
-                    </button>
-                </>
-            )}
+            ) : null }
             {
                 errorMessage && <p style={{color: 'red'}}>{errorMessage}</p>
             }
-            <div>
+            <div className={"courses-container"}>
                 <h3>Uploaded Chapters</h3>
-                <ul>
+                <div className={"courses"}>
                     {chapters.map(chapter => (
-                        <li key={chapter.id}>
+                        <div key={chapter.id} className="courses-card">
                             {chapter.chapter_name}
                             <button onClick={() => handleDownload(chapter.id, chapter.chapter_name)}>Download</button>
                             <button onClick={() => handleView(chapter.id)}>View</button>
@@ -203,9 +177,9 @@ const ChapterUpload = ({ isDarkMode, language, Role }) => {
                                     <ConfirmDelete deletionVisible={deletionVisible} setDeletionVisible={setDeletionVisible} handleDelete={() => handleDelete(chapter.id)} />
                                 </>
                             )}
-                        </li>
+                        </div>
                     ))}
-                </ul>
+                </div>
                 {fileView && (
                     <div>
                         <h3>File Preview</h3>
@@ -215,7 +189,6 @@ const ChapterUpload = ({ isDarkMode, language, Role }) => {
                         {fileView.contentType === 'application/pdf' && (
                             <embed src={fileView.url} type="application/pdf" width="100%" height="600px"/>
                         )}
-                        {/* Add more conditions for other file types if needed */}
                         <button onClick={() => setFileView(null)}>Close Preview</button>
                     </div>
                 )}

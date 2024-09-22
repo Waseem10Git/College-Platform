@@ -1,28 +1,33 @@
-/* Home.css */
-
 /* Welcome section */
-.home{
+.home {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding-top: 2rem;
-}
-footer{
-    margin-top: auto;
-}
-
-.welcome-section {
   background-color: #f7f7f7;
 }
+footer {
+  margin-top: auto;
+}
 
-.home.dark .welcome-section {
+.welcomeSection, .teamSection {
+  background-color: #f7f7f7;
+  display: flex;
+  justify-content: center;
+}
+
+.home.dark {
   background-color: #161616;
 }
 
-.welcome-section h2 {
+.home.dark .welcomeSection, .home.dark .teamSection {
+  background-color: #161616;
+}
+
+.welcomeSection h2 {
   font-size: 3rem;
 }
-.welcome-section p {
+
+.welcomeSection p {
   font-size: 1.5rem;
 }
 
@@ -31,19 +36,28 @@ section {
 }
 
 .container {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-
 .content {
   text-align: start;
+}
+
+.home.dark .content h2 {
+  color: #ffffff;
+}
+
+.home.dark .content p {
+  color: #eeeeee;
 }
 
 .image {
   width: 50%;
 }
+
 .image img {
   max-height: 450px;
 }
@@ -55,10 +69,9 @@ h2 {
 
 .content p {
   font-size: 1.3rem;
-
 }
 
-.cta-button {
+.ctaButton {
   margin-top: 20px;
   padding: 10px 20px;
   background-color: #007bff;
@@ -69,34 +82,36 @@ h2 {
   cursor: pointer;
   transition: 0.3s;
 }
-.cta-button a {
-  color:white;
+
+.ctaButton a {
+  color: white;
 }
 
-.cta-button:hover {
+.ctaButton:hover {
   background-color: transparent; /* Darker blue on hover */
 }
-.cta-button:hover a {
+
+.ctaButton:hover a {
   color: #007bff;
 }
 
 /* About section */
-.about-section {
-  padding-block: 50px;
+.aboutSection, .collegeInfo {
   background-color: #f0f0f0;
+  display: flex;
+  justify-content: center;
 }
-.home.dark .about-section {
-  background-color: #1c1c1c;
-}
-.about-section .container {
+
+.aboutSection .container {
   gap: 3rem;
   flex-direction: row-reverse;
 }
+
 .content {
   width: 60%;
 }
 
- .image {
+.image {
   width: 35%;
 }
 
@@ -104,40 +119,41 @@ h2 {
   max-height: 500px;
 }
 
-
-.college-info {
-  background-color: #f0f0f0;
-  padding-block: 5rem;
-}
-.home.dark .college-info {
+.home.dark .collegeInfo, .home.dark .aboutSection {
   background-color: #1c1c1c;
 }
-.college-info .container {
+
+.collegeInfo .container {
   flex-direction: row-reverse;
 }
-
 
 @media (max-width: 767px) {
   .container {
     width: 100%;
     flex-direction: column !important;
   }
+
   .content {
-    width: 100%
+    width: 100%;
   }
+
   .image {
     width: 70%;
   }
+
   .home {
     padding-top: 0;
   }
+
   .home h2 {
     font-size: 2.3rem;
   }
+
   .home p {
-    font-size:1.2rem;
+    font-size: 1.2rem;
   }
 }
+
 @media (min-width: 768px) {
   .container {
     width: 750px;

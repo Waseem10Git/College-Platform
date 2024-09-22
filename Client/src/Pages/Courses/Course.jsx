@@ -1,4 +1,4 @@
-import "./Course.css";
+import style from "./Course.module.css";
 import { useNavigate, useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import axios from '../../api/axios';
@@ -38,24 +38,24 @@ export default function Course({ isDarkMode, Role  }) {
     };
 
     return (
-        <div className={`courses-container ${isDarkMode && "dark"}`}>
-            <div className="courses">
+        <div className={`${style.coursesContainer} ${isDarkMode ? style.dark : ""}`}>
+            <div className={style.courses}>
                 {allCourses.length > 0 ? (
                     allCourses.map((item, index) => (
-                        <div key={index} className="courses-card"
+                        <div key={index} className={style.coursesCard}
                              onClick={() => handleCourseClick(item.course_code)}>
-                            <div className="image">
+                            <div className={style.image}>
                                 <img src={`data:image/jpeg;base64,${item.image}`} alt={item.course_name}/>
                             </div>
-                            <div className="content">
-                                <div className={"course-name"}>
+                            <div className={style.content}>
+                                <div>
                                     <h3>{item.course_name}</h3>
                                 </div>
-                                <div className="flex">
+                                <div className={style.flex}>
                                     <div>
                                         <h4>Level 2</h4>
                                     </div>
-                                    <div className="price">
+                                    <div className={style.price}>
                                         <h3>{item.course_code}</h3>
                                     </div>
                                 </div>

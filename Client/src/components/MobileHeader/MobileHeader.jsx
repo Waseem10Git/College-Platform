@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import "./MobileHeader.css"
+import styles from "./MobileHeader.module.css"
 import logo from "../Header/images/logo.jpg"
 import menu from "./images/menu.png"
 import { PagesLinks, HeaderItems } from "../index"
@@ -10,15 +10,15 @@ const MobileHeader = ({ language, toggleLanguage, isDarkMode, toggleTheme, Role,
 
     return (
         <>
-            <nav className={`mobile-nav ${isDarkMode ? "dark" : ""}`}>
-                <img src={logo} alt="Logo" className='logo' />
+            <nav className={`${styles.mobileNav} ${isDarkMode ? styles.dark : ""}`}>
+                <img src={logo} alt="Logo" className={styles.logo} />
                 {Role === "student" ? <Notifications userId={userId} /> : null}
                 <button onClick={() => setIsVisible(true)}>
                     <img src={menu} alt="menu icon" />
                 </button>
             </nav>
-            <div onClick={() => setIsVisible(false)} className={`layout ${isVisible ? "visible" : "hidden"}`}/>
-            <div className={`drawer ${isVisible ? "visible" : "hidden"} ${isDarkMode ? "dark" : ""}`}>
+            <div onClick={() => setIsVisible(false)} className={`${styles.layout} ${isVisible ? "" : styles.hidden}`}/>
+            <div className={`${styles.drawer} ${isVisible ? "" : styles.hidden} ${isDarkMode ? styles.dark : ""}`}>
                 <PagesLinks
                     language={language}
                     Role={Role}
