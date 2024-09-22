@@ -1,15 +1,15 @@
 import React, {useEffect, useRef, useState} from 'react';
-import io from 'socket.io-client';
+// import io from 'socket.io-client';
 import axios from '../../api/axios';
 import {MdNotificationsActive} from "react-icons/md";
 import NotificationPopover from '../NotificationPopover/NotificationPopover';
 import "./Notifications.css"
 
-const socket = io("http://localhost:4001", {
-    withCredentials: true,
-    transports: ['websocket', 'polling'],
-    secure: true
-});
+// const socket = io("http://localhost:4001", {
+//     withCredentials: true,
+//     transports: ['websocket', 'polling'],
+//     secure: true
+// });
 
 
 function Notifications({ userId }) {
@@ -34,19 +34,19 @@ function Notifications({ userId }) {
             });
 
         // Listen for new notifications
-        socket.on('notification', notification => {
-            const formattedNotification = {
-                ...notification,
-                created_at: new Date(notification.created_at).toISOString()
-            };
-            setUnreadNotifications(prev => {
-                return [...prev, formattedNotification].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-            });
-        });
-
-        return () => {
-            socket.off('notification');
-        };
+        // socket.on('notification', notification => {
+        //     const formattedNotification = {
+        //         ...notification,
+        //         created_at: new Date(notification.created_at).toISOString()
+        //     };
+        //     setUnreadNotifications(prev => {
+        //         return [...prev, formattedNotification].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        //     });
+        // });
+        //
+        // return () => {
+        //     socket.off('notification');
+        // };
     }, [userId]);
 
     useEffect(() => {
