@@ -9,7 +9,7 @@ function HeaderItems ({ language, auth, isDarkMode, name, toggleLanguage, toggle
 
     const navigate = useNavigate();
     const handleSignOut = () => {
-        axios.get('/api/auth/signOut')
+        axios.get('/api/auth/signOut',{withCredentials: true})
             .then(res => {
                 navigate('/');
                 window.location.reload();
