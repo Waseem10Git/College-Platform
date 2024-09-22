@@ -7,7 +7,7 @@ const { Server } = require('socket.io');
 const conn = require('./config/db');
 const createTables = require('./config/createTables');
 
-const NotificationController = require('./controllers/notificationController');
+const NotificationController = require('./controllers/NotificationController');
 const answerRoutes = require('./routes/answerRoutes');
 const assignmentRoutes = require('./routes/assignmentRoutes');
 const authRoutes = require('./routes/authRoutes');
