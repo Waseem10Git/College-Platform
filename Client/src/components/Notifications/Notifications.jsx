@@ -5,7 +5,7 @@ import {MdNotificationsActive} from "react-icons/md";
 import NotificationPopover from '../NotificationPopover/NotificationPopover';
 import "./Notifications.css"
 
-const socket = io("https://college-platform-production.up.railway.app", {
+const socket = io("wss://college-platform-production.up.railway.app/socket.io", {
     withCredentials: true,
     transports: ['websocket', 'polling'],
     secure: true
