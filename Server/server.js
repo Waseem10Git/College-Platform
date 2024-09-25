@@ -76,9 +76,9 @@ app.use('/api', studentExamStatusRoutes);
 app.use('/api', studentMeetingRoutes);
 app.use('/api', userRoutes);
 
-// const port = process.env.PORT || 4001;
-server.listen(4001, "0.0.0.0", () => {
-    console.log(`Server is running on port ${4001}`);
+const port = process.env.PORT || 4001;
+server.listen(port, "0.0.0.0", () => {
+    console.log(`Server is running on port ${port}`);
 });
 
 io.on('connection', (socket) => {
