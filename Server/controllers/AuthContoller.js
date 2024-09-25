@@ -20,7 +20,7 @@ class authController {
                 const match = await bcrypt.compare(password.toString(), results[0].password);
                 if (match) {
                     const { first_name: firstName, role, id } = results[0];
-                    const token = jwt.sign({ firstName, role, id }, jwtSecretKey, { expiresIn: "5d" });
+                    const token = jwt.sign({ firstName, role, id }, process.env.JWT_SECTRET_KEY, { expiresIn: "5d" });
                     res.cookie('authToken', token, {
                         httpOnly: true,    // Ensures cookie is accessible only via HTTP (not JS)
                         secure: true,      // Ensures cookie is sent over HTTPS

@@ -2,7 +2,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const express = require('express');
 const bodyParser = require('body-parser');
-const http = require('http');
+const https = require('https');
 const { Server } = require('socket.io');
 const conn = require('./config/db');
 // const createTables = require('./config/createTables');
@@ -31,7 +31,7 @@ const studentMeetingRoutes = require('./routes/studentMeetingRoutes');
 const userRoutes = require('./routes/userRoutes');
 
 const app = express();
-const server = http.createServer(app);
+const server = https.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: '*',
