@@ -48,7 +48,7 @@ function App() {
 
   axios.defaults.withCredentials = true;
   useEffect(() => {
-    axios.get('/api/auth')
+    axios.get('/api/auth',{withCredentials: true})
         .then(res => {
           console.log("Server response:", res.data); // Log the server response
           if (res.data.Status === "Success") {
