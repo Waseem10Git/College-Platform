@@ -42,13 +42,21 @@ const io = new Server(server, {
 
 app.use(express.json());
 app.use(cors({
-    origin: "https://college-platform.netlify.app",
-    methods: ["POST", "GET", 'DELETE', 'PUT'],
-    credentials: true
+    origin: ["https://college-platform.netlify.app"],
+    methods: ["POST", "GET", "DELETE", "PUT"],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token'],
+    exposedHeaders: ['Authorization']
 }));
+app.options('*', cors());
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Credentials', 'true');
+    next();
+});
 
 // Initialize NotificationController with io
 const notificationController = new NotificationController(io);
