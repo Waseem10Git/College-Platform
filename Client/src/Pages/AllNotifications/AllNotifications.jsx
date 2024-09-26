@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import axios from '../../api/axios';
 import "./AllNotificaions.css"
-// import io  from "socket.io-client";
+import io  from "socket.io-client";
 
-// const socket = io("http://localhost:4001", {
-//     withCredentials: true,
-//     transports: ['websocket', 'polling'],
-//     secure: true
-// });
+const socket = io("http://localhost:4001", {
+    withCredentials: true,
+    transports: ['websocket', 'polling'],
+    secure: true
+});
 
 
 function AllNotifications({ userId }) {
@@ -31,19 +31,19 @@ function AllNotifications({ userId }) {
 
         fetchNotifications();
 
-        // socket.on('notification', notification => {
-        //     const formattedNotification = {
-        //         ...notification,
-        //         created_at: new Date(notification.created_at)
-        //     };
-        //     setNotifications(prev => {
-        //         return [...prev, formattedNotification].sort((a, b) => b.created_at - a.created_at);
-        //     });
-        // });
-        //
-        // return () => {
-        //     socket.off('notification');
-        // };
+        socket.on('notification', notification => {
+            const formattedNotification = {
+                ...notification,
+                created_at: new Date(notification.created_at)
+            };
+            setNotifications(prev => {
+                return [...prev, formattedNotification].sort((a, b) => b.created_at - a.created_at);
+            });
+        });
+
+        return () => {
+            socket.off('notification');
+        };
     }, [userId]);
 
     const formatDate = (dateString) => {

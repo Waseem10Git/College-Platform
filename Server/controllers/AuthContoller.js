@@ -1,7 +1,9 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const UserModel = require("../models/User");
+const env = require('dotenv')
 
+env.config();
 
 class authController {
     static async getUserInfo(req, res) {
@@ -20,12 +22,7 @@ class authController {
                 if (match) {
                     const { first_name: firstName, role, id } = results[0];
                     const token = jwt.sign({ firstName, role, id }, process.env.JWT_SECTRET_KEY, { expiresIn: "5d" });
-                    res.cookie('authToken', token, {
-                        httpOnly: true,    // Ensures cookie is accessible only via HTTP (not JS)
-                        secure: true,      // Ensures cookie is sent over HTTPS
-                        sameSite: 'None',  // Allows cross-origin requests to include the cookie
-                        maxAge: 24 * 60 * 60 * 1000  // Cookie expiry (1 day)
-                    });
+                    res.cookie('authToken', token);
                     return res.json({ Status: "Success" });
                 } else {
                     return res.json({ Error: "Password not matched" });

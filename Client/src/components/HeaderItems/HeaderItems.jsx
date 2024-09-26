@@ -9,7 +9,7 @@ function HeaderItems ({ language, auth, isDarkMode, name, toggleLanguage, toggle
 
     const navigate = useNavigate();
     const handleSignOut = () => {
-        axios.get('/api/auth/signOut',{withCredentials: true})
+        axios.get('/api/auth/signOut')
             .then(res => {
                 navigate('/');
                 window.location.reload();
@@ -46,11 +46,6 @@ function HeaderItems ({ language, auth, isDarkMode, name, toggleLanguage, toggle
             </Link>
           )}
         </div>
-        {/*<div className="header-item go-live">*/}
-        {/*  <Link to="/live" className="header-item primary ">*/}
-        {/*    {language === "En" ? "Go Live" : "البث المباشر"}*/}
-        {/*  </Link>*/}
-        {/*</div>*/}
       </div>
     );
 }
