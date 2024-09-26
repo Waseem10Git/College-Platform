@@ -4,7 +4,7 @@ const env = require('dotenv');
 env.config();
 
 // Use the environment variable for the database connection URL
-console.log('MYSQL URL: ', process.env.MYSQL_URL);
+// console.log('MYSQL URL: ', process.env.MYSQL_URL);
 
 const conn = mysql.createConnection({
     host: process.env.DB_HOST,
