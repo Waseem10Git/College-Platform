@@ -42,7 +42,7 @@ const io = new Server(server, {
 
 app.use(express.json());
 app.use(cors({
-    origin: ["https://college-platform.netlify.app"],
+    origin: ["https://college-platform.netlify.app", "http://localhost:3000"],
     methods: ["POST", "GET", "DELETE", "PUT"],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token'],
