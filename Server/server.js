@@ -4,8 +4,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const https = require('https');
 const { Server } = require('socket.io');
-const conn = require('./config/db');
-const createTables = require('./config/createTables');
+// const conn = require('./config/db');
+// const createTables = require('./config/createTables');
 
 const NotificationController = require('./controllers/NotificationController');
 const answerRoutes = require('./routes/answerRoutes');
@@ -45,18 +45,16 @@ app.use(cors({
     origin: ["https://college-platform.netlify.app", "http://localhost:3000"],
     methods: ["POST", "GET", "DELETE", "PUT"],
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token'],
-    exposedHeaders: ['Authorization']
 }));
-app.options('*', cors());
+// app.options('*', cors());
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Credentials', 'true');
-    next();
-});
+// app.use((req, res, next) => {
+//     res.header('Access-Control-Allow-Credentials', 'true');
+//     next();
+// });
 
 
 
@@ -87,36 +85,15 @@ app.use('/api', studentMeetingRoutes);
 app.use('/api', userRoutes);
 
 const port = process.env.PORT || 8080;
-// server.listen(port, () => {
-//     console.log(`Server is running on port ${port}`);
+server.listen(port, "0.0.0.0", () => {
+    console.log(`Server is running on port ${port}`);
+});
+
+
+// io.on('connection', (socket) => {
+//     console.log('A user connected');
+//
+//     socket.on('disconnect', () => {
+//         console.log('User disconnected');
+//     });
 // });
-
-conn.connect(err => {
-    if (err) {
-        console.error('Database connection failed: ', err.stack);
-        return;
-    }
-    console.log('Connected to MySQL database.');
-
-    // Create tables and start the server after successful table creation
-    createTables()
-        .then(() => {
-            console.log('All tables created successfully');
-            // Start server only if tables are created successfully
-            server.listen(port, () => {
-                console.log(`Server is running on port ${port}`);
-            });
-        })
-        .catch(err => {
-            console.error('Error creating tables: ', err);
-            process.exit(1);  // Exit process in case of failure
-        });
-});
-
-io.on('connection', (socket) => {
-    console.log('A user connected');
-
-    socket.on('disconnect', () => {
-        console.log('User disconnected');
-    });
-});
