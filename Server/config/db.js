@@ -5,13 +5,8 @@ env.config();
 
 // Use the environment variable for the database connection URL
 // console.log('MYSQL URL: ', process.env.MYSQL_URL);
-
-const conn = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE
-});
+const URL = "mysql://root:HxsnpogUcXIOlgTVXQgRIiUXlLCLLYxU@mysql-ow2_.railway.internal:3306/railway"
+const conn = mysql.createConnection(URL);
 
 
 // Database connection with error handling
