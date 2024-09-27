@@ -13,7 +13,6 @@ class authController {
 
     static async signIn(req, res) {
         const { email, password } = req.body;
-        console.log("jwt: ", process.env.JWT_SECTRET_KEY);
 
         try {
             const results = await UserModel.getUserByEmail(email);

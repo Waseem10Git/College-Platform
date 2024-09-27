@@ -4,20 +4,8 @@ const EnrollmentModel = require("../models/Enrollment");
 const conn = require("../config/db");
 
 class NotificationController {
-    constructor(io) {
-        this.io = io;
-    }
 
-    async emitNotification(userId, message) {
-        try {
-            this.io.emit('notification', {userId, message});
-            console.log(`Notification sent to user ${userId}: ${message}`);
-        } catch (err) {
-            console.error('Error creating notification:', err);
-        }
-    }
-
-    async getNotifications(req, res) {
+    static async getNotifications(req, res) {
         try {
             const { id } = req.params;
             const notifications = await NotificationModel.getNotifications(id);
@@ -28,7 +16,7 @@ class NotificationController {
         }
     }
 
-    async getUnreadNotifications(req, res) {
+    static async getUnreadNotifications(req, res) {
         try {
             const { id } = req.params;
             const unreadNotifications = await NotificationModel.getUnreadNotifications(id);
@@ -39,7 +27,7 @@ class NotificationController {
         }
     }
 
-    async markNotificationsAsRead(req, res) {
+    static async markNotificationsAsRead(req, res) {
         try {
             const { id } = req.params;
             await NotificationModel.markNotificationsAsRead(id);
@@ -50,7 +38,7 @@ class NotificationController {
         }
     }
 
-    async sendNotification(req, res) {
+    static async sendNotification(req, res) {
         try {
             const { userId, courseCode, message } = req.body;
 
@@ -95,8 +83,6 @@ class NotificationController {
                         });
                     }
 
-                    // Emit the notification to all connected clients
-                    this.io.emit('notification', { userId, message });
                     res.status(200).send('Notification sent');
                 });
             });

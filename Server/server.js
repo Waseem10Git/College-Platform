@@ -3,11 +3,10 @@ const cors = require('cors');
 const express = require('express');
 const bodyParser = require('body-parser');
 const http = require('http');
-const { Server } = require('socket.io');
 // const conn = require('./config/db');
 // const createTables = require('./config/createTables');
+const port = process.env.PORT || 4001;
 
-const NotificationController = require('./controllers/NotificationController');
 const answerRoutes = require('./routes/answerRoutes');
 const assignmentRoutes = require('./routes/assignmentRoutes');
 const authRoutes = require('./routes/authRoutes');
@@ -32,13 +31,6 @@ const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-    cors: {
-        origin: '*',
-        methods: ['GET', 'POST'],
-        credentials: true
-    }
-});
 
 app.use(express.json());
 app.use(cors({
@@ -56,11 +48,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //     next();
 // });
 
-
-
-// Initialize NotificationController with io
-const notificationController = new NotificationController(io);
-
 // Use routes
 app.use('/api', answerRoutes);
 app.use('/api', assignmentRoutes);
@@ -76,7 +63,7 @@ app.use('/api', examResultRoutes);
 app.use('/api', examRoutes);
 app.use('/api', instructorCourseExamRoutes);
 app.use('/api', instructorCourseRoutes);
-app.use('/api', notificationRoutes(notificationController));
+app.use('/api', notificationRoutes);
 app.use('/api', questionRoutes);
 app.use('/api', studentAnswerRoutes);
 app.use('/api', studentAssignmentRoutes);
@@ -84,15 +71,6 @@ app.use('/api', studentExamStatusRoutes);
 app.use('/api', studentMeetingRoutes);
 app.use('/api', userRoutes);
 
-const port = process.env.PORT || 4001;
 server.listen(port, "0.0.0.0", () => {
     console.log(`Server is running on port ${port}`);
-});
-
-io.on('connection', (socket) => {
-    console.log('A user connected');
-
-    socket.on('disconnect', () => {
-        console.log('User disconnected');
-    });
 });

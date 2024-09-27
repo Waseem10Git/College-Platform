@@ -1,14 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import axios from '../../api/axios';
-import "./AllNotificaions.css"
-import io  from "socket.io-client";
-
-const socket = io("http://localhost:4001", {
-    withCredentials: true,
-    transports: ['websocket', 'polling'],
-    secure: true
-});
-
+import "./AllNotificaions.css";
 
 function AllNotifications({ userId }) {
     const [notifications, setNotifications] = useState([]);
@@ -20,7 +12,7 @@ function AllNotifications({ userId }) {
                 if (response.data) {
                     const formattedNotifications = response.data.map(notif => ({
                         ...notif,
-                        created_at: new Date(notif.created_at) // Assuming 'created_at' is in UTC format
+                        created_at: new Date(notif.created_at)
                     })).sort((a, b) => b.created_at - a.created_at);
                     setNotifications(formattedNotifications);
                 }
@@ -31,24 +23,16 @@ function AllNotifications({ userId }) {
 
         fetchNotifications();
 
-        socket.on('notification', notification => {
-            const formattedNotification = {
-                ...notification,
-                created_at: new Date(notification.created_at)
-            };
-            setNotifications(prev => {
-                return [...prev, formattedNotification].sort((a, b) => b.created_at - a.created_at);
-            });
-        });
+        const intervalId = setInterval(fetchNotifications, 5000);
 
         return () => {
-            socket.off('notification');
+            clearInterval(intervalId);
         };
     }, [userId]);
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        date.setHours(date.getHours() - 3);
+        date.setHours(date.getHours() - 3); // Adjusting the time zone if needed
         return date.toLocaleString([], { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: '2-digit', year: 'numeric' });
     };
 

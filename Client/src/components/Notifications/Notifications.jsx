@@ -1,16 +1,8 @@
 import React, {useEffect, useRef, useState} from 'react';
-import io from 'socket.io-client';
 import axios from '../../api/axios';
 import {MdNotificationsActive} from "react-icons/md";
 import NotificationPopover from '../NotificationPopover/NotificationPopover';
-import "./Notifications.css"
-
-const socket = io("http://localhost:4001", {
-    withCredentials: true,
-    transports: ['websocket', 'polling'],
-    secure: true
-});
-
+import "./Notifications.css";
 
 function Notifications({ userId }) {
     const [unreadNotifications, setUnreadNotifications] = useState([]);
@@ -18,34 +10,27 @@ function Notifications({ userId }) {
     const popoverRef = useRef(null);
 
     useEffect(() => {
-        // Fetch unread notifications
-        axios.get(`/api/unread-notifications/${userId}`)
-            .then(response => {
-                if (response.data){
+        const fetchUnreadNotifications = async () => {
+            try {
+                const response = await axios.get(`/api/unread-notifications/${userId}`);
+                if (response.data) {
                     const formattedNotifications = response.data.map(notif => ({
                         ...notif,
                         created_at: new Date(notif.created_at).toISOString()
                     })).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
                     setUnreadNotifications(formattedNotifications);
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error fetching unread notifications:', error);
-            });
+            }
+        };
 
-        // Listen for new notifications
-        socket.on('notification', notification => {
-            const formattedNotification = {
-                ...notification,
-                created_at: new Date(notification.created_at).toISOString()
-            };
-            setUnreadNotifications(prev => {
-                return [...prev, formattedNotification].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-            });
-        });
+        fetchUnreadNotifications();
+
+        const intervalId = setInterval(fetchUnreadNotifications, 5000);
 
         return () => {
-            socket.off('notification');
+            clearInterval(intervalId);
         };
     }, [userId]);
 
