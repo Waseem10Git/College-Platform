@@ -2,12 +2,9 @@ const mysql = require('mysql2');
 const env = require('dotenv');
 
 env.config();
-const conn = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE
-});
+console.log("MYSQL URL is:");
+console.log(process.env.MYSQL_URL);
+const conn = mysql.createConnection(process.env.MYSQL_URL);
 
 
 // Database connection with error handling

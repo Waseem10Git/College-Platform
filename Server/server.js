@@ -3,8 +3,8 @@ const cors = require('cors');
 const express = require('express');
 const bodyParser = require('body-parser');
 const http = require('http');
-// const conn = require('./config/db');
-// const createTables = require('./config/createTables');
+const conn = require('./config/db');
+const createTables = require('./config/createTables');
 const port = process.env.PORT || 4001;
 
 const answerRoutes = require('./routes/answerRoutes');
@@ -71,6 +71,23 @@ app.use('/api', studentExamStatusRoutes);
 app.use('/api', studentMeetingRoutes);
 app.use('/api', userRoutes);
 
-server.listen(port, "0.0.0.0", () => {
-    console.log(`Server is running on port ${port}`);
+conn.connect(err => {
+    if (err) {
+        console.error('Database connection failed: ', err.stack);
+        return;
+    }
+    console.log('Connected to MySQL database.');
+
+    createTables()
+        .then(() => {
+            console.log('All tables created successfully');
+
+            server.listen(port, "0.0.0.0", () => {
+                console.log(`Server is running on port ${port}`);
+            });
+        })
+        .catch(err => {
+            console.error('Error creating tables: ', err);
+            process.exit(1);
+        });
 });
