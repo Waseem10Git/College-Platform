@@ -1,9 +1,11 @@
-import style from "./Course.module.css";
+import "./Course.css";
 import { useNavigate, useParams } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import React, {useContext, useEffect, useState} from "react";
 import axios from '../../api/axios';
+import UserContext from "../../context/UserContext";
 
-export default function Course({ isDarkMode, Role  }) {
+export default function Course() {
+    const { isDarkMode, role } = useContext(UserContext);
     const [allCourses, setAllCourses] = useState([]);
     const navigate = useNavigate();
     const {userId} = useParams();
@@ -12,11 +14,11 @@ export default function Course({ isDarkMode, Role  }) {
         const fetchData = async () => {
             try {
                 console.log("userId: ", userId)
-                console.log("Role: ",Role)
+                console.log("role: ",role)
                 let response;
-                if (Role === 'student') {
+                if (role === 'student') {
                     response = await axios.get(`/api/student/${userId}/courses`, {responseType: "json"});
-                } else if (Role === 'instructor') {
+                } else if (role === 'instructor') {
                     response = await axios.get(`/api/instructor/${userId}/courses`, {responseType: "json"});
                 }
                 console.log('API response:', response.data); // Log the response
@@ -30,7 +32,7 @@ export default function Course({ isDarkMode, Role  }) {
             }
         };
         fetchData();
-    }, [userId, Role]);
+    }, [userId, role]);
 
     const handleCourseClick = (courseCode) => {
         console.log(courseCode)
@@ -38,24 +40,24 @@ export default function Course({ isDarkMode, Role  }) {
     };
 
     return (
-        <div className={`${style.coursesContainer} ${isDarkMode ? style.dark : ""}`}>
-            <div className={style.courses}>
+        <div className={`Course_coursesContainer ${isDarkMode ? "Course_dark" : ""}`}>
+            <div className="Course_courses">
                 {allCourses.length > 0 ? (
                     allCourses.map((item, index) => (
-                        <div key={index} className={style.coursesCard}
+                        <div key={index} className={"Course_coursesCard"}
                              onClick={() => handleCourseClick(item.course_code)}>
-                            <div className={style.image}>
+                            <div className={"Course_image"}>
                                 <img src={`data:image/jpeg;base64,${item.image}`} alt={item.course_name}/>
                             </div>
-                            <div className={style.content}>
+                            <div className={"Course_content"}>
                                 <div>
                                     <h3>{item.course_name}</h3>
                                 </div>
-                                <div className={style.flex}>
+                                <div className="Course_flex">
                                     <div>
                                         <h4>Level 2</h4>
                                     </div>
-                                    <div className={style.price}>
+                                    <div className={"Course_price"}>
                                         <h3>{item.course_code}</h3>
                                     </div>
                                 </div>

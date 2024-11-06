@@ -3,9 +3,12 @@ import moonIcon from "../Header/images/night.png";
 import sunIcon from "../Header/images/sun.png";
 import axios from '../../api/axios';
 import styles from '../Header/Header.module.css'
+import {useContext} from "react";
+import UserContext from "../../context/UserContext";
 
 
-function HeaderItems ({ language, auth, isDarkMode, name, toggleLanguage, toggleTheme, userId }) {
+function HeaderItems () {
+    const { language, auth, isDarkMode, name, toggleLanguage, toggleTheme, userId } = useContext(UserContext);
 
     const navigate = useNavigate();
     const handleSignOut = () => {

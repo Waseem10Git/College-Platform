@@ -1,7 +1,12 @@
-import React, { useEffect, useState } from "react";
-import axios from '../../api/axios';
+import React, {useContext, useEffect, useState} from "react";
+import UserContext from "../../context/UserContext";
+import departmentsCoursesApi from "../../api/departmentsCoursesApi";
+import coursesApi from "../../api/coursesApi";
+import { toast } from 'react-toastify';
+import {ConfirmDelete} from "../../components";
 
-const DepartmentsCoursesView = ({ language, departments }) => {
+const DepartmentsCoursesView = ({ departments }) => {
+    const { language } = useContext(UserContext);
     const [courses, setCourses] = useState([]);
     const [departmentsCourses, setDepartmentsCourses] = useState([]);
     const [levels] = useState([1, 2, 3, 4]);
@@ -15,10 +20,22 @@ const DepartmentsCoursesView = ({ language, departments }) => {
     const [newLevel, setNewLevel] = useState('');
     const [newSemester, setNewSemester] = useState('');
     const [editingCourse, setEditingCourse] = useState(null);
+    const [addingErrCourseMessage, setAddingErrCourseMessage] = useState('');
+    const [addingErrDepartmentMessage, setAddingErrDepartmentMessage] = useState('');
+    const [addingErrLevelMessage, setAddingErrLevelMessage] = useState('');
+    const [addingErrSemesterMessage, setAddingErrSemesterMessage] = useState('');
+    const [addingErrNewCourseDepartmentMessage, setAddingErrNewCourseDepartmentMessage] = useState('');
+    const [editingErrCourseMessage, setEditingErrCourseMessage] = useState('');
+    const [editingErrDepartmentMessage, setEditingErrDepartmentMessage] = useState('');
+    const [editingErrLevelMessage, setEditingErrLevelMessage] = useState('');
+    const [editingErrSemesterMessage, setEditingErrSemesterMessage] = useState('');
+    const [editingErrNewCourseDepartmentMessage, setEditingErrNewCourseDepartmentMessage] = useState('');
+    const [deletionVisible, setDeletionVisible] = useState(false);
+    const [departmentToDelete, setDepartmentToDelete] = useState(null);
 
     const fetchDepartmentsCourses = async () => {
         try {
-            const response = await axios.get('/api/departments-courses');
+            const response = await departmentsCoursesApi.fetchDepartmentsCourses();
             setDepartmentsCourses(response.data);
         } catch (err) {
             console.log('Error fetching departments-courses data: ', err);
@@ -26,31 +43,107 @@ const DepartmentsCoursesView = ({ language, departments }) => {
     };
 
     useEffect(() => {
-        axios.get('/api/courses').then(response => {
+        coursesApi.fetchCourses().then(response => {
             setCourses(response.data);
         });
         fetchDepartmentsCourses();
     }, []);
-    console.log("courses: ", courses);
-    console.log("Departments: ", departments);
-    console.log("Departments Courses: ", departmentsCourses);
+
+    const validateAddingSelection = (department, course, level, semester) => {
+        if (!course) {
+            setAddingErrCourseMessage(language === 'En' ? 'Please select an item in each list.' : 'يرجى اختيار عنصر في كل قائمة.');
+            return false;
+        }
+        if (!department) {
+            setAddingErrDepartmentMessage(language === 'En' ? 'Please select an item in each list.' : 'يرجى اختيار عنصر في كل قائمة.');
+            return false;
+        }
+        if (!level) {
+            setAddingErrLevelMessage(language === 'En' ? 'Please select an item in each list.' : 'يرجى اختيار عنصر في كل قائمة.');
+            return false;
+        }
+        if (!semester) {
+            setAddingErrSemesterMessage(language === 'En' ? 'Please select an item in each list.' : 'يرجى اختيار عنصر في كل قائمة.');
+            return false;
+        }
+
+        const isDuplicate = departmentsCourses.some(
+            dc => dc.department_id.toString() === department && dc.course_code === course
+        );
+        if (isDuplicate) {
+            setAddingErrNewCourseDepartmentMessage(language === 'En' ? 'This course-department combination already exists.' : 'هذا الجمع بين الدورة والقسم موجود بالفعل.');
+            return false;
+        }
+
+        setAddingErrCourseMessage('');
+        setAddingErrDepartmentMessage('');
+        setAddingErrLevelMessage('');
+        setAddingErrSemesterMessage('');
+        return true;
+    };
+
+    const validateUpdatingSelection = (department, course, level, semester) => {
+        if (!course) {
+            setEditingErrCourseMessage(language === 'En' ? 'Please select an item in each list.' : 'يرجى اختيار عنصر في كل قائمة.');
+            return false;
+        }
+        if (!department) {
+            setEditingErrDepartmentMessage(language === 'En' ? 'Please select an item in each list.' : 'يرجى اختيار عنصر في كل قائمة.');
+            return false;
+        }
+        if (!level) {
+            setEditingErrLevelMessage(language === 'En' ? 'Please select an item in each list.' : 'يرجى اختيار عنصر في كل قائمة.');
+            return false;
+        }
+        if (!semester) {
+            setEditingErrSemesterMessage(language === 'En' ? 'Please select an item in each list.' : 'يرجى اختيار عنصر في كل قائمة.');
+            return false;
+        }
+
+        const isDuplicate = departmentsCourses.some(
+            dc => dc.department_id.toString() === department && dc.course_code === course && dc.id !== editingCourse
+        );
+        if (isDuplicate) {
+            setEditingErrNewCourseDepartmentMessage(language === 'En' ? 'This course-department combination already exists.' : 'هذا الجمع بين الدورة والقسم موجود بالفعل.');
+            return false;
+        }
+
+        setAddingErrCourseMessage('');
+        setAddingErrDepartmentMessage('');
+        setAddingErrLevelMessage('');
+        setAddingErrSemesterMessage('');
+        return true;
+    };
 
     const handleAdd = async () => {
+        setEditingErrCourseMessage('');
+        setEditingErrDepartmentMessage('');
+        setEditingErrLevelMessage('');
+        setEditingErrSemesterMessage('');
+        setEditingErrNewCourseDepartmentMessage('');
+        setAddingErrCourseMessage('');
+        setAddingErrDepartmentMessage('');
+        setAddingErrLevelMessage('');
+        setAddingErrSemesterMessage('');
+        setAddingErrNewCourseDepartmentMessage('');
+        if (!validateAddingSelection(newDepartment, newCourse, newLevel, newSemester)) return;
+
         try {
-            await axios.post('/api/departments-courses', {
-                department_id: newDepartment,
-                course_id: newCourse,
-                level: newLevel,
-                semester: newSemester
-            }).then(res => {
-                if (res.data.success) {
-                    fetchDepartmentsCourses();
-                    resetForm();
-                }
-            }).catch(err => console.error(err));
-        } catch (error) {
-            console.error('Error adding department-course relation:', error);
+            const res = await departmentsCoursesApi.addDepartmentCourse(newDepartment, newCourse, newLevel, newSemester);
+            if (res.data.success) {
+                toast.success(language === 'En' ? 'Department-course combination success!' : 'نجاح الجمع بين القسم والمقرر الدراسي!');
+                fetchDepartmentsCourses();
+                resetForm();
+            }
+        } catch (err) {
+            console.error(err);
+            if (err.response && err.response.data && err.response.data.message) {
+                toast.error(err.response.data.message);
+            } else {
+                toast.error(language === 'En' ? 'Department-course combination failed' : 'فشل الجمع بين القسم والمقرر الدراسي');
+            }
         }
+
     };
 
     const handleUpdate = (course) => {
@@ -62,31 +155,44 @@ const DepartmentsCoursesView = ({ language, departments }) => {
     };
 
     const handleSaveUpdate = async () => {
+        if (!validateUpdatingSelection(selectedDepartment, selectedCourse, selectedLevel, selectedSemester)) return;
+
         try {
-            await axios.put(`/api/departments-courses/${editingCourse}`, {
-                department_id: selectedDepartment || undefined,
-                course_id: selectedCourse || undefined,
-                level: selectedLevel || undefined,
-                semester: selectedSemester || undefined
-            }).then(res => {
-                if (res.data.success) {
-                    fetchDepartmentsCourses();
-                    resetForm();
-                }
-            }).catch(err => console.error(err));
-        } catch (error) {
-            console.error('Error updating department-course relation:', error);
+            const res = await departmentsCoursesApi.updateDepartmentCourse(editingCourse, selectedDepartment, selectedCourse, selectedLevel, selectedSemester);
+            if (res.data.success) {
+                toast.success(language === 'En' ? 'Success updating department-course relation' : 'تم تحديث العلاقة بين القسم والمقرر الدراسي بنجاح');
+                fetchDepartmentsCourses();
+                resetForm();
+            }
+        } catch (err) {
+            if (err.response && err.response.data && err.response.data.message) {
+                toast.error(err.response.data.message);
+            } else {
+                toast.error(language === 'En' ? 'Error updating department-course relation' : 'خطأ في تحديث العلاقة بين القسم والمقرر الدراسي');
+            }
         }
     };
 
-    const handleDelete = (id) => {
-        axios.delete(`/api/departments-courses/${id}`)
-            .then(res => {
-                if (res.data.success) {
-                    fetchDepartmentsCourses();
-                }
-            })
-            .catch(err => console.error(err));
+    const handleDelete = async (id) => {
+        try {
+            const res = await departmentsCoursesApi.deleteDepartmentCourse(id);
+            if (res.data.success) {
+                toast.success(language === 'En' ? 'Success deleting department-course relation' : 'تم حذف العلاقة بين القسم والمقرر الدراسي بنجاح');
+                fetchDepartmentsCourses();
+            }
+        } catch (err) {
+            if (err.response && err.response.data && err.response.data.message) {
+                toast.error(err.response.data.message);
+            } else {
+                toast.error(language === 'En' ? 'Error deleting department-course relation' : 'خطأ في حذف العلاقة بين القسم والمقرر الدراسي');
+            }
+        }
+
+    };
+
+    const confirmDelete = (id) => {
+        setDepartmentToDelete(id);
+        setDeletionVisible(true);
     };
 
     const resetForm = () => {
@@ -95,127 +201,236 @@ const DepartmentsCoursesView = ({ language, departments }) => {
         setSelectedDepartment('');
         setSelectedLevel('');
         setSelectedSemester('');
+        setNewCourse('');
+        setNewDepartment('');
+        setNewLevel('');
+        setNewSemester('');
+        setAddingErrCourseMessage('');
+        setAddingErrDepartmentMessage('');
+        setAddingErrLevelMessage('');
+        setAddingErrSemesterMessage('');
+        setAddingErrNewCourseDepartmentMessage('');
+        setEditingErrCourseMessage('');
+        setEditingErrDepartmentMessage('');
+        setEditingErrLevelMessage('');
+        setEditingErrSemesterMessage('');
+        setEditingErrNewCourseDepartmentMessage('');
     };
 
     return (
-        <table className="course-table">
-            <thead>
-            <tr>
-                <th>{language === 'En' ? 'Course' : 'الدورة'}</th>
-                <th>{language === 'En' ? 'Department' : 'القسم'}</th>
-                <th>{language === 'En' ? 'Level' : 'المستوى'}</th>
-                <th>{language === 'En' ? 'Semester' : 'الفصل'}</th>
-                <th>{language === 'En' ? 'Actions' : 'الإجراءات'}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>
-                    <select value={newCourse} onChange={(e) => setNewCourse(e.target.value)}>
-                        <option value="">{language === 'En' ? 'Select Course' : 'اختر الدورة'}</option>
-                        {courses.map((course, index) => (
-                            <option key={index} value={course.course_code}>{course.course_name}</option>
-                        ))}
-                    </select>
-                </td>
-                <td>
-                    <select value={newDepartment} onChange={(e) => setNewDepartment(e.target.value)}>
-                        <option value="">{language === 'En' ? 'Select Department' : 'اختر القسم'}</option>
-                        {departments.map((department, index) => (
-                            <option key={index} value={department.department_id}>{department.department_name}</option>
-                        ))}
-                    </select>
-                </td>
-                <td>
-                    <select value={newLevel} onChange={(e) => setNewLevel(e.target.value)}>
-                        <option value="">{language === 'En' ? 'Select Level' : 'اختر المستوى'}</option>
-                        {levels.map(level => (
-                            <option key={level} value={level}>{level}</option>
-                        ))}
-                    </select>
-                </td>
-                <td>
-                    <select value={newSemester} onChange={(e) => setNewSemester(e.target.value)}>
-                        <option value="">{language === 'En' ? 'Select Semester' : 'اختر الفصل'}</option>
-                        {semesters.map(semester => (
-                            <option key={semester} value={semester}>{semester}</option>
-                        ))}
-                    </select>
-                </td>
-                <td>
-                    <button onClick={handleAdd}>
-                        {language === 'En' ? 'Add' : 'اضافة'}
-                    </button>
-                </td>
-            </tr>
-            {departmentsCourses.map(dc => (
-                <tr key={dc.id}>
+        <>
+            <table className="DepartmentsCoursesView_course-table">
+                <thead>
+                <tr>
+                    <th>{language === 'En' ? 'Course' : 'الدورة'}</th>
+                    <th>{language === 'En' ? 'Department' : 'القسم'}</th>
+                    <th>{language === 'En' ? 'Level' : 'المستوى'}</th>
+                    <th>{language === 'En' ? 'Semester' : 'الفصل'}</th>
+                    <th>{language === 'En' ? 'Actions' : 'الإجراءات'}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
                     <td>
-                        {editingCourse === dc.id ? (
-                            <select value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)}>
-                                <option value="">{language === 'En' ? 'Select Course' : 'اختر الدورة'}</option>
-                                {courses.map((course, index) => (
-                                    <option key={index} value={course.course_code}>{course.course_name}</option>
-                                ))}
-                            </select>
-                        ) : (
-                            dc.course_name
+                        {addingErrCourseMessage && (
+                            <p style={{
+                                color: 'red',
+                                marginBottom: '8px',
+                                fontStyle: 'italic'
+                            }}>{addingErrCourseMessage}</p>
                         )}
+                        <select value={newCourse} onChange={(e) => setNewCourse(e.target.value)}>
+                            <option value="" disabled>{language === 'En' ? 'Select Course' : 'اختر الدورة'}</option>
+                            {courses.map((course, index) => (
+                                <option key={index} value={course.course_code}>{course.course_name}</option>
+                            ))}
+                        </select>
                     </td>
                     <td>
-                        {editingCourse === dc.id ? (
-                            <select value={selectedDepartment} onChange={(e) => setSelectedDepartment(e.target.value)}>
-                                <option value="">{language === 'En' ? 'Select Department' : 'اختر القسم'}</option>
-                                {departments.map((department, index) => (
-                                    <option key={index}
-                                            value={department.department_id}>{department.department_name}</option>
-                                ))}
-                            </select>
-                        ) : (
-                            dc.department_name
+                        {addingErrDepartmentMessage && (
+                            <p style={{
+                                color: 'red',
+                                marginBottom: '8px',
+                                fontStyle: 'italic'
+                            }}>{addingErrDepartmentMessage}</p>
                         )}
+                        <select value={newDepartment} onChange={(e) => setNewDepartment(e.target.value)}>
+                            <option value="" disabled>{language === 'En' ? 'Select Department' : 'اختر القسم'}</option>
+                            {departments.map((department, index) => (
+                                <option key={index}
+                                        value={department.department_id}>{department.department_name}</option>
+                            ))}
+                        </select>
                     </td>
                     <td>
-                        {editingCourse === dc.id ? (
-                            <select value={selectedLevel} onChange={(e) => setSelectedLevel(e.target.value)}>
-                                <option value="">{language === 'En' ? 'Select Level' : 'اختر المستوى'}</option>
-                                {levels.map(level => (
-                                    <option key={level} value={level}>{level}</option>
-                                ))}
-                            </select>
-                        ) : (
-                            dc.level
+                        {addingErrLevelMessage && (
+                            <p style={{
+                                color: 'red',
+                                marginBottom: '8px',
+                                fontStyle: 'italic'
+                            }}>{addingErrLevelMessage}</p>
                         )}
+                        <select value={newLevel} onChange={(e) => setNewLevel(e.target.value)}>
+                            <option value="" disabled>{language === 'En' ? 'Select Level' : 'اختر المستوى'}</option>
+                            {levels.map(level => (
+                                <option key={level} value={level}>{level}</option>
+                            ))}
+                        </select>
                     </td>
                     <td>
-                        {editingCourse === dc.id ? (
-                            <select value={selectedSemester} onChange={(e) => setSelectedSemester(e.target.value)}>
-                                <option value="">{language === 'En' ? 'Select Semester' : 'اختر الفصل'}</option>
-                                {semesters.map(semester => (
-                                    <option key={semester} value={semester}>{semester}</option>
-                                ))}
-                            </select>
-                        ) : (
-                            dc.semester
+                        {addingErrSemesterMessage && (
+                            <p style={{
+                                color: 'red',
+                                marginBottom: '8px',
+                                fontStyle: 'italic'
+                            }}>{addingErrSemesterMessage}</p>
                         )}
+                        <select value={newSemester} onChange={(e) => setNewSemester(e.target.value)}>
+                            <option value="" disabled>{language === 'En' ? 'Select Semester' : 'اختر الفصل'}</option>
+                            {semesters.map(semester => (
+                                <option key={semester} value={semester}>{semester}</option>
+                            ))}
+                        </select>
                     </td>
                     <td>
-                        {editingCourse === dc.id ? (
-                            <>
-                                <button onClick={handleSaveUpdate}>{language === 'En' ? 'Update' : 'تحديث'}</button>
-                                <button onClick={resetForm}>{language === 'En' ? 'Cancel' : 'إلغاء'}</button>
-                            </>
-                        ) : (
-                            <>
-                                <button onClick={() => handleUpdate(dc)}>{language === 'En' ? 'Edit' : 'تعديل'}</button>
-                                <button onClick={() => handleDelete(dc.id)}>{language === 'En' ? 'Delete' : 'حذف'}</button>
-                            </>
+                        {addingErrNewCourseDepartmentMessage && (
+                            <p style={{
+                                color: 'red',
+                                marginBottom: '8px',
+                                fontStyle: 'italic'
+                            }}>{addingErrNewCourseDepartmentMessage}</p>
                         )}
+                        <button onClick={handleAdd}>
+                            {language === 'En' ? 'Add' : 'اضافة'}
+                        </button>
                     </td>
                 </tr>
-            ))}
-            </tbody>
-        </table>
+                {departmentsCourses.map(dc => (
+                    <tr key={dc.id}>
+                        <td>
+                            {editingErrCourseMessage && (
+                                <p style={{
+                                    color: 'red',
+                                    marginBottom: '8px',
+                                    fontStyle: 'italic'
+                                }}>{editingErrCourseMessage}</p>
+                            )}
+                            {editingCourse === dc.id ? (
+                                <select value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)}>
+                                    <option value=""
+                                            disabled>{language === 'En' ? 'Select Course' : 'اختر الدورة'}</option>
+                                    {courses.map((course, index) => (
+                                        <option key={index} value={course.course_code}>{course.course_name}</option>
+                                    ))}
+                                </select>
+                            ) : (
+                                dc.course_name
+                            )}
+                        </td>
+                        <td>
+                            {editingErrDepartmentMessage && (
+                                <p style={{
+                                    color: 'red',
+                                    marginBottom: '8px',
+                                    fontStyle: 'italic'
+                                }}>{editingErrDepartmentMessage}</p>
+                            )}
+                            {editingCourse === dc.id ? (
+                                <select value={selectedDepartment}
+                                        onChange={(e) => setSelectedDepartment(e.target.value)}>
+                                    <option value=""
+                                            disabled>{language === 'En' ? 'Select Department' : 'اختر القسم'}</option>
+                                    {departments.map((department, index) => (
+                                        <option key={index}
+                                                value={department.department_id}>{department.department_name}</option>
+                                    ))}
+                                </select>
+                            ) : (
+                                dc.department_name
+                            )}
+                        </td>
+                        <td>
+                            {editingErrLevelMessage && (
+                                <p style={{
+                                    color: 'red',
+                                    marginBottom: '8px',
+                                    fontStyle: 'italic'
+                                }}>{editingErrLevelMessage}</p>
+                            )}
+                            {editingCourse === dc.id ? (
+                                <select value={selectedLevel} onChange={(e) => setSelectedLevel(e.target.value)}>
+                                    <option value=""
+                                            disabled>{language === 'En' ? 'Select Level' : 'اختر المستوى'}</option>
+                                    {levels.map(level => (
+                                        <option key={level} value={level}>{level}</option>
+                                    ))}
+                                </select>
+                            ) : (
+                                dc.level
+                            )}
+                        </td>
+                        <td>
+                            {editingErrSemesterMessage && (
+                                <p style={{
+                                    color: 'red',
+                                    marginBottom: '8px',
+                                    fontStyle: 'italic'
+                                }}>{editingErrSemesterMessage}</p>
+                            )}
+                            {editingCourse === dc.id ? (
+                                <select value={selectedSemester} onChange={(e) => setSelectedSemester(e.target.value)}>
+                                    <option value=""
+                                            disabled>{language === 'En' ? 'Select Semester' : 'اختر الفصل'}</option>
+                                    {semesters.map(semester => (
+                                        <option key={semester} value={semester}>{semester}</option>
+                                    ))}
+                                </select>
+                            ) : (
+                                dc.semester
+                            )}
+                        </td>
+                        <td>
+                            {editingCourse === dc.id ? (
+                                <>
+                                    {editingErrNewCourseDepartmentMessage && (
+                                        <p style={{
+                                            color: 'red',
+                                            marginBottom: '8px',
+                                            fontStyle: 'italic'
+                                        }}>{editingErrNewCourseDepartmentMessage}</p>
+                                    )}
+                                    <button onClick={handleSaveUpdate}>{language === 'En' ? 'Update' : 'تحديث'}</button>
+                                    <button onClick={resetForm}>{language === 'En' ? 'Cancel' : 'إلغاء'}</button>
+                                </>
+                            ) : (
+                                <>
+                                    <button onClick={() => {
+                                        handleUpdate(dc)
+                                        setAddingErrCourseMessage('');
+                                        setAddingErrDepartmentMessage('');
+                                        setAddingErrLevelMessage('');
+                                        setAddingErrSemesterMessage('');
+                                        setAddingErrNewCourseDepartmentMessage('');
+                                    }}>
+                                        {language === 'En' ? 'Edit' : 'تعديل'}
+                                    </button>
+                                    <button
+                                        onClick={() => confirmDelete(dc.id)}>{language === 'En' ? 'Delete' : 'حذف'}</button>
+                                </>
+                            )}
+                        </td>
+                    </tr>
+                ))}
+                </tbody>
+            </table>
+            {deletionVisible && (
+                <ConfirmDelete
+                    deletionVisible={deletionVisible}
+                    setDeletionVisible={setDeletionVisible}
+                    handleDelete={() => handleDelete(departmentToDelete)}
+                />
+            )}
+        </>
     );
 }
 

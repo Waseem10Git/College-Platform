@@ -1,7 +1,9 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import './Footer.css';
+import UserContext from "../../context/UserContext";
 
-const Footer = ({ language, isDarkMode , stick }) => {
+const Footer = () => {
+  const { language, isDarkMode } = useContext(UserContext);
   const Year = new Date().getFullYear();
   return (
     <footer 

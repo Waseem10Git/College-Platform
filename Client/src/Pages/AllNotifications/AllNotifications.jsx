@@ -1,8 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import axios from '../../api/axios';
 import "./AllNotificaions.css";
+import UserContext from "../../context/UserContext";
 
-function AllNotifications({ userId }) {
+function AllNotifications() {
+    const { userId } = useContext(UserContext);
     const [notifications, setNotifications] = useState([]);
 
     useEffect(() => {

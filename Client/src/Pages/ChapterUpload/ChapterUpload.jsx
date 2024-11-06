@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import axios from '../../api/axios';
 import { useParams } from 'react-router-dom';
 import { UploadFile, ConfirmDelete } from "../../components";
 import uploadLabel from "../FileUpload/images/uploadLabel.png";
 import styles from "./ChapterUpload.module.css"
+import UserContext from "../../context/UserContext";
 
-const ChapterUpload = ({ isDarkMode, language, Role }) => {
+const ChapterUpload = () => {
+    const { isDarkMode, language, role } = useContext(UserContext);
     const [file, setFile] = useState(null);
     const [chapters, setChapters] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
@@ -108,14 +110,14 @@ const ChapterUpload = ({ isDarkMode, language, Role }) => {
 
     const handleDragOver = (event) => {
         event.preventDefault();
-        if (Role === "instructor") {
+        if (role === "instructor") {
             setIsDragging(true);
         }
     };
 
     const handleDragEnter = (event) => {
         event.preventDefault();
-        if (Role === "instructor") {
+        if (role === "instructor") {
             setIsDragging(true);
         }
     };
@@ -126,7 +128,7 @@ const ChapterUpload = ({ isDarkMode, language, Role }) => {
 
     const handleDrop = (event) => {
         event.preventDefault();
-        if (Role === "instructor") {
+        if (role === "instructor") {
             setIsDragging(false);
             const files = event.dataTransfer.files;
             if (files.length > 0) {
@@ -142,7 +144,7 @@ const ChapterUpload = ({ isDarkMode, language, Role }) => {
              onDragLeave={handleDragLeave}
              onDrop={handleDrop}
         >
-            {Role === 'instructor' ? (
+            {role === 'instructor' ? (
                 <>
                     <div className={"file-upload-container"}>
                         <div className={"content"}>
@@ -171,7 +173,7 @@ const ChapterUpload = ({ isDarkMode, language, Role }) => {
                             {chapter.chapter_name}
                             <button onClick={() => handleDownload(chapter.id, chapter.chapter_name)}>Download</button>
                             <button onClick={() => handleView(chapter.id)}>View</button>
-                            {Role === 'instructor' && (
+                            {role === 'instructor' && (
                                 <>
                                     <button onClick={() => setDeletionVisible(true)}>Delete</button>
                                     <ConfirmDelete deletionVisible={deletionVisible} setDeletionVisible={setDeletionVisible} handleDelete={() => handleDelete(chapter.id)} />

@@ -13,7 +13,7 @@ router.get('/instructors', verifyUser, isAdmin, asyncHandler(UserController.getA
 router.get('/students', verifyUser, isAdmin, asyncHandler(UserController.getAllStudents));
 router.post('/add-account', asyncHandler(UserController.addAccount));
 router.post('/update-account', asyncHandler(UserController.updateAccount));
-router.post('/delete-account', asyncHandler(UserController.deleteAccount));
+router.post('/delete-account/:id', asyncHandler(UserController.deleteAccount));
 router.post('/upload-accounts', upload.single('file'), asyncHandler(UserController.uploadAccounts));
 
 module.exports = router;

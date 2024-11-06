@@ -1,99 +1,95 @@
 /* src/UploadAssignment.css */
 
-.upload-assignment {
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
-    margin: 0 auto;
-    text-align: center;
-  }
-  
-  .upload-assignment h2 {
-    margin-bottom: 20px;
-  }
-  
-  .form-group {
-    margin-bottom: 20px;
-    text-align: left; /* Align labels to the left */
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-  }
-  
-  input[type="text"],
-  textarea {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-  }
-  
-  input[type="file"] {
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-  }
-  
-  button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
-  .dark {
-    background-color: #161616;
-    color: #fff;
-  }
-  
-  .light {
-    background-color: #f7f7f7;
-    color: #333;
-  }
-  
-  .dark input,
-  .dark textarea,
-  .dark input[type="file"] {
-    background-color: #333;
-    color: #fff;
-    border: 1px solid #444;
-  }
-  
-  .light input,
-  .light textarea,
-  .light input[type="file"] {
-    background-color: #fff;
-    color: #000;
-    border: 1px solid #ccc;
-  }
-  
-  .dark button {
-    background-color: #007bff;
-  }
-  
-  .light button {
-    background-color: #007bff;
-  }
-  
-  /* Additional styles for RTL support */
-  .upload-assignment.rtl {
-    direction: rtl;
-    text-align: right; /* Align labels and text to the right */
-  }
-  
-  .upload-assignment.rtl label {
-    text-align: right; /* Align labels to the right */
-  }
-  
+.UploadAssignment_component {
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.UploadAssignment_component h2 {
+  margin-bottom: 20px;
+}
+
+.UploadAssignment_form-group {
+  margin-bottom: 20px;
+  text-align: left; /* Align labels to the left */
+}
+
+.UploadAssignment_component label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.UploadAssignment_component input[type="text"],
+.UploadAssignment_component textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.UploadAssignment_component input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.UploadAssignment_component button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.UploadAssignment_component button:hover {
+  background-color: #0056b3;
+}
+
+.UploadAssignment_component.dark {
+  background-color: #161616;
+  color: #fff;
+}
+
+.UploadAssignment_component.light {
+  background-color: #f7f7f7;
+  color: #333;
+}
+
+.UploadAssignment_component.dark input,
+.UploadAssignment_component.dark textarea,
+.UploadAssignment_component.dark input[type="file"] {
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #444;
+}
+
+.UploadAssignment_component.light input,
+.UploadAssignment_component.light textarea,
+.UploadAssignment_component.light input[type="file"] {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #ccc;
+}
+
+.UploadAssignment_component.dark button,
+.UploadAssignment_component.light button {
+  background-color: #007bff;
+}
+
+/* Additional styles for RTL support */
+.UploadAssignment_component.rtl {
+  direction: rtl;
+  text-align: right; /* Align labels and text to the right */
+}
+
+.UploadAssignment_component.rtl label {
+  text-align: right; /* Align labels to the right */
+}

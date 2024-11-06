@@ -1,18 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import axios from '../../api/axios';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, {useState, useEffect, useContext} from 'react';
+import { toast } from 'react-toastify';
+import UserContext from "../../context/UserContext";
+import studentsEnrollmentsApi from "../../api/studentsEnrollmentsApi";
+import instructorsCoursesApi from "../../api/instructorsCoursesApi";
+import usersApi from "../../api/usersApi";
+import {ConfirmDelete} from "../../components";
 
-const InstructorsView = ({ language }) => {
+const InstructorsView = () => {
+    const { language } = useContext(UserContext);
     const [studentsEnrollments, setStudentsEnrollments] = useState([]);
     const [instructorsCourses, setInstructorsCourses] = useState([]);
     const [students, setStudents] = useState([]);
-    const [newInstructorCourse, setNewInstructorCourse] = useState([]);
+    const [newStudentEnrollment, setNewStudentEnrollment] = useState([]);
     const [selectedStudent, setSelectedStudent] = useState('');
+    const [addingErrStudentsMessage, setAddingErrStudentsMessage] = useState('');
+    const [addingErrCoursesMessage, setAddingErrCoursesMessage] = useState('');
+    const [addingExistErr, setAddingExistErr] = useState('');
+    const [deletionVisible, setDeletionVisible] = useState(false);
+    const [departmentToDelete, setDepartmentToDelete] = useState(null);
 
-    const fetchInstructorsCourses = async () => {
+    const fetchStudentsEnrollments = async () => {
         try {
-            const response = await axios.get('/api/students-enrollments');
+            const response = await studentsEnrollmentsApi.fetchStudentsEnrollments();
             setStudentsEnrollments(response.data);
         } catch (err) {
             console.error('Error fetching enrollments data:', err);
@@ -20,41 +29,67 @@ const InstructorsView = ({ language }) => {
         }
     };
 
+    const fetchInstructorsCourses = async () => {
+        try {
+            const response = await instructorsCoursesApi.fetchData();
+            setInstructorsCourses(response.data);
+        } catch (err) {
+            console.error('Error fetching instructors-courses data:', err);
+            toast.error(language === 'En' ? 'Error fetching departments-courses data' : 'خطأ في جلب بيانات الأقسام والمدربين');
+        }
+    };
+
+    const fetchStudents = async () => {
+        try {
+            const response = await usersApi.fetchStudents();
+            setStudents(response.data);
+        } catch (err) {
+            console.error('Error fetching students data:', err);
+            toast.error(language === 'En' ? 'Error fetching students data' : 'خطأ في جلب بيانات الطلاب');
+        }
+    };
+
     useEffect(() => {
+        fetchStudentsEnrollments();
         fetchInstructorsCourses();
-
-        axios.get('/api/instructors-departments-courses')
-            .then(response => {
-                setInstructorsCourses(response.data);
-            })
-            .catch(err => {
-                console.error('Error fetching instructors-courses data:', err);
-                toast.error(language === 'En' ? 'Error fetching departments-courses data' : 'خطأ في جلب بيانات الأقسام والمدربين');
-            });
-
-        axios.get('/api/students')
-            .then(response => {
-                setStudents(response.data);
-            })
-            .catch(err => {
-                console.error('Error fetching students data:', err);
-                toast.error(language === 'En' ? 'Error fetching students data' : 'خطأ في جلب بيانات الطلاب');
-            });
+        fetchStudents();
     }, []);
-    console.log("students: ", students);
-    console.log("instructors courses: ", instructorsCourses);
-    console.log("enrollments : ", studentsEnrollments);
+
+    const validateAdding = (student, newStudentEnrollment) => {
+        if (!student) {
+            setAddingErrStudentsMessage(language === 'En' ? 'Please select an item in each list.' : 'يرجى اختيار عنصر في كل قائمة.');
+            return false;
+        }
+        if (newStudentEnrollment <= 0) {
+            setAddingErrCoursesMessage(language === 'En' ? 'Please select an item(s) in each list.' : 'يرجى اختيار عنصر(عناصر) في كل قائمة.');
+            return false;
+        }
+
+        const isDuplicate = studentsEnrollments.some(
+            se => se.student_id.toString() === student && newStudentEnrollment.some(nse => nse === se.instructor_course_id)
+        );
+
+        if (isDuplicate) {
+            setAddingExistErr(language === 'En' ? 'This course(s) enrolled to the this student.' : 'تم تسجيل هذه الدورة (الدورات) لهذا الطالب.');
+            return false;
+        }
+
+        return true;
+    };
 
     const handleAdd = async () => {
+        setAddingErrStudentsMessage('');
+        setAddingErrCoursesMessage('');
+        setAddingExistErr('');
+
         try {
-            const response = await axios.post('/api/students-enrollments', {
-                student_id: selectedStudent,
-                instructor_course_ids: newInstructorCourse
-            });
+            if (!validateAdding(selectedStudent, newStudentEnrollment)) return;
+
+            const response = await studentsEnrollmentsApi.enrollStudent(selectedStudent, newStudentEnrollment);
             if (response.data.success) {
-                fetchInstructorsCourses();
+                fetchStudentsEnrollments();
                 resetForm();
-                toast.success(language === 'En' ? 'Added successfully!' : 'تمت الإضافة بنجاح!');
+                toast.success(language === 'En' ? 'Adding student-course relation successfully!' : 'تم إضافة العلاقة بين الطالب والدورة بنجاح!');
             }
         } catch (error) {
             console.error('Error adding instructor-course relation:', error);
@@ -63,31 +98,38 @@ const InstructorsView = ({ language }) => {
                     toast.error(errMsg);
                 });
             } else {
-                toast.error(language === 'En' ? 'Error adding instructor-course relation' : 'خطأ في إضافة العلاقة بين الطالب والدورة');
+                toast.error(language === 'En' ? 'Error adding student-course relation' : 'خطأ في إضافة العلاقة بين الطالب والدورة');
             }
         }
     };
 
     const handleDelete = async (id) => {
+        setAddingErrStudentsMessage('');
+        setAddingErrCoursesMessage('');
+        setAddingExistErr('');
         try {
-            await axios.delete(`/api/students-enrollments/${id}`);
-            fetchInstructorsCourses();
-            toast.success(language === 'En' ? 'Deleted successfully!' : 'تم الحذف بنجاح!');
+            await studentsEnrollmentsApi.deleteStudentEnrollment(id);
+            fetchStudentsEnrollments();
+            toast.success(language === 'En' ? 'Deleting student-course relation successfully!' : 'تم حذف العلاقة بين الطالب والدورة بنجاح!');
         } catch (error) {
             console.error('Error deleting instructor-course relation:', error);
-            toast.error(language === 'En' ? 'Error deleting instructor-course relation' : 'خطأ في حذف العلاقة بين المدرب والدورة');
+            toast.error(language === 'En' ? 'Error deleting student-course relation' : 'خطأ في حذف العلاقة بين الطالب والدورة');
         }
+    };
+
+    const confirmDelete = (id) => {
+        setDepartmentToDelete(id);
+        setDeletionVisible(true);
     };
 
     const resetForm = () => {
         setSelectedStudent('');
-        setNewInstructorCourse([]);
+        setNewStudentEnrollment([]);
     };
 
     return (
         <>
-            <ToastContainer />
-            <table className="course-table">
+            <table className="StudentsView_course-table">
                 <thead>
                 <tr>
                     <th>{language === 'En' ? 'Student Name' : 'اسم الدكتور'}</th>
@@ -98,6 +140,9 @@ const InstructorsView = ({ language }) => {
                 <tbody>
                 <tr>
                     <td>
+                        {addingErrStudentsMessage && (
+                            <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{addingErrStudentsMessage}</p>
+                        )}
                         <select value={selectedStudent} onChange={(e) => setSelectedStudent(e.target.value)}>
                             <option value="">{language === 'En' ? 'Select Student' : 'اختر الطالب'}</option>
                             {students.map((student, index) => (
@@ -106,8 +151,11 @@ const InstructorsView = ({ language }) => {
                         </select>
                     </td>
                     <td>
-                        <select multiple value={newInstructorCourse}
-                                onChange={(e) => setNewInstructorCourse(
+                        {addingErrCoursesMessage && (
+                            <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{addingErrCoursesMessage}</p>
+                        )}
+                        <select multiple value={newStudentEnrollment}
+                                onChange={(e) => setNewStudentEnrollment(
                                     [...e.target.options].filter(option => option.selected).map(option => option.value))}
                         >
                             {instructorsCourses.map(ic => (
@@ -116,6 +164,9 @@ const InstructorsView = ({ language }) => {
                         </select>
                     </td>
                     <td>
+                        {addingExistErr && (
+                            <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{addingExistErr}</p>
+                        )}
                         <button onClick={handleAdd}>
                             {language === 'En' ? 'Add' : 'اضافة'}
                         </button>
@@ -130,12 +181,19 @@ const InstructorsView = ({ language }) => {
                             {se.instructor_fname} {se.instructor_lname}_{se.course_name}
                         </td>
                         <td>
-                            <button onClick={() => handleDelete(se.id)}>{language === 'En' ? 'Delete' : 'حذف'}</button>
+                            <button onClick={() => confirmDelete(se.id)}>{language === 'En' ? 'Delete' : 'حذف'}</button>
                         </td>
                     </tr>
                 ))}
                 </tbody>
             </table>
+            {deletionVisible && (
+                <ConfirmDelete
+                    deletionVisible={deletionVisible}
+                    setDeletionVisible={setDeletionVisible}
+                    handleDelete={() => handleDelete(departmentToDelete)}
+                />
+            )}
         </>
     );
 };

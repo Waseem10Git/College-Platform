@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import styles from './ExamPreview.module.css';
+import React, {useState, useEffect, useContext} from 'react';
+import  './ExamPreview.css';
 import axios from '../../api/axios';
 import CourseSelect from '../ExamResults/CourseSelect';
 import ExamSelect from '../ExamResults/ExamSelect';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment/moment";
+import UserContext from "../../context/UserContext";
 
-function ExamPreviewPage({ isDarkMode, language, Role, userId }) {
+function ExamPreviewPage() {
+    const { isDarkMode, language, userId } = useContext(UserContext);
     const [courses, setCourses] = useState([]);
     const [exams, setExams] = useState([]);
     const [examDetails, setExamDetails] = useState({});
@@ -180,41 +182,41 @@ function ExamPreviewPage({ isDarkMode, language, Role, userId }) {
     return (
         <div className={isDarkMode ? 'dark-mode' : 'light-mode'}>
             {!editMode ? (
-                <div className={"select-container"}>
+                <div className={"ExamPreviewPage_select-container"}>
                     <CourseSelect courses={courses} onSelect={handleCourseSelect} language={language} />
                     <ExamSelect exams={exams} onSelect={handleExamSelect} language={language} />
                 </div>
             ) : null}
-            <div className={styles.examContainer}>
+            <div className={"ExamPreviewPage_examContainer"}>
                 <div>
                     {editMode && exams.length > 0 ? (
                         <div>
                             <h2>Editing Exam</h2>
-                            <div className="exam-container">
-                                <div className="input-wrapper">
-                                    <label className="input-label">
+                            <div className="ExamPreviewPage_exam-container">
+                                <div className="ExamPreviewPage_input-wrapper">
+                                    <label className="ExamPreviewPage_input-label">
                                         {language === 'En' ? 'Exam Name:' : 'اسم الامتحان'}
                                     </label>
                                     <input
                                         type="text"
                                         value={examName}
                                         onChange={(e) => setExamName(e.target.value)}
-                                        className="input-field"
+                                        className="ExamPreviewPage_input-field"
                                     />
                                 </div>
-                                <div className="input-wrapper">
-                                    <label className="input-label">
+                                <div className="ExamPreviewPage_input-wrapper">
+                                    <label className="ExamPreviewPage_input-label">
                                         {language === 'En' ? 'Duration:' : 'مدة الامتحان'}
                                     </label>
                                     <input
                                         type="number"
                                         value={duration}
                                         onChange={(e) => setDuration(parseInt(e.target.value))}
-                                        className="input-field"
+                                        className="ExamPreviewPage_input-field"
                                     />
                                 </div>
-                                <div className="input-wrapper">
-                                    <label className="input-label">
+                                <div className="ExamPreviewPage_input-wrapper">
+                                    <label className="ExamPreviewPage_input-label">
                                         {language === 'En' ? 'Start At:' : 'تاريخ البدء'}
                                     </label>
                                     <DatePicker
@@ -222,7 +224,7 @@ function ExamPreviewPage({ isDarkMode, language, Role, userId }) {
                                         onChange={(date) => setStartAt(date)}
                                         showTimeSelect
                                         dateFormat="Pp"
-                                        className="input-field"
+                                        className="ExamPreviewPage_input-field"
                                         minDate={new Date()}
                                         minTime={
                                             startAt && startAt.toDateString() === new Date().toDateString()
@@ -239,65 +241,65 @@ function ExamPreviewPage({ isDarkMode, language, Role, userId }) {
                                         (answer) => answer.question_id === question.question_id
                                     );
                                     return (
-                                        <div key={questionIndex} className="question-edit">
-                                            <div className="input-wrapper">
-                                                <label className="input-label" style={{borderTop: '1px solid #ccc'}}>
+                                        <div key={questionIndex} className="ExamPreviewPage_question-edit">
+                                            <div className="ExamPreviewPage_input-wrapper">
+                                                <label className="ExamPreviewPage_input-label" style={{borderTop: '1px solid #ccc'}}>
                                                     {language === 'En' ? `Question ${questionIndex + 1}:` : `السؤال ${questionIndex + 1}:`}
                                                 </label>
                                                 <input
                                                     type="text"
                                                     value={question.question_text}
                                                     onChange={(e) => handleQuestionChange(questionIndex, e.target.value)}
-                                                    className="input-field"
+                                                    className="ExamPreviewPage_input-field"
                                                 />
                                             </div>
                                             {answersForQuestion.map((answer, answerIndex) => (
-                                                <div key={answerIndex} className="input-wrapper">
-                                                    <label className="input-label">
+                                                <div key={answerIndex} className="ExamPreviewPage_input-wrapper">
+                                                    <label className="ExamPreviewPage_input-label">
                                                         {language === 'En' ? `Option ${answerIndex + 1}:` : `اختيار ${answerIndex + 1}:`}
                                                     </label>
                                                     <input
                                                         type="text"
                                                         value={answer.answer_text}
                                                         onChange={(e) => handleOptionChange(questionIndex, answerIndex, e.target.value)}
-                                                        className="input-field"
+                                                        className="ExamPreviewPage_input-field"
                                                     />
                                                 </div>
                                             ))}
                                             {/*new input to handle points of the question*/}
-                                            <div className="input-wrapper">
-                                                <label className="input-label">
+                                            <div className="ExamPreviewPage_input-wrapper">
+                                                <label className="ExamPreviewPage_input-label">
                                                     {language === 'En' ? `Points:` : `الدرجة:`}
                                                 </label>
                                                 <input
                                                     type="text"
                                                     value={question.points}
                                                     onChange={(e) => handleQuestionPointsChange(questionIndex, e.target.value)}
-                                                    className="input-field"
+                                                    className="ExamPreviewPage_input-field"
                                                 />
                                             </div>
                                         </div>
                                     );
                                 })}
-                                <button onClick={handleEditSubmit} className="submit-edit-button">
+                                <button onClick={handleEditSubmit} className="ExamPreviewPage_submit-edit-button">
                                     {language === 'En' ? 'Submit Edit' : 'إرسال التعديل'}
                                 </button>
-                                <button className={styles.editButton} onClick={toggleEditMode}>
+                                <button className={"ExamPreviewPage_editButton"} onClick={toggleEditMode}>
                                     {language === 'En' ? 'Cancel Edit' : 'الغاء التعديل'}
                                 </button>
                             </div>
                         </div>
                     ) : null}
                     {selectedExamId && !editMode && (
-                        <div className={"exam-container"}>
-                            <div className="exam-details">
-                                <div className={"input-wrapper"}>
+                        <div className={"ExamPreviewPage_exam-container"}>
+                            <div className="ExamPreviewPage_exam-details">
+                                <div className={"ExamPreviewPage_input-wrapper"}>
                                 <h3>{examDetails.exam_name}</h3>
                                 </div>
-                                <div className={"input-wrapper"}>
+                                <div className={"ExamPreviewPage_input-wrapper"}>
                                     <p>Duration: {examDetails.duration} minutes</p>
                                 </div>
-                                <div className={"input-wrapper"}>
+                                <div className={"ExamPreviewPage_input-wrapper"}>
                                     <p>{`Start Time: ${formatDate(examDetails.start_at)}`}</p>
                                 </div>
                             </div>
@@ -306,7 +308,7 @@ function ExamPreviewPage({ isDarkMode, language, Role, userId }) {
                                     (answer) => answer.question_id === question.question_id
                                 );
                                 return (
-                                    <div className="question-item" key={questionIndex}>
+                                    <div className="ExamPreviewPage_question-item" key={questionIndex}>
                                         <h3>{question.question_text} ?</h3>
                                         {isMCQ ? (
                                             examAnswers
@@ -321,10 +323,10 @@ function ExamPreviewPage({ isDarkMode, language, Role, userId }) {
                                     </div>
                                 );
                             })}
-                            <button className={styles.editButton} onClick={toggleEditMode}>
+                            <button className={"ExamPreviewPage_editButton"} onClick={toggleEditMode}>
                                 Edit Exam
                             </button>
-                            <button onClick={handleDeleteExam} className="delete-button">
+                            <button onClick={handleDeleteExam} className="ExamPreviewPage_delete-button">
                                 {language === 'En' ? 'Delete Exam' : 'حذف الامتحان'}
                             </button>
                         </div>

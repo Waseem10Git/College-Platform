@@ -6,35 +6,15 @@ const http = require('http');
 const conn = require('./config/db');
 const createTables = require('./config/createTables');
 const port = process.env.PORT || 4001;
-
-const answerRoutes = require('./routes/answerRoutes');
-const assignmentRoutes = require('./routes/assignmentRoutes');
-const authRoutes = require('./routes/authRoutes');
-const chapterRoutes = require('./routes/chapterRoutes');
-const courseRoutes = require('./routes/courseRoutes');
-const departmentCourseRoutes = require('./routes/departmentCourseRoutes');
-const departmentRoutes = require('./routes/departmentRoutes');
-const enrollmentExamRoutes = require('./routes/enrollmentExamRoutes');
-const enrollmentRoutes = require('./routes/enrollmentRoutes');
-const examPreviewRoutes = require('./routes/examPreviewRoutes');
-const examResultRoutes = require('./routes/examResultRoutes');
-const examRoutes = require('./routes/examRoutes');
-const instructorCourseExamRoutes = require('./routes/instructorCourseExamRoutes');
-const instructorCourseRoutes = require('./routes/instructorCourseRoutes');
-const notificationRoutes = require('./routes/notificationRoutes');
-const questionRoutes = require('./routes/questionRoutes');
-const studentAnswerRoutes = require('./routes/studentAnswerRoutes');
-const studentAssignmentRoutes = require('./routes/studentAssignmentRoutes');
-const studentExamStatusRoutes = require('./routes/studentExamStatusRoutes');
-const studentMeetingRoutes = require('./routes/studentMeetingRoutes');
-const userRoutes = require('./routes/userRoutes');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cors({
-    origin: ["https://college-platform.netlify.app", "http://localhost:3000"],
+    origin: ["https://college-platform.netlify.app", "http://localhost:3000", "http://localhost:3001"],
     methods: ["POST", "GET", "DELETE", "PUT"],
     credentials: true,
 }));
@@ -49,27 +29,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // });
 
 // Use routes
-app.use('/api', answerRoutes);
-app.use('/api', assignmentRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api', chapterRoutes);
-app.use('/api', courseRoutes);
-app.use('/api', departmentCourseRoutes);
-app.use('/api', departmentRoutes);
-app.use('/api', enrollmentExamRoutes);
-app.use('/api', enrollmentRoutes);
-app.use('/api', examPreviewRoutes);
-app.use('/api', examResultRoutes);
-app.use('/api', examRoutes);
-app.use('/api', instructorCourseExamRoutes);
-app.use('/api', instructorCourseRoutes);
-app.use('/api', notificationRoutes);
-app.use('/api', questionRoutes);
-app.use('/api', studentAnswerRoutes);
-app.use('/api', studentAssignmentRoutes);
-app.use('/api', studentExamStatusRoutes);
-app.use('/api', studentMeetingRoutes);
-app.use('/api', userRoutes);
+require('./routes')(app);
+
+// app.use(express.static('client/build'));
+// app.get('*', (req, res) => {
+//     res.sendFile(`${__dirname}/client/build/index.html`);
+// });
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '../Client/build')));
+
+// Catch-all handler for routes handled by React Router
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../Client/build', 'index.html'));
+});
 
 conn.connect(err => {
     if (err) {

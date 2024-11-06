@@ -1,94 +1,94 @@
-.upload-student-assignment {
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
-    margin: 0 auto;
-    text-align: center;
-  }
-  
-  .upload-student-assignment h2 {
-    margin-bottom: 20px;
-  }
-  
-  .form-group {
-    margin-bottom: 20px;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-  }
-  
-  select,
-  input[type="file"] {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-    margin-top: 5px;
-  }
-  
-  button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
-  .dark {
-    background-color: #161616;
-    color: #fff;
-  }
-  
-  .light {
-    background-color: #f7f7f7;
-    color: #333;
-  }
-  
-  .dark select,
-  .dark input[type="file"] {
-    background-color: #333;
-    color: #fff;
-    border: 1px solid #444;
-  }
-  
-  .light select,
-  .light input[type="file"] {
-    background-color: #fff;
-    color: #000;
-    border: 1px solid #ccc;
-  }
-  
-  .dark button {
-    background-color: #007bff;
-  }
-  
-  .light button {
-    background-color: #007bff;
-  }
-  
-  .assignment-description {
-    text-align: left;
-    margin-bottom: 20px;
-  }
-  
-  /* RTL support */
-  .upload-student-assignment.rtl {
-    direction: rtl;
-    text-align: right;
-  }
-  
-  .upload-student-assignment.rtl label {
-    text-align: right;
-  }
-  
+.Assignments_uploadStudentAssignment {
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+
+}
+
+.Assignments_uploadStudentAssignment h2 {
+  margin-bottom: 20px;
+}
+
+.Assignments_formGroup {
+  margin-bottom: 20px;
+}
+
+.Assignments_formGroup label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.Assignments_formGroup select,
+.Assignments_formGroup input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  margin-top: 5px;
+}
+
+.Assignments_uploadStudentAssignment button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.Assignments_uploadStudentAssignment button:hover {
+  background-color: #0056b3;
+}
+
+.Assignments_dark {
+  background-color: #161616;
+  color: #fff;
+}
+
+.Assignments_light {
+  background-color: #f7f7f7;
+  color: #333;
+}
+
+.Assignments_dark select,
+.Assignments_dark input[type="file"] {
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #444;
+}
+
+.Assignments_light select,
+.Assignments_light input[type="file"] {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #ccc;
+}
+
+.Assignments_dark button {
+  background-color: #007bff;
+}
+
+.Assignments_light button {
+  background-color: #007bff;
+}
+
+.Assignments_assignmentDescription {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+/* RTL support */
+.Assignments_uploadStudentAssignment.Assignments_rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.Assignments_uploadStudentAssignment.Assignments_rtl label {
+  text-align: right;
+}

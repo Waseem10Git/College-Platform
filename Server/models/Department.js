@@ -11,6 +11,18 @@ class DepartmentModel {
         return results;
     }
 
+    static async getDepartmentByName(departmentName) {
+        const query = "SELECT * FROM departments WHERE department_name = ?";
+        const results = await queryAsync(query, [departmentName]);
+        return results;
+    }
+
+    static async getDepartmentById(departmentID) {
+        const query = "SELECT * FROM departments WHERE department_id = ?";
+        const results = await queryAsync(query, [departmentID]);
+        return results;
+    }
+
     static async addDepartment(department_name) {
         const query = 'INSERT INTO departments (department_name) VALUES (?)';
         const results = await queryAsync(query, [department_name]);

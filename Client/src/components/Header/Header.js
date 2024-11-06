@@ -2,19 +2,11 @@ import {Link} from 'react-router-dom';
 import styles from './Header.module.css';
 import logo from './images/logo.jpg';
 import { HeaderItems, Notifications } from ".."
+import {useContext} from "react";
+import UserContext from "../../context/UserContext";
 
-const Header = ({
-  language,
-  toggleLanguage,
-  isDarkMode,
-  toggleTheme,
-  setShowHome,
-  setShowSignIn,
-    name,
-    auth,
-    role,
-    userId
-}) => {
+const Header = () => {
+  const {language, toggleLanguage, isDarkMode, toggleTheme, name, auth, role, userId} = useContext(UserContext);
 
   return (
     <header className={`${styles.header} ${isDarkMode ? styles.dark : styles.light}`}>

@@ -4,112 +4,115 @@
   flex-grow: 1;
   background-color: #f8f8f8;
   margin: 0 auto;
-  }
+}
 
-  .accounts-container.dark {
-    background-color: #161616;
-  }
-  .accounts-container .container {
-    height: 100%;
-    display: flex;
-    gap: 5rem;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-  }
-  
-  .account-section {
-    text-align: start;
-    align-self: stretch;
-    padding: 20px;
-    border-right: 2px solid #ccc;
-  }
-  .dark .account-section {
-    background-color: #161616;
-  }
+.accounts-container.accounts-container_dark {
+  background-color: #161616;
+  color: #f9f9f9;
+}
 
-  .account-section h2 {
-    font-size: 2rem;
-    margin-bottom: 10px;
-    color: #333;
-  }
-  
-  .account-section ul {
-    list-style-type: none;
-    padding-top: 10px;
-  }
-  
-  .account-section ul li {
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    color: #666;
-    transition: .3s;
-    margin-bottom: 5px;
-    font-size: 1.1rem;
-  }
-  
-  .account-section ul li:hover, li.active {
-    background-color: #007bff;
-    color: white !important ;
-  }
+.accounts-container .accounts_component_container {
+  height: 100%;
+  display: flex;
+  gap: 5rem;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}
 
-  .accounts-container main {
-    flex-grow: 1;
-  }
-  
-  .form-container {
-    margin-top: 20px;
-    width: 300px;
-  }
-  
-  form {
-    text-align: start;
-    padding: 20px;
-    border-radius: 10px;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  form label {
-    display: block;
-    font-weight: 500;
-    margin-bottom: 5px;
-    color: #333;
-  }
-  
-  form input[type='text'],
-  form input[type='email'],
-  form input[type='password'],
-  form input[type='number'],
-  form .form-group input[type='file'],
-  form .form-group .form-select {
-    width: 90%;
-    padding: 10px;
-    margin: 0;
-    border: 2px solid #ccc;
-    border-radius: 3px;
-    background-color: #fff;
-    transition: border-color 0.3s;
-    display: block;
-    box-sizing: border-box;
-   
-  }
-  
-  form input[type='text']:focus,
-  form input[type='email']:focus,
-  form input[type='password']:focus,
-  form input[type='file']:focus,
-  form select:focus {
-    border-color: #007bff;
-    outline: none;
-  }
-  
-  .accounts-container button {
-    width: 90%;
-    margin-top: 20px;
+.accounts_component_account-section {
+  text-align: start;
+  align-self: stretch;
+  padding: 20px;
+  border-right: 2px solid #ccc;
+}
+
+.accounts-container_dark .accounts_component_account-section {
+  background-color: #161616;
+}
+
+.accounts_component_account-section h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.accounts_component_account-section ul {
+  list-style-type: none;
+  padding-top: 10px;
+}
+
+.accounts_component_account-section ul li {
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #666;
+  transition: 0.3s;
+  margin-bottom: 5px;
+  font-size: 1.1rem;
+}
+
+.accounts_component_account-section ul li:hover,
+li.accounts_component_active {
+  background-color: #007bff;
+  color: white !important;
+}
+
+.accounts-container main {
+  flex-grow: 1;
+}
+
+.accounts_component_form-container {
+  margin-top: 20px;
+  width: 300px;
+}
+
+form {
+  text-align: start;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.accounts_component_form-group {
+  margin-bottom: 15px;
+}
+
+form label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+form input[type='text'],
+form input[type='email'],
+form input[type='password'],
+form input[type='number'],
+form .accounts_component_form-group input[type='file'],
+form .accounts_component_form-group .accounts_component_form-select {
+  width: 90%;
+  padding: 10px;
+  margin: 0;
+  border: 2px solid #ccc;
+  border-radius: 3px;
+
+  transition: border-color 0.3s;
+  display: block;
+  box-sizing: border-box;
+}
+
+form input[type='text']:focus,
+form input[type='email']:focus,
+form input[type='password']:focus,
+form input[type='file']:focus,
+form select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.accounts-container button {
+  width: 90%;
+  margin-top: 20px;
   padding: 10px 20px;
   background-color: #007bff;
   border: 2px solid #007bff; /* Blue button color */
@@ -118,76 +121,140 @@
   font-size: 16px;
   cursor: pointer;
   transition: 0.3s;
-  }
-  
-  form button:hover {
-    background-color: transparent;
-    color: #007bff;
-  }
-  
-  .dark .accounts-container {
-    background-color: #161616; /* Dark gray */
-    color: #ffffff; /* White */
 }
 
-.dark .account-section {
-    border-color: #333333; /* Dark gray */
-    background-color: #161616; /* Darker gray */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+form button:hover {
+  background-color: transparent;
+  color: #007bff;
 }
 
-.dark .account-section h2 {
-    color: #ffffff; /* White */
+.accounts-container_dark .accounts-container {
+  background-color: #161616; /* Dark gray */
+  color: #ffffff; /* White */
 }
 
-.dark .account-section ul li {
-    color: #cccccc; /* Light gray */
+.accounts-container_dark .accounts_component_account-section {
+  border-color: #333333; /* Dark gray */
+  background-color: #161616; /* Darker gray */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.dark form label {
-    color: #cccccc; /* Light gray */
+.accounts-container_dark .accounts_component_account-section h2 {
+  color: #ffffff; /* White */
 }
 
-.dark form input[type='text'],
-.dark form input[type='email'],
-.dark form input[type='password'],
-.dark form select, .dark form textarea {
-    background-color: #1c1c1c; /* Dark gray */
-    border-color: #555555; /* Medium gray */
-    color: #ffffff; /* White */
+.accounts-container_dark .accounts_component_account-section ul li {
+  color: #cccccc; /* Light gray */
 }
 
-.dark form input[type='text']:focus,
-.dark form input[type='email']:focus,
-.dark form input[type='password']:focus,
-.dark form select:focus {
-    border-color: #ffffff; /* White */
+.accounts-container_dark form label {
+  color: #cccccc; /* Light gray */
 }
 
-  .dark #role {
-    background-color: #555; /* Darker background color in dark mode */
-    color: #fff; /* White text color in dark mode */
-    border-color: #ccc; /* Lighter border color in dark mode */
+.accounts-container_dark form input[type='text'],
+.accounts-container_dark form input[type='email'],
+.accounts-container_dark form input[type='password'],
+.accounts-container_dark form input[type='number'],
+.accounts-container_dark form select,
+.accounts-container_dark form option,
+.accounts-container_dark form textarea {
+  background-color: #1c1c1c; /* Dark gray */
+  border-color: #555555; /* Medium gray */
+  color: #ffffff; /* White */
+}
+
+.accounts-container_dark form input[type='text']:focus,
+.accounts-container_dark form input[type='email']:focus,
+.accounts-container_dark form input[type='password']:focus,
+.accounts-container_dark form select:focus {
+  border-color: #ffffff; /* White */
+}
+
+.accounts-container_dark #role {
+  background-color: #555; /* Darker background color in dark mode */
+  color: #fff; /* White text color in dark mode */
+  border-color: #ccc; /* Lighter border color in dark mode */
 }
 
 /* responsive */
 @media (max-width: 767px) {
-  .accounts-container .container {
+  .accounts-container .accounts_component_container {
     gap: 1rem;
   }
-  .account-section {
-    border : none
+
+  .accounts_component_account-section {
+    border: none;
   }
+
   .accounts-container main {
     width: 100%;
   }
+
   form input[type='text'],
   form input[type='email'],
   form input[type='password'],
   form select {
     width: 100%;
   }
+
   .accounts-container button {
     width: 100%;
+  }
+}
+
+
+.accounts_component_form-group .filter-input {
+  width: 100%; /* Full width */
+  padding: 10px; /* Padding inside the input */
+  margin-bottom: 15px; /* Space below the input */
+  font-size: 16px; /* Adjust font size */
+  border: 1px solid #ddd; /* Light border */
+  border-radius: 5px; /* Rounded corners */
+}
+
+/* Styling for when no data is available */
+.accounts_component_form-group .no-data {
+  text-align: center;
+  color: #999; /* Gray text for no data message */
+}
+
+
+.accounts_component_form-group table {
+  width: 100%; /* Make the table take up full width */
+  border-collapse: collapse; /* Remove the gaps between borders */
+  margin-top: 20px; /* Add space at the top */
+}
+
+.accounts_component_form-group th,
+.accounts_component_form-group td {
+  padding: 12px 15px; /* Add padding to cells */
+  border: 1px solid #ddd; /* Add border around cells */
+  text-align: left; /* Align text to the left */
+  font-size: 16px; /* Set font size */
+}
+
+.accounts_component_form-group th {
+
+  font-weight: bold; /* Make the header bold */
+}
+
+
+.accounts_component_form-group tr:hover {
+  background-color: #f1f1f1; /* Highlight row on hover */
+}
+
+
+
+.accounts_component_form-group th,
+.accounts_component_form-group td {
+  text-align: center; /* Center the text in the cells */
+}
+
+/* Responsive table for smaller screens */
+@media screen and (max-width: 600px) {
+  .accounts_component_form-group table,
+  .accounts_component_form-group th,
+  .accounts_component_form-group td {
+    font-size: 14px; /* Adjust font size for smaller screens */
   }
 }

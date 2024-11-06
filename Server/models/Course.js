@@ -74,18 +74,29 @@ class CourseModel {
         });
     }
 
-    // static async getCoursesByInstructorId(instructorId) {
-    //     const query = `
-    //         SELECT C.course_code, C.course_name
-    //         FROM courses as C
-    //         INNER JOIN departments_courses as DC ON C.course_code = DC.course_id
-    //         INNER JOIN instructors_courses as IC ON IC.department_course_id = DC.id
-    //         INNER JOIN users as U ON IC.instructor_id = U.id
-    //         WHERE U.id = ?
-    //     `;
-    //     const results = await queryAsync(query, [instructorId]);
-    //     return results;
-    // }
+    static getCourseById(id) {
+        return new Promise((resolve, reject) => {
+            const query = `SELECT * FROM courses WHERE course_code = ?`;
+            conn.query(query, [id], (err, result) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(result[0]);
+            })
+        })
+    }
+
+    static getCourseByName(name) {
+        return new Promise((resolve, reject) => {
+            const query = `SELECT * FROM courses WHERE course_name = ?`;
+            conn.query(query, [name], (err, result) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(result[0]);
+            })
+        })
+    }
 
     static getCoursesByInstructorId(instructorId) {
         return new Promise((resolve, reject) => {
@@ -106,17 +117,11 @@ class CourseModel {
         });
     }
 
-    // static async addCourse(courseData) {
-    //     const { id, name, description, image } = courseData;
-    //     const query = 'INSERT INTO courses (course_code, course_name, description, image) VALUES (?, ?, ?, ?)';
-    //     await queryAsync(query, [id, name, description, image]);
-    // }
-
     static addCourse(courseData) {
         return new Promise((resolve, reject) => {
-            const { id, name, description, image } = courseData;
-            const query = 'INSERT INTO courses (course_code, course_name, description, image) VALUES (?, ?, ?, ?)';
-            conn.query(query, [id, name, description, image], (err, results) => {
+            const { course_code, course_name } = courseData;
+            const query = 'INSERT INTO courses (course_code, course_name) VALUES (?, ?)';
+            conn.query(query, [course_code, course_name], (err, results) => {
                 if (err) {
                     return reject(err);
                 }
@@ -125,22 +130,19 @@ class CourseModel {
         });
     }
 
-    static updateCourse({ id, name, description, image }) {
+    static updateCourse({ id, course_code, course_name }) {
         return new Promise((resolve, reject) => {
+
             let updateCourseQuery = 'UPDATE courses SET ';
             const updateValues = [];
 
-            if (name) {
+            if (course_code) {
+                updateCourseQuery += 'course_code = ?, ';
+                updateValues.push(course_code);
+            }
+            if (course_name) {
                 updateCourseQuery += 'course_name = ?, ';
-                updateValues.push(name);
-            }
-            if (description) {
-                updateCourseQuery += 'description = ?, ';
-                updateValues.push(description);
-            }
-            if (image) {
-                updateCourseQuery += 'image = ?, ';
-                updateValues.push(image);
+                updateValues.push(course_name);
             }
 
             updateCourseQuery = updateCourseQuery.slice(0, -2); // Remove last comma

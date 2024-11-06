@@ -1,6 +1,6 @@
 /* src/ExamResultDetails.css */
 
-.quiz-result {
+.examResultDetails_quizResult {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -9,11 +9,11 @@
   text-align: center;
 }
 
-.select-container {
+.examResultDetails_selectContainer {
   margin-bottom: 20px;
 }
 
-select {
+.examResultDetails_select {
   padding: 10px;
   margin: 10px;
   border-radius: 5px;
@@ -21,20 +21,23 @@ select {
   width: 200px;
 }
 
-.results-table {
+.examResultDetails_resultsTable {
   margin-top: 20px;
 }
 
-table {
+.examResultDetails_table {
   width: 100%;
   border-collapse: collapse;
 }
 
-table, th, td {
+.examResultDetails_table,
+.examResultDetails_th,
+.examResultDetails_td {
   border: 1px solid #ddd;
 }
 
-th, td {
+.examResultDetails_th,
+.examResultDetails_td {
   padding: 10px;
   text-align: left;
 }
@@ -49,17 +52,17 @@ th, td {
   color: #333;
 }
 
-.dark select {
+.dark .examResultDetails_select {
   background-color: #444;
   color: #fff;
 }
 
-.dark h2 {
+.dark .examResultDetails_h2 {
   background-color: #161616;
   color: #fff;
 }
 
-.light select {
+.light .examResultDetails_select {
   background-color: #fff;
   color: #000;
 }

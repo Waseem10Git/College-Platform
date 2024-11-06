@@ -4,7 +4,12 @@ const env = require('dotenv');
 env.config();
 console.log("MYSQL URL is:");
 console.log(process.env.MYSQL_URL);
-const conn = mysql.createConnection(process.env.MYSQL_URL);
+const conn = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'college_platform'
+});
 
 
 // Database connection with error handling

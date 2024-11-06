@@ -17,6 +17,23 @@ class DepartmentCourseModel {
         });
     }
 
+    static checkDepartmentCourseExistence(id) {
+        return new Promise((resolve, reject) => {
+            const sql = `
+            SELECT EXISTS (
+                SELECT 1 FROM departments_courses WHERE id = ?
+            ) AS exist;
+        `;
+            conn.query(sql, [id], (err, result) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(result[0].exist === 1);
+            });
+        });
+    }
+
+
     static addDepartmentCourse(department_id, course_id, level, semester) {
         return new Promise((resolve, reject) => {
             const query = 'INSERT INTO departments_courses (department_id, course_id, level, semester) VALUES (?, ?, ?, ?)';

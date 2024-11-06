@@ -1,4 +1,4 @@
-export {default as AdminUser} from './AdminUser/AdminUser'
+export {default as AdminUser} from './AdminRoute/AdminRoute'
 export {default as Footer} from './Footer/Footer'
 export {default as Header} from './Header/Header'
 export {default as MobileHeader} from './MobileHeader/MobileHeader'

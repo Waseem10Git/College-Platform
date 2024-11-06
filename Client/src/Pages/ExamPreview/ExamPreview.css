@@ -1,0 +1,44 @@
+.ExamPreviewPage_exam-container {
+  /* Add your component-specific styles here */
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.ExamPreviewPage_exam-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.ExamPreviewPage_question {
+  margin-bottom: 20px;
+}
+
+.ExamPreviewPage_options-list {
+  padding: 0;
+}
+
+.ExamPreviewPage_option {
+  margin-bottom: 10px;
+}
+
+.ExamPreviewPage_correct-answer {
+  font-weight: bold;
+  color: green;
+}
+
+.ExamPreviewPage_edit-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.ExamPreviewPage_edit-button:hover {
+  background-color: #0056b3;
+}

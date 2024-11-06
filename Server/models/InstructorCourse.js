@@ -106,22 +106,51 @@ class InstructorCourseModel {
         });
     }
 
-    static getMeetingId(instructorId, courseId) {
+    static checkSingleInstructorCourseExistence(id) {
         return new Promise((resolve, reject) => {
             const sql = `
-                SELECT ic.meeting_id 
-                FROM instructors_courses as ic
-                INNER JOIN departments_courses as dc ON ic.department_course_id = dc.id
-                WHERE ic.instructor_id = ? AND dc.course_id = ?
-            `;
-            conn.query(sql, [instructorId, courseId], (err, results) => {
+            SELECT EXISTS (
+                SELECT 1 FROM instructors_courses WHERE id = ?
+            ) AS exist;
+        `;
+            conn.query(sql, [id], (err, result) => {
                 if (err) {
                     return reject(err);
                 }
-                resolve(results[0]);
+                resolve(result[0].exist === 1);
             });
         });
     }
+
+    static async checkInstructorCourseExistence(instructor_id, department_course_ids) {
+        return new Promise((resolve, reject) => {
+            // Generate the instructor_course_id
+            const ids = department_course_ids.map(department_course_id => `${instructor_id}_${department_course_id}`);
+
+            const placeholders = ids.map(() => '?').join(', ');
+            const sql = `
+            SELECT id 
+            FROM instructors_courses 
+            WHERE id IN (${placeholders});
+        `;
+
+            conn.query(sql, ids, (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                console.log(results);
+
+                // If any results are found, it means there's a duplicate
+                if (results.length > 0) {
+                    return resolve(true); // Indicate duplicate found
+                }
+
+                // If no results found, all ids are unique and can be added
+                resolve(false);
+            });
+        });
+    }
+
 }
 
 module.exports = InstructorCourseModel;

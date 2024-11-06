@@ -15,7 +15,17 @@ class EnrollmentModel {
     static getStudentEnrollments() {
         return new Promise((resolve, reject) => {
             const sql = `
-                SELECT su.id, su.first_name as student_fname, su.last_name as student_lname, e.id, c.course_code, c.course_name, d.department_name, iu.first_name as instructor_fname, iu.last_name as instructor_lname
+                SELECT 
+                    su.id as student_id, 
+                    su.first_name as student_fname, 
+                    su.last_name as student_lname, 
+                    e.id, 
+                    c.course_code, 
+                    c.course_name, 
+                    d.department_name, 
+                    iu.first_name as instructor_fname, 
+                    iu.last_name as instructor_lname,
+                    ic.id as instructor_course_id
                 FROM users as su
                 INNER JOIN enrollments as e ON su.id = e.student_id
                 INNER JOIN instructors_courses as ic ON e.instructor_course_id = ic.id
@@ -111,6 +121,50 @@ class EnrollmentModel {
                     return reject(err);
                 }
                 resolve(results);
+            });
+        });
+    }
+
+    static checkSingleStudentCourseExistence(id) {
+        return new Promise((resolve, reject) => {
+            const sql = `
+            SELECT EXISTS (
+                SELECT 1 FROM enrollments WHERE id = ?
+            ) AS exist;
+        `;
+            conn.query(sql, [id], (err, result) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(result[0].exist === 1);
+            });
+        });
+    }
+
+    static async checkStudentCourseExistence(student_id, instructor_course_ids) {
+        return new Promise((resolve, reject) => {
+            // Generate the instructor_course_id
+            const ids = instructor_course_ids.map(instructor_course_id => `${student_id}_${instructor_course_id}`);
+
+            const placeholders = ids.map(() => '?').join(', ');
+            const sql = `
+            SELECT id 
+            FROM enrollments 
+            WHERE id IN (${placeholders});
+        `;
+
+            conn.query(sql, ids, (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+
+                // If any results are found, it means there's a duplicate
+                if (results.length > 0) {
+                    return resolve(true); // Indicate duplicate found
+                }
+
+                // If no results found, all ids are unique and can be added
+                resolve(false);
             });
         });
     }

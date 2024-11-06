@@ -13,7 +13,6 @@ export {default as Home} from './Home/Home'
 export {default as Quiz} from './Quiz/Quiz'
 export {default as SignIn} from './SignIn/SignIn'
 export {default as AdminCourses} from "./Admin-Courses/AdminCourses";
-export {default as DashboardPage} from "./DashboardPage/DashboardPage";
 export {default as Profile} from "./Profile/Profile";
 export {default as Assignments} from './Assignments/Assignments';
 export {default as UploadAssignment} from './UploadAssignment/UploadAssignment';

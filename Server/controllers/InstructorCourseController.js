@@ -1,10 +1,17 @@
 const InstructorCourseModel = require('../models/InstructorCourse');
+const DepartmentCourseModel = require("../models/DepartmentCourse");
 
 class InstructorCourseController {
     static async addInstructorToCourses(req, res) {
-        const { instructor_id, department_course_ids } = req.body;
-
         try {
+            const { instructor_id, department_course_ids } = req.body;
+            if (!instructor_id || department_course_ids.length <= 0)
+                return res.status(400).json({ success: false, message: 'All fields are required.' });
+
+            const isExist = await InstructorCourseModel.checkInstructorCourseExistence(instructor_id, department_course_ids);
+            if (isExist)
+                return res.status(409).json({ success: false, message: 'This instructor assigned to this course(s) already exists.' });
+
             const result = await InstructorCourseModel.addInstructorToCourses(instructor_id, department_course_ids);
             return res.json(result);
         } catch (err) {
@@ -14,9 +21,16 @@ class InstructorCourseController {
     }
 
     static async deleteInstructorCourse(req, res) {
-        const { id } = req.params;
-
         try {
+            const { id } = req.params;
+
+            if (!id)
+                return res.status(400).json({ success: false, message: 'ID is not define' });
+
+            const isExist = await InstructorCourseModel.checkSingleInstructorCourseExistence(id);
+            if (!isExist)
+                return res.status(409).json({ success: false, message: 'Instructor-Course relation is not exists.' });
+
             await InstructorCourseModel.deleteInstructorCourse(id);
             return res.json({ success: true });
         } catch (err) {
@@ -65,21 +79,6 @@ class InstructorCourseController {
         }
     }
 
-    static async getMeetingId(req, res) {
-        try {
-            const { instructorId, courseId } = req.params;
-            const result = await InstructorCourseModel.getMeetingId(instructorId, courseId);
-
-            if (result) {
-                return res.json(result);
-            } else {
-                return res.status(404).send('Meeting ID not found');
-            }
-        } catch (err) {
-            console.error('Error getting meeting ID:', err);
-            return res.status(500).send('Server error');
-        }
-    }
 }
 
 module.exports = InstructorCourseController;

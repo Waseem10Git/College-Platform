@@ -1,11 +1,11 @@
 .signIn {
- flex-grow: 1;
- display: flex;
- align-items: center;
- justify-content: center;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.formContainer {
+.signIn_formContainer {
   width: 100% !important;
   max-width: 400px;
   padding: 20px;
@@ -15,12 +15,12 @@
   margin: 35px 0;
 }
 
-.signIn.dark {
+.signIn_dark {
   background-color: #161616;
   color: #fff;
 }
 
-.signIn.light {
+.signIn_light {
   background-color: #f7f7f7;
   color: #333;
 }
@@ -29,13 +29,13 @@
   text-align: center;
 }
 
-.signIn.dark h2 {
+.signIn_dark h2 {
   color: #fff;
 }
 
-.signIn form {
+.signIn .signIn_form {
   margin-top: 20px;
-  border:none;
+  border: none;
 }
 
 .signIn input[type="text"],
@@ -48,14 +48,14 @@
   border: 2px solid #ccc !important;
 }
 
-.signIn.dark input[type="text"],
-.signIn.dark input[type="password"] {
+.signIn_dark input[type="text"],
+.signIn_dark input[type="password"] {
   background: #2c2c2c;
   color: #ccc;
 }
 
-.signIn.dark input[type="text"]::placeholder,
-.signIn.dark input[type="password"]::placeholder {
+.signIn_dark input[type="text"]::placeholder,
+.signIn_dark input[type="password"]::placeholder {
   color: #ccc;
 }
 

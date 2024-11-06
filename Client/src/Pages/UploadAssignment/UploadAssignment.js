@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import axios from '../../api/axios';
 import './UploadAssignment.css';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
+import UserContext from "../../context/UserContext";
 
-const UploadAssignment = ({ isDarkMode, language, userId }) => {
+const UploadAssignment = () => {
+    const { isDarkMode, language, userId } = useContext(UserContext);
     const [selectedCourse, setSelectedCourse] = useState('');
     const [assignmentName, setAssignmentName] = useState('');
     const [assignmentDescription, setAssignmentDescription] = useState('');
@@ -69,10 +71,10 @@ const UploadAssignment = ({ isDarkMode, language, userId }) => {
     };
 
     return (
-        <div className={`upload-assignment ${isDarkMode ? 'dark' : 'light'} ${language === 'Ar' ? 'rtl' : ''}`}>
+        <div className={`UploadAssignment_component ${isDarkMode ? 'dark' : 'light'} ${language === 'Ar' ? 'rtl' : ''}`}>
             <h2>{language === 'En' ? 'Upload new Assignment' : 'رفع واجب جديد'}</h2>
             <form onSubmit={handleSubmit}>
-                <div className="form-group">
+                <div className="UploadAssignment_form-group">
                     <label htmlFor="courseSelect">
                         {language === 'En' ? 'Select Course:' : 'اختر الدورة الدراسية:'}
                     </label>
@@ -95,7 +97,7 @@ const UploadAssignment = ({ isDarkMode, language, userId }) => {
 
                 {selectedCourse && (
                     <>
-                        <div className="form-group">
+                        <div className="UploadAssignment_form-group">
                             <label htmlFor="assignmentName">
                                 {language === 'En' ? 'Assignment Name:' : 'اسم الواجب:'}
                             </label>
@@ -107,7 +109,7 @@ const UploadAssignment = ({ isDarkMode, language, userId }) => {
                                 required
                             />
                         </div>
-                        <div className="form-group">
+                        <div className="UploadAssignment_form-group">
                             <label htmlFor="assignmentDescription">
                                 {language === 'En' ? 'Assignment Description:' : 'وصف الواجب:'}
                             </label>
@@ -119,7 +121,7 @@ const UploadAssignment = ({ isDarkMode, language, userId }) => {
                                 required
                             ></textarea>
                         </div>
-                        <div className="form-group">
+                        <div className="UploadAssignment_form-group">
                             <label htmlFor="assignmentFile">
                                 {language === 'En' ? 'Upload File:' : 'رفع ملف:'}
                             </label>
@@ -130,7 +132,7 @@ const UploadAssignment = ({ isDarkMode, language, userId }) => {
                                 required
                             />
                         </div>
-                        <div className="form-group">
+                        <div className="UploadAssignment_form-group">
                             <label htmlFor="dueDate">
                                 {language === 'En' ? 'Due Date:' : 'تاريخ الاستحقاق:'}
                             </label>
@@ -139,7 +141,7 @@ const UploadAssignment = ({ isDarkMode, language, userId }) => {
                                 onChange={(date) => setDueDate(date)}
                                 showTimeSelect
                                 dateFormat="Pp"
-                                className="input-field"
+                                className="UploadAssignment_input-field"
                                 minDate={new Date()}
                                 minTime={
                                     dueDate && dueDate.toDateString() === new Date().toDateString()

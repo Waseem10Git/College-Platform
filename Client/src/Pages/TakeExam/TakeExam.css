@@ -1,5 +1,5 @@
 /* TakeExam.css */
-.quiz-page {
+.TakeExam_quiz-page {
   flex: 1;
   display: flex;
   align-items: center;
@@ -7,25 +7,25 @@
   min-height: 80vh;
 }
 
-.quiz-page.dark {
+.TakeExam_quiz-page.dark {
   background-color: #161616;
 }
 
-.quiz-page.dark .quiz-container {
+.TakeExam_quiz-page.dark .TakeExam_quiz-container {
   background-color: #1c1c1c;
 }
 
-.quiz-page h1 {
+.TakeExam_quiz-page h1 {
   font-size: 1.6rem;
   margin-bottom: 20px;
 }
 
-.quiz-page h2 {
+.TakeExam_quiz-page h2 {
   font-size: 2rem;
   font-weight: 600;
 }
 
-.quiz-container {
+.TakeExam_quiz-container {
   max-width: 800px;
   margin: 0 auto;
   padding: 30px;
@@ -34,7 +34,7 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.quiz-page ul {
+.TakeExam_quiz-page ul {
   list-style: none;
   display: flex;
   align-items: center;
@@ -43,48 +43,48 @@
   height: fit-content;
 }
 
-.quiz-page ul li {
+.TakeExam_quiz-page ul li {
   width: 45%;
   padding-inline: 10px;
 }
 
-.question {
+.TakeExam_question {
   font-size: 18px;
   margin-bottom: 20px;
 }
 
-.option :hover{
+.TakeExam_option:hover {
   background: #007bff;
   color: white;
 }
 
-.option label {
-  margin: 10px ;
+.TakeExam_option label {
+  margin: 10px;
   display: block;
   cursor: pointer;
-  width: 100%; 
-  padding: 8px 16px; 
+  width: 100%;
+  padding: 8px 16px;
   border: 2px solid #007bff;
   border-radius: 10px;
   font-weight: 700;
-  transition: .3s;
+  transition: 0.3s;
 }
 
-label.selected-option {
+.TakeExam_label.selected-option {
   background-color: #007bff;
   color: white;
 }
 
-.option input {
+.TakeExam_option input {
   display: none;
 }
 
-.button-container {
+.TakeExam_button-container {
   text-align: center;
   margin-top: 20px;
 }
 
-.button {
+.TakeExam_button {
   padding: 10px 20px;
   background-color: #007bff;
   color: white;
@@ -93,45 +93,44 @@ label.selected-option {
   cursor: pointer;
 }
 
-.button:hover {
+.TakeExam_button:hover {
   background-color: #0056b3;
 }
 
-.quiz-page p {
+.TakeExam_quiz-page p {
   font-size: 2rem;
 }
 
-.quiz-page img {
+.TakeExam_quiz-page img {
   max-width: 30%;
   margin-block: 15px;
 }
 
-
 /* responsive */
 @media (max-width: 767px) {
-  .quiz-container {
+  .TakeExam_quiz-container {
     background-color: transparent;
     box-shadow: none;
   }
 
-  .quiz-page.dark .quiz-container {
+  .TakeExam_quiz-page.dark .TakeExam_quiz-container {
     background-color: transparent;
   }
 }
 
-.quiz-result {
+.TakeExam_quiz-result {
   padding: 20px;
 }
 
-.select-container {
+.TakeExam_select-container {
   margin-bottom: 20px;
 }
 
-.question-item {
+.TakeExam_question-item {
   margin-bottom: 20px;
 }
 
-.answer-button {
+.TakeExam_answer-button {
   display: block;
   margin: 10px 0;
   padding: 10px;
@@ -140,24 +139,24 @@ label.selected-option {
   cursor: pointer;
 }
 
-.answer-button.selected {
+.TakeExam_answer-button.selected {
   background-color: #d3f9d8;
   border-color: #6c6;
 }
 
-.answer-button:disabled {
+.TakeExam_answer-button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
 
-.navigation-buttons {
+.TakeExam_navigation-buttons {
   margin-top: 20px;
 }
 
-.navigation-buttons button {
+.TakeExam_navigation-buttons button {
   margin-right: 10px;
 }
 
-.question-item h3 {
+.TakeExam_question-item h3 {
   border-bottom: 1px solid #eee;
 }

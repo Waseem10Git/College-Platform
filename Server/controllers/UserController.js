@@ -76,9 +76,13 @@ class UserController {
 
     static async addAccount(req, res) {
         try {
-            const { userID, firstName, middleName, lastName, email, password, role, departmentName } = req.body;
+            const { userID, firstName, lastName, email, password, role, departmentID } = req.body;
 
-            await UserModel.addAccount({ userID, firstName, middleName, lastName, email, password, role, departmentName });
+            const userExist = await UserModel.getUserById(userID);
+
+            if (userExist) return res.status(404).json({ Status: "Error", Message: "User ID is exist" });
+
+            await UserModel.addAccount({ userID, firstName, lastName, email, password, role, departmentID });
 
             return res.status(200).json({ Status: "Success" });
         } catch (error) {
@@ -89,9 +93,13 @@ class UserController {
 
     static async updateAccount(req, res) {
         try {
-            const { newFirstName, newMiddleName, newLastName, newEmail, newPassword, userID } = req.body;
+            const { newFirstName, newLastName, newEmail, newPassword, newRole, newDepartmentID, userID } = req.body;
 
-            await UserModel.updateAccount({ newFirstName, newMiddleName, newLastName, newEmail, newPassword, userID });
+            const userExist = await UserModel.getUserById(userID);
+
+            if (!userExist) return res.status(404).json({ Status: "Error", Message: "User not exist" });
+
+            await UserModel.updateAccount({ newFirstName, newLastName, newEmail, newPassword, newRole, newDepartmentID, userID });
 
             return res.status(200).json({ Status: "Success" });
         } catch (error) {
@@ -102,11 +110,15 @@ class UserController {
 
     static async deleteAccount(req, res) {
         try {
-            const { userID } = req.body;
+            const { id } = req.params;
+            console.log("id", id);
+            const userExist = await UserModel.getUserById(id);
 
-            await UserModel.deleteAccount(userID);
+            if (!userExist) return res.status(404).json({ Status: "Error", Message: "User not exist" });
 
-            return res.status(200).json({ Status: "Success" });
+            await UserModel.deleteAccount(id);
+
+            return res.status(200).json({ Status: "Success", Message: "User account deleted successfully" });
         } catch (error) {
             console.error("Error deleting account:", error);
             return res.status(500).json({ Status: "Error", Error: error });
@@ -115,7 +127,7 @@ class UserController {
 
     static async uploadAccounts(req, res) {
         try {
-            console.log(req.file);
+            console.log('file: ', req.file);
             const filePath = req.file.path;
             const workbook = XLSX.readFile(filePath);
             const sheetName = workbook.SheetNames[0];
@@ -123,19 +135,18 @@ class UserController {
             const allData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
             const header = allData[0]; // First row as headers
             const data = allData.slice(1);
-            console.log(header);
+            console.log('header: ', header);
 
             // Process the JSON data
             for (const account of data) {
                 await UserModel.addAccount({
                     userID: account[0],
                     firstName: account[1],
-                    middleName: account[2],
-                    lastName: account[3],
-                    email: account[4],
-                    password: account[5],
-                    role: account[6],
-                    departmentName: account[7]
+                    lastName: account[2],
+                    email: account[3],
+                    password: account[4],
+                    role: account[5],
+                    departmentID: account[6]
                 });
             }
 

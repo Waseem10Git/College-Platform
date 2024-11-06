@@ -14,8 +14,8 @@ router.get('/instructor-courses-departments', verifyUser, isAdmin, asyncHandler(
 router.get('/student/:id/courses', verifyUser, asyncHandler(CourseController.getAllCoursesForStudent));
 router.get('/instructor/:id/courses', verifyUser, asyncHandler(CourseController.getAllCoursesForInstructor));
 router.get('/courses/:id', verifyUser, asyncHandler(CourseController.getCoursesByInstructorId));
-router.post('/courses', upload.single('image'), asyncHandler(CourseController.addCourse));
-router.put('/courses/:id', upload.single('image'), asyncHandler(CourseController.updateCourse));
+router.post('/courses', asyncHandler(CourseController.addCourse));
+router.put('/courses/:id', asyncHandler(CourseController.updateCourse));
 router.delete('/courses/:id', asyncHandler(CourseController.deleteCourse));
 router.get('/courses', asyncHandler(CourseController.getAllCourses));
 router.post('/courses', asyncHandler(CourseController.createCourse));

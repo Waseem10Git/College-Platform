@@ -8,6 +8,5 @@ router.delete('/instructors-enrollments/:id', asyncHandler(InstructorCourseContr
 router.get('/instructors-courses', asyncHandler(InstructorCourseController.getAllInstructorCourses));
 router.get('/instructors-departments-courses', asyncHandler(InstructorCourseController.getInstructorsDepartmentsCourses));
 router.post('/instructors-courses', asyncHandler(InstructorCourseController.addInstructorCourses));
-router.get('/instructor-meeting/:instructorId/:courseId', asyncHandler(InstructorCourseController.getMeetingId));
 
 module.exports = router;

@@ -4,8 +4,11 @@ import learningImage from "./images/learning.svg";
 import ELearningImage from "./images/elearning.svg";
 import teamImage from "./images/team.svg";
 import collegeImage from "./images/college.svg";
+import {useContext} from "react";
+import UserContext from "../../context/UserContext";
 
-const Home = ({ language, isDarkMode, name, auth }) => {
+const Home = () => {
+  const { language, isDarkMode, name, auth } = useContext(UserContext);
 
   return (
       <div className={`${styles.home} ${isDarkMode ? styles.dark : styles.light}`}>

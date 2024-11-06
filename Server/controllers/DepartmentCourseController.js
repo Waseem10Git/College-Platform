@@ -14,6 +14,14 @@ class DepartmentCourseController {
     static async addDepartmentCourse(req, res) {
         try {
             const { department_id, course_id, level, semester } = req.body;
+
+            if (!department_id || !course_id || !level || !semester)
+                return res.status(400).json({ success: false, message: 'All fields are required.' });
+
+            const isExist = await DepartmentCourseModel.checkDepartmentCourseExistence(department_id + '_' + course_id)
+            if (isExist)
+                return res.status(409).json({ success: false, message: 'This course-department combination already exists.' });
+
             await DepartmentCourseModel.addDepartmentCourse(department_id, course_id, level, semester);
             return res.status(200).json({ success: true });
         } catch (err) {
@@ -26,6 +34,11 @@ class DepartmentCourseController {
         try {
             const { id } = req.params;
             const { department_id, course_id, level, semester } = req.body;
+
+            const isExist = await DepartmentCourseModel.getDepartmentCourseById(id)
+            if (isExist && id !== department_id +'_'+ course_id)
+                return res.status(409).json({ success: false, message: 'This course-department combination already exists.' });
+
             await DepartmentCourseModel.updateDepartmentCourse(id, department_id, course_id, level, semester);
             return res.status(200).json({ success: true });
         } catch (err) {
@@ -37,6 +50,14 @@ class DepartmentCourseController {
     static async deleteDepartmentCourse(req, res) {
         try {
             const { id } = req.params;
+
+            if (!id)
+                return res.status(400).json({ success: false, message: 'ID is not define' });
+
+            const isExist = await DepartmentCourseModel.checkDepartmentCourseExistence(id);
+            if (!isExist)
+                return res.status(409).json({ success: false, message: 'Course is not exists.' });
+
             await DepartmentCourseModel.deleteDepartmentCourse(id);
             return res.status(200).json({ success: true });
         } catch (err) {

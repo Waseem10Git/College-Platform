@@ -37,7 +37,7 @@ class NotificationModel {
             SELECT n.message, n.created_at 
             FROM user_notifications as un
             INNER JOIN notifications as n ON un.notification_id = n.id
-            WHERE user_id = ? AND is_read = 0
+            WHERE un.user_id = ? AND un.is_read = 0
             `;
             conn.query(sql, [studentId], (err, results) => {
                 if (err) {

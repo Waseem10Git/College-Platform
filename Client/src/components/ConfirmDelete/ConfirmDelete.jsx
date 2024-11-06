@@ -17,7 +17,7 @@ const ConfirmDelete = ({ deletionVisible, setDeletionVisible, handleDelete }) =>
                 </div>
                 <div>
                     <button type="submit">Delete</button>
-                    <button type="button" onClick={() => setDeletionVisible(false)}>Cancel</button>
+                    <button onClick={() => setDeletionVisible(false)}>Cancel</button>
                 </div>
             </form>
         </div>

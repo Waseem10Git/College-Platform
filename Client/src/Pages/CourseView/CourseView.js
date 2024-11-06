@@ -75,7 +75,7 @@ const CourseView = ({ isDarkMode, language, Role }) => {
 
   return (
     <div
-      className={`course-view ${
+      className={`CourseView_course-view ${
         isDarkMode ? "dark-mode" : "light-mode"
       } ${language.toLowerCase()}`}
       onDragOver={handleDragOver}
@@ -85,17 +85,17 @@ const CourseView = ({ isDarkMode, language, Role }) => {
     >
       <h1>{language === "En" ? "Lectures" : "المحاضرات"}</h1>
       {course && (
-        <div className="course-header">
+        <div className="CourseView_course-header">
           <h2>{course.courseName}</h2>
           <h3>{course.doctorName}</h3>
           {courseimg && (
-            <div className="course-img-wrapper">
+            <div className="CourseView_course-img-wrapper">
               <img
                 src={courseimg}
                 alt={course.courseName}
-                className="course-img"
+                className="CourseView_course-img"
               />
-              <div className={`notch ${isMeetingStarted ? "green" : ""}`}></div>
+              <div className={`CourseView_notch ${isMeetingStarted ? "green" : ""}`}></div>
             </div>
           )}
         </div>
@@ -103,13 +103,13 @@ const CourseView = ({ isDarkMode, language, Role }) => {
       {Role && (
         <>
           <button
-            className="btn add-lecture"
+            className="CourseView_btn CourseView_add-lecture"
             onClick={() => document.getElementById("fileUpload").click()}
           >
             {language === "En" ? "Add New Lecture" : "أضف محاضرة جديدة"}
           </button>
           <button
-            className={`btn start-meeting `}
+            className={`CourseView_btn CourseView_start-meeting `}
             onClick={handleStartMeeting}
           >
             {language === "En" ? "Start Online Meeting" : "ابدأ ألإجتماع عبر الإنترنت"}
@@ -118,23 +118,23 @@ const CourseView = ({ isDarkMode, language, Role }) => {
       )}
       {!Role && (
         <>
-          <button className="btn join-meeting" onClick={handleJoinMeeting}>
+          <button className="CourseView_btn CourseView_join-meeting" onClick={handleJoinMeeting}>
             {language === "En"
               ? "Join Online Meeting"
               : "إنضم إلى اجتماع عبر الإنترنت"}
           </button>
         </>
       )}
-      <ul className="lecture-list">
+      <ul className="CourseView_lecture-list">
         {lectures.map((lecture, index) => (
-          <li key={index} className="lecture-item">
+          <li key={index} className="CourseView_lecture-item">
             <span>{lecture}</span>
             <a href={pdfFiles[index]} target="_blank" rel="noopener noreferrer">
               {language === "En" ? "View PDF" : "عرض ملف PDF"}
             </a>
             {Role && (
               <div
-                className="delete-lecture"
+                className="CourseView_delete-lecture"
                 onClick={() => handleDeleteLecture(index)}
               >
                 {language === "En" ? "Delete" : "حذف"}
@@ -152,7 +152,7 @@ const CourseView = ({ isDarkMode, language, Role }) => {
         onChange={(e) => handleFileUpload(e.target.files)}
       />
       {isDragging && Role && (
-        <div className="drag-overlay">
+        <div className="CourseView_drag-overlay">
           {language === "En"
             ? "Drop files here to upload"
             : "قم بإسقاط الملفات هنا لتحميلها"}

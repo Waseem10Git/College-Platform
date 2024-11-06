@@ -1,103 +1,189 @@
-.courses-container {
-    padding: 20px;
+/* General styles for the App */
+html, body {
+    height: 100%; /* Full height for body */
+    margin: 0; /* Remove default margin */
 }
 
-.departments {
-    margin-bottom: 20px;
+.App {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Full height of the viewport */
 }
 
-.departments button {
-    margin-right: 10px;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-.departments button:hover {
-    background-color: #0056b3;
-}
-
-.department-details {
-    margin-top: 20px;
-}
-
-.level {
-    margin-bottom: 20px;
-}
-
-.level h3 {
-    margin-top: 0;
-}
-
-.semester {
-    margin-bottom: 10px;
-}
-
-.semester h4 {
-    margin-bottom: 5px;
-}
-
-.course-table {
+.AdminCourses_courses-container {
+    padding: 30px;
+    background-color: #f5f5f5;
+    transition: background-color 0.3s;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 10px;
+    margin: 0 auto;
+    align-items: center; /* Centers the buttons horizontally */
+
 }
 
-.course-table th,
-.course-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
+.AdminCourses_view-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; /* Distributes equal space between buttons */
+    align-items: center; /* Centers buttons horizontally */
+    height: 100%; /* Ensure full height to apply space-between */
+    gap: 10px; /* Optional: Adds extra space between the buttons */
 }
 
-.course-table th {
-    background-color: #f2f2f2;
+.AdminCourses_view-button {
+    width: 250px; /* Set a consistent button width */
+    padding: 10px; /* Adjust button padding */
+    margin: 0; /* Remove default margins */
 }
 
-input[type="text"] {
-    width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
+.AdminCourses_courses-container.dark-mode,
+.AdminCourses_courses-container.dark-mode select,
+.AdminCourses_courses-container.dark-mode input[type='text'] {
+    background-color: #111; /* Dark background */
+    color: #fff; /* Light text for dark mode */
+    font-size: medium;
+    font-weight: bold;
 }
 
-.add-button,
-.delete-button {
-    width: 100px; /* Adjust width */
-    padding: 5px 10px;
+.AdminCourses_view-buttons {
+    display: flex;
+    gap: 20px; /* Increased space between buttons */
+
+}
+
+.AdminCourses_view-button {
+    padding: 12px 20px; /* Increased padding for buttons */
+    font-size: 16px;
     border: none;
-    color: white;
+    border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.AdminCourses_view-button:hover {
+    background-color: #007bff; /* Blue on hover */
+    color: white; /* White text on hover */
+}
+
+.AdminCourses_view-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5); /* Focus outline */
+}
+
+/* Footer styles */
+.footer {
+    background-color: #111; /* Footer background */
+    color: #fff; /* Footer text color */
     text-align: center;
-    margin-right: 5px;
+    padding: 15px; /* Increased padding for footer */
 }
 
-.add-button {
-    background-color: #28a745;
+/* Responsive Design */
+@media (max-width: 600px) {
+    .CoursesView_course-table {
+        width: 100%;
+        font-size: 0.4em; /* Reduce font size for mobile */
+    }
+
+    .AdminCourses_view-buttons {
+        display: flex;
+        gap: 5px; /* Increased space between buttons */
+
+    }
+
+    .CoursesView_course-table th, .CoursesView_course-table td {
+        display: block;
+        width: 100%;
+        text-align: right; /* Align text to the right for RTL support */
+        padding: 8px 5px; /* Reduce padding for smaller screens */
+    }
+
+    .CoursesView_course-table th::before, .CoursesView_course-table td::before {
+        content: attr(data-label); /* Use data-label for accessibility */
+        font-weight: bold;
+        float: left; /* Move label to the left */
+    }
+
+    .CoursesView_course-table th, .CoursesView_course-table td {
+        text-align: left;
+    }
+
+    .CoursesView_course-table input[type="text"],
+    .CoursesView_course-table input[type="file"],
+    .CoursesView_course-table button {
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 10px; /* Add space between form inputs */
+    }
+
+    .CoursesView_course-table img {
+        max-width: 100%;
+        height: auto;
+    }
 }
 
-.add-button:hover {
-    background-color: #218838;
+
+.CoursesView_course-table,
+.DepartmentsView_course-table,
+.DepartmentsCoursesView_course-table,
+.InstructorsView_course-table,
+.StudentsView_course-table {
+    text-align: center;
+    font-size: medium;
+    font-weight: bold;
+    width: 100%; /* Full width for the table */
+
 }
 
-.delete-button {
-    background-color: #dc3545;
+.CoursesView_course-table th,
+.DepartmentsView_course-table th,
+.DepartmentsCoursesView_course-table th,
+.InstructorsView_course-table th,
+.StudentsView_course-table th{
+    font-size: large;
+    font-weight: bolder;
+    padding: 15px; /* Increased padding for better spacing */
+    text-align: center;
+    border-bottom: 1px solid #ddd; /* Light grey border */
+    width: 20%; /* Equal width for each column */
+    flex: auto;
+    justify-content: center;
+    vertical-align: middle; /* Vertically center the content */
 }
 
-.delete-button:hover {
-    background-color: #c82333;
+.CoursesView_course-table td,
+.DepartmentsView_course-table td,
+.DepartmentsCoursesView_course-table td,
+.InstructorsView_course-table td,
+.StudentsView_course-table td{
+    flex: auto;
+    justify-content: center;
+    padding: 15px; /* Increased padding for better spacing */
+    text-align: center; /* Center the text horizontally */
+    border-bottom: 1px solid #ddd; /* Light grey border */
+    vertical-align: middle; /* Vertically center the content */
+
 }
 
-.department-header {
-    font-size: 24px;
-    margin-bottom: 10px;
-}
-
-.department-levels {
-    margin-top: 20px;
-}
-
-.add-button-container {
+.CoursesView_course-table td button,
+.DepartmentsView_course-table td button,
+.DepartmentsCoursesView_course-table td button,
+.InstructorsView_course-table td button,
+.StudentsView_course-table td button {
+    width: 70px; /* Set button width to 300px */
+    padding: 10px; /* Adjust padding for better button appearance */
+    text-align: center; /* Ensure the button text is centered */
+    margin-left: 10px;
+    margin-bottom: 16px;
+    display: inline-block; /* Keep form elements inline */
+    background-color: #007bff;
+    border: 2px solid #007bff; /* Blue button color */
+    color: white;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
     margin-top: 20px;
 }

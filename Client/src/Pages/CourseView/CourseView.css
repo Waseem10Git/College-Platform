@@ -1,23 +1,26 @@
-.course-view {
+body{
+  background-color: red;
+}
+.CourseView_course-view {
   padding: 20px;
   font-family: Arial, sans-serif;
   position: relative;
 }
 
-.course-view.ar {
+.CourseView_course-view.ar {
   direction: rtl;
 }
 
-.course-view.en, .course-view.En {
+.CourseView_course-view.en, .CourseView_course-view.En {
   direction: ltr;
 }
 
-.course-view h1 {
+.CourseView_course-view h1 {
   font-size: 24px;
   margin-bottom: 20px;
 }
 
-.lecture-list {
+.CourseView_lecture-list {
   list-style-type: none;
   padding: 0;
   margin-bottom: 20px;
@@ -26,7 +29,7 @@
   justify-content: center;
 }
 
-.lecture-item {
+.CourseView_lecture-item {
   width: 300px;
   height: 300px;
   display: flex;
@@ -40,16 +43,16 @@
   box-sizing: border-box;
 }
 
-.lecture-item a {
+.CourseView_lecture-item a {
   text-decoration: none;
   color: #007bff;
 }
 
-.lecture-item button {
+.CourseView_lecture-item button {
   margin-top: 10px;
 }
 
-.btn {
+.CourseView_btn {
   display: inline-block;
   margin-right: 10px;
   padding: 10px 20px;
@@ -60,64 +63,64 @@
   text-align: center;
 }
 
-.btn.add-lecture {
+.CourseView_btn.CourseView_add-lecture {
   background-color: #007bff;
   color: white;
 }
 
-.btn.start-meeting {
+.CourseView_btn.CourseView_start-meeting {
   background-color: #28a745;
   color: white;
 }
 
-.btn.delete-lecture {
+.CourseView_btn.CourseView_delete-lecture {
   background-color: #dc3545;
   color: white;
 }
 
-.btn.delete-lecture:hover {
+.CourseView_btn.CourseView_delete-lecture:hover {
   background-color: #c82333;
 }
 
-.light-mode {
+.CourseView_light-mode {
   background-color: #ffffff;
   color: #000000;
 }
 
-.light-mode .lecture-item {
+.CourseView_light-mode .CourseView_lecture-item {
   background-color: #f0f0f0;
 }
 
-.light-mode .btn.add-lecture {
+.CourseView_light-mode .CourseView_btn.CourseView_add-lecture {
   background-color: #007bff;
   color: white;
 }
 
-.light-mode .btn.start-meeting {
+.CourseView_light-mode .CourseView_btn.CourseView_start-meeting {
   background-color: #28a745;
   color: white;
 }
 
-.dark-mode {
+.CourseView_dark-mode {
   background-color: #1a1a1a;
   color: #ffffff;
 }
 
-.dark-mode .lecture-item {
+.CourseView_dark-mode .CourseView_lecture-item {
   background-color: #333333;
 }
 
-.dark-mode .btn.add-lecture {
+.CourseView_dark-mode .CourseView_btn.CourseView_add-lecture {
   background-color: #0056b3;
   color: white;
 }
 
-.dark-mode .btn.start-meeting {
+.CourseView_dark-mode .CourseView_btn.CourseView_start-meeting {
   background-color: #1e7e34;
   color: white;
 }
 
-.delete-lecture {
+.CourseView_delete-lecture {
   display: inline-block;
   margin-right: 10px;
   padding: 10px 20px;
@@ -131,11 +134,11 @@
   transition: background-color 0.3s ease-in-out;
 }
 
-.delete-lecture:hover {
+.CourseView_delete-lecture:hover {
   background-color: #b21f2d;
 }
 
-.drag-overlay {
+.CourseView_drag-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -153,26 +156,26 @@
   transition: opacity 0.3s ease;
 }
 
-.drag-overlay.visible {
+.CourseView_drag-overlay.visible {
   opacity: 1;
   pointer-events: all;
 }
 
-.course-img {
+.CourseView_course-img {
   width: 100px;
   height: 100px;
   object-fit: cover;
   margin-bottom: 10px;
 }
 
-.lecture-details {
+.CourseView_lecture-details {
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.lecture-details span {
+.CourseView_lecture-details span {
   display: block;
   margin-bottom: 10px;
 }

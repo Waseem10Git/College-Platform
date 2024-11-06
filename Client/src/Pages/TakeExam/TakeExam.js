@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import {useContext, useEffect, useState} from 'react';
 import './TakeExam.css';
 import axios from '../../api/axios';
 import CourseSelect from '../ExamResults/CourseSelect';
 import ExamSelect from '../ExamResults/ExamSelect';
 import {NotificationModal} from '../../components';
+import UserContext from "../../context/UserContext";
 
-const TakeExam = ({ isDarkMode, language, Role, userId }) => {
+const TakeExam = () => {
+  const { isDarkMode, language, role, userId } = useContext(UserContext);
   const [selectedQuizId, setSelectedQuizId] = useState('');
   const [courses, setCourses] = useState([]);
   const [exams, setExams] = useState([]);
@@ -36,7 +38,7 @@ const TakeExam = ({ isDarkMode, language, Role, userId }) => {
       }
     };
     fetchData();
-  }, [userId, Role]);
+  }, [userId, role]);
 
   useEffect(() => {
     if (intervalId) {
@@ -233,16 +235,16 @@ const TakeExam = ({ isDarkMode, language, Role, userId }) => {
   };
 
   return (
-      <div className={`quiz-result ${isDarkMode ? 'dark' : 'light'}`}>
+      <div className={`TakeExam_component ${isDarkMode ? 'dark' : 'light'}`}>
         {!isInExam && !showResults && (
-            <div className="select-container">
+            <div className="TakeExam_select-container">
               <CourseSelect language={language} courses={courses} onSelect={handleCourseSelect} />
               <ExamSelect language={language} exams={exams} onSelect={handleExamDetailsSelect} />
             </div>
         )}
 
         {selectedQuizId && !isInExam && !showResults && (
-            <div className="exam-details">
+            <div className="TakeExam_exam-details">
               <h3>{examDetails.exam_name}</h3>
               {!isExamEnded ? <h3>Duration: {examDetails.duration} minutes</h3> : null}
               <p>
@@ -267,8 +269,8 @@ const TakeExam = ({ isDarkMode, language, Role, userId }) => {
         )}
 
         {isInExam && !showResults && (
-            <div className="questions-container">
-              <div className="timer">{formatTime(timer)}</div>
+            <div className="TakeExam_questions-container">
+              <div className="TakeExam_timer">{formatTime(timer)}</div>
               {examQuestions.length > 0 && (
                   <div>
                     {examQuestions.map((question, questionIndex) => {
@@ -276,7 +278,7 @@ const TakeExam = ({ isDarkMode, language, Role, userId }) => {
                           (answer) => answer.question_id === question.question_id
                       );
                       return (
-                          <div className="question-item" key={questionIndex}>
+                          <div className="TakeExam_question-item" key={questionIndex}>
                             <h3>{question.question_text} ?</h3>
                             {isMCQ ? (
                                 examAnswers
@@ -284,7 +286,7 @@ const TakeExam = ({ isDarkMode, language, Role, userId }) => {
                                     .map((answer, answerIndex) => (
                                         <button
                                             key={answerIndex}
-                                            className={`answer-button ${
+                                            className={`TakeExam_answer-button ${
                                                 studentAnswers[question.question_id] === answer.answer_text
                                                     ? 'selected'
                                                     : ''
@@ -310,7 +312,7 @@ const TakeExam = ({ isDarkMode, language, Role, userId }) => {
                           </div>
                       );
                     })}
-                    <div className="navigation-buttons">
+                    <div className="TakeExam_navigation-buttons">
                       <button onClick={handleSubmit} disabled={isSubmitted}>
                         Submit
                       </button>
@@ -321,7 +323,7 @@ const TakeExam = ({ isDarkMode, language, Role, userId }) => {
         )}
 
         {showResults && (
-            <div className="results-container">
+            <div className="TakeExam_results-container">
               <h2>Exam Result</h2>
               <table>
                 <thead>

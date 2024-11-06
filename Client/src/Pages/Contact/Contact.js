@@ -1,7 +1,9 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import styles from './Contact.module.css'
+import UserContext from "../../context/UserContext";
 
-const ContactPage = ({ language, isDarkMode }) => {
+const ContactPage = () => {
+  const { language, isDarkMode } = useContext(UserContext);
   return (
     <div className={`${styles.contactPage} ${isDarkMode ? styles.dark : styles.light}`}>
     <div className={styles.contactContainer}>

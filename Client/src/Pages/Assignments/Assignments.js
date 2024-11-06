@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import { Link } from 'react-router-dom';
 import './Assignments.css';
 import axios from '../../api/axios';
+import UserContext from "../../context/UserContext";
 
-const Assignments = ({ isDarkMode, language, userRole, userId }) => {
+const Assignments = () => {
+  const { isDarkMode, language, role, userId } = useContext(UserContext);
   const [selectedCourse, setSelectedCourse] = useState('');
   const [selectedAssignment, setSelectedAssignment] = useState(null);
   const [studentFile, setStudentFile] = useState(null);
@@ -14,7 +16,7 @@ const Assignments = ({ isDarkMode, language, userRole, userId }) => {
     axios.get(`/api/student/${userId}/courses`)
         .then(response => setCourses(response.data))
         .catch(error => console.error('Error fetching courses:', error));
-  }, [userRole, userId]);
+  }, [role, userId]);
 
   console.log("courses: ", courses);
 
@@ -71,10 +73,11 @@ const Assignments = ({ isDarkMode, language, userRole, userId }) => {
   };
 
   return (
-      <div className={`upload-student-assignment ${isDarkMode ? 'dark' : 'light'} ${language === 'Ar' ? 'rtl' : ''}`}>
+      <div
+          className={`Assignments_uploadStudentAssignment ${isDarkMode ? 'Assignments_dark' : 'Assignments_light'} ${language === 'Ar' ? 'Assignments_rtl' : ''}`}>
         <h2>{language === 'En' ? 'Upload Assignment' : 'رفع الواجب'}</h2>
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
+          <div className="Assignments_formGroup">
             <label htmlFor="courseSelect">{language === 'En' ? 'Select Course:' : 'اختر الدورة الدراسية:'}</label>
             <select id="courseSelect" value={selectedCourse} onChange={handleCourseChange} required>
               <option value="" disabled>{language === 'En' ? 'Select course' : 'اختر الدورة الدراسية'}</option>
@@ -86,7 +89,7 @@ const Assignments = ({ isDarkMode, language, userRole, userId }) => {
 
           {selectedCourse && (
               <>
-                <div className="form-group">
+                <div className="Assignments_formGroup">
                   <label htmlFor="assignmentSelect">{language === 'En' ? 'Select Assignment:' : 'اختر الواجب:'}</label>
                   <select
                       id="assignmentSelect"
@@ -104,14 +107,16 @@ const Assignments = ({ isDarkMode, language, userRole, userId }) => {
                 </div>
 
                 {selectedAssignment && (
-                    <div className="assignment-description">
-                      <p><strong>{language === 'En' ? 'Description:' : 'الوصف:'}</strong> {selectedAssignment.description}</p>
+                    <div className="Assignments_assignmentDescription">
+                      <p>
+                        <strong>{language === 'En' ? 'Description:' : 'الوصف:'}</strong> {selectedAssignment.description}
+                      </p>
                     </div>
                 )}
 
-                <div className="form-group">
+                <div className="Assignments_formGroup">
                   <label htmlFor="studentFile">{language === 'En' ? 'Upload Your File:' : 'رفع الملف الخاص بك:'}</label>
-                  <input type="file" id="studentFile" onChange={handleFileChange} required />
+                  <input type="file" id="studentFile" onChange={handleFileChange} required/>
                 </div>
 
                 <button type="submit">{language === 'En' ? 'Upload' : 'رفع'}</button>
@@ -119,9 +124,10 @@ const Assignments = ({ isDarkMode, language, userRole, userId }) => {
           )}
         </form>
 
-        {userRole === 'instructor' && (
+        {role === 'instructor' && (
             <Link to="/upload-assignment">
-              <button className="upload-assignment-button">{language === 'En' ? 'Upload Assignment' : 'رفع واجب'}</button>
+              <button
+                  className="Assignments_uploadAssignmentButton">{language === 'En' ? 'Upload Assignment' : 'رفع واجب'}</button>
             </Link>
         )}
       </div>

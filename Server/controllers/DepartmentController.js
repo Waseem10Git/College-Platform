@@ -15,11 +15,16 @@ class DepartmentController {
     static async addDepartment(req, res) {
         const { department_name } = req.body;
         try {
+            if (!department_name) return res.status(404).json({ Status: "Error", Message: "Department name is empty" });
+
+            const isExist = await DepartmentModel.getDepartmentByName(department_name);
+            if (isExist.length > 0) return res.status(404).json({ Status: "Error", Message: "Department is exist" });
+
             await DepartmentModel.addDepartment(department_name);
-            res.json({ success: true });
+            return res.json({ success: true });
         } catch (error) {
             console.error('Error adding department:', error);
-            res.status(500).json({ message: 'Server Error', error });
+            return res.status(500).json({ message: 'Server Error', error });
         }
     }
 
@@ -27,6 +32,11 @@ class DepartmentController {
         const { id } = req.params;
         const { department_name } = req.body;
         try {
+            if (!department_name) return res.status(404).json({ Status: "Error", Message: "Department name is empty" });
+
+            const isExist = await DepartmentModel.getDepartmentByName(department_name);
+            if (isExist.length > 0) return res.status(404).json({ Status: "Error", Message: "Department is exist" });
+
             await DepartmentModel.updateDepartment(id, department_name);
             res.json({ success: true });
         } catch (error) {
@@ -38,6 +48,11 @@ class DepartmentController {
     static async deleteDepartment(req, res) {
         const { id } = req.params;
         try {
+            if (!id) return res.status(404).json({ Status: "Error", Message: "Department ID is empty" });
+
+            const isExist = await DepartmentModel.getDepartmentById(id);
+            if (!isExist.length > 0) return res.status(404).json({ Status: "Error", Message: "Department is not exist" });
+
             await DepartmentModel.deleteDepartment(id);
             res.json({ success: true });
         } catch (error) {

@@ -1,0 +1,63 @@
+
+.examResults_ExamResult {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Titles */
+.examResults_h1, .examResults_h2 {
+  color: #333;
+  font-weight: 600;
+}
+
+/* Select Components */
+.examResults_select {
+  width: 100%;
+  padding: 8px;
+  margin: 10px 0;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Table Styles */
+.examResults_table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.examResults_th, .examResults_td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.examResults_th {
+  background-color: #007bff;
+  color: white;
+}
+
+.examResults_tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.examResults_tr:hover {
+  background-color: #ddd;
+}
+
+/* No Results Message */
+.examResults_noResults {
+  color: #999;
+  margin-top: 20px;
+}
+
+/* Container for the selectors */
+.examResults_selectContainer {
+  margin-bottom: 20px;
+}

@@ -1,4 +1,5 @@
-.coursesContainer {
+
+.Course_coursesContainer {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -9,14 +10,14 @@
     min-height: 100vh;
 }
 
-.courses {
+.Course_courses {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
 }
 
-.coursesCard {
+.Course_coursesCard {
     background-color: #f0f0f0;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -27,26 +28,26 @@
     height: 375px;
 }
 
-.coursesCard:hover {
+.Course_coursesCard:hover {
     transform: translateY(-5px);
 }
 
-.coursesCard .image {
+.Course_coursesCard .Course_image {
     width: 100%;
 }
 
-.coursesCard .image img {
+.Course_coursesCard .Course_image img {
     width: 100%;
     height: auto;
     object-fit: cover;
 }
 
-.coursesCard .content {
+.Course_coursesCard .Course_content {
     padding: 15px;
     width: 100%;
 }
 
-.coursesCard .flex {
+.Course_coursesCard .Course_flex {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -54,86 +55,86 @@
     margin-top: 10px;
 }
 
-.coursesCard h3 {
+.Course_coursesCard h3 {
     font-size: 18px;
     font-weight: bold;
     margin: 0;
 }
 
-.coursesCard h4 {
+.Course_coursesCard h4 {
     font-size: 14px;
     color: #555;
     margin: 0;
 }
 
-.coursesCard .price h3 {
+.Course_coursesCard .Course_price h3 {
     font-size: 16px;
     color: #007bff;
     margin: 0;
 }
 
 /* Dark mode styling */
-.coursesContainer.dark {
+.Course_coursesContainer.Course_dark {
     background-color: #1a1a1a;
 }
 
-.dark .coursesCard {
+.Course_dark .Course_coursesCard {
     background-color: #333;
     color: #f0f0f0;
 }
 
-.dark .coursesCard h4 {
+.Course_dark .Course_coursesCard h4 {
     color: #ADB1B4;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .coursesCard {
+    .Course_coursesCard {
         width: 235px;
         height: auto;
     }
 
-    .coursesCard h3 {
+    .Course_coursesCard h3 {
         font-size: 16px;
     }
 
-    .coursesCard h4 {
+    .Course_coursesCard h4 {
         font-size: 12px;
     }
 
-    .coursesCard .price h3 {
+    .Course_coursesCard .Course_price h3 {
         font-size: 14px;
     }
 
-    .courses {
+    .Course_courses {
         gap: 15px;
     }
 }
 
 @media (max-width: 480px) {
-    .coursesContainer {
+    .Course_coursesContainer {
         padding: 10px;
         gap: 10px;
     }
 
-    .coursesCard {
+    .Course_coursesCard {
         width: 200px;
         height: auto;
     }
 
-    .coursesCard .content {
+    .Course_coursesCard .Course_content {
         padding: 10px;
     }
 
-    .coursesCard h3 {
+    .Course_coursesCard h3 {
         font-size: 14px;
     }
 
-    .coursesCard h4 {
+    .Course_coursesCard h4 {
         font-size: 12px;
     }
 
-    .coursesCard .price h3 {
+    .Course_coursesCard .Course_price h3 {
         font-size: 12px;
     }
 }

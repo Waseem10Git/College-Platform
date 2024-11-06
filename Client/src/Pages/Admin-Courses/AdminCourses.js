@@ -1,19 +1,21 @@
-import { useState, useEffect } from 'react';
+import {useState, useEffect, useContext} from 'react';
 import './AdminCourses.css';
-import axios from '../../api/axios';
 import DepartmentsView from './DepartmentsView'
 import CoursesView from "./CoursesView";
 import InstructorsView from "./InstructorsView";
 import DepartmentsCoursesView from "./DepartmentsCoursesView";
 import StudentsView from "./StudentsView";
+import UserContext from "../../context/UserContext";
+import departmentsApi from "../../api/departmentsApi";
 
-const AdminCourses = ({ isDarkMode, language }) => {
+const AdminCourses = () => {
+    const { isDarkMode, language } = useContext(UserContext);
     const [departments, setDepartments] = useState([]);
     const [selectedView, setSelectedView] = useState('');
 
     const fetchDepartments = async () => {
         try {
-            const response = await axios.get('/api/departments');
+            const response = await departmentsApi.fetchDepartment();
             setDepartments(response.data);
         }catch (err) {
             console.log("Error fetching departments data: ", err);
@@ -26,33 +28,33 @@ const AdminCourses = ({ isDarkMode, language }) => {
     const renderView = () => {
         switch (selectedView) {
             case 'departments':
-                return <DepartmentsView isDarkMode={isDarkMode} language={language}/>;
+                return <DepartmentsView departments={departments} fetchDepartments={fetchDepartments}/>;
             case 'courses':
-                return <CoursesView language={language} departments={departments}/>;
+                return <CoursesView/>;
             case 'departments-courses':
-                return <DepartmentsCoursesView language={language} departments={departments}/>
+                return <DepartmentsCoursesView departments={departments} fetchDepartments={fetchDepartments}/>
             case 'instructors':
-                return <InstructorsView language={language} />;
+                return <InstructorsView/>;
             case 'students':
-                return <StudentsView language={language} />;
+                return <StudentsView/>;
             default:
                 return null;
         }
     };
 
     return (
-        <div className={`courses-container ${isDarkMode ? 'dark-mode' : ''}`}>
-            <div className="view-buttons">
+        <div className={`AdminCourses_courses-container ${isDarkMode ? 'dark-mode' : ''}`}>
+            <div className="AdminCourses_view-buttons">
                 <button onClick={() => setSelectedView('departments')}
-                        className="view-button">{language === 'En' ? 'Add Departments' : 'إضافة الأقسام'}</button>
+                        className="AdminCourses_view-button">{language === 'En' ? 'Add Departments' : 'إضافة الأقسام'}</button>
                 <button onClick={() => setSelectedView('courses')}
-                        className="view-button">{language === 'En' ? 'Add Courses' : 'إضافة الدورات'}</button>
+                        className="AdminCourses_view-button">{language === 'En' ? 'Add Courses' : 'إضافة الدورات'}</button>
                 <button onClick={() => setSelectedView('departments-courses')}
-                        className="view-button">{language === 'En' ? 'Add Courses to Departments' : 'إضافة الدورات الى الأقسام'}</button>
+                        className="AdminCourses_view-button">{language === 'En' ? 'Add Courses to Departments' : 'إضافة الدورات الى الأقسام'}</button>
                 <button onClick={() => setSelectedView('instructors')}
-                        className="view-button">{language === 'En' ? 'Add Instructors to Courses' : 'إضافة المدربين الى الدورات'}</button>
+                        className="AdminCourses_view-button">{language === 'En' ? 'Add Instructors to Courses' : 'إضافة المدربين الى الدورات'}</button>
                 <button onClick={() => setSelectedView('students')}
-                        className="view-button">{language === 'En' ? 'Add Students to Courses' : 'إضافة الطلاب الى الدورات'}</button>
+                        className="AdminCourses_view-button">{language === 'En' ? 'Add Students to Courses' : 'إضافة الطلاب الى الدورات'}</button>
             </div>
 
             {selectedView ? renderView() : null}

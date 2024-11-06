@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, {useContext, useState} from 'react';
 import './FileUpload.css';
 import uploadImage from "./images/upload.svg"
 import uploadLabel from "./images/uploadLabel.png"
+import UserContext from "../../context/UserContext";
 
-const FileUpload = ({isDarkMode}) => {
+const FileUpload = () => {
+  const {isDarkMode} = useContext(UserContext);
   const [file, setFile] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
 

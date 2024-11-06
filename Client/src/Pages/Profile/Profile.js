@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import './Profile.css';
 import axios from '../../api/axios';
+import UserContext from "../../context/UserContext";
 
-const Profile = ({ isDarkMode, language, userId }) => {
+const Profile = () => {
+  const { isDarkMode, language, userId } = useContext(UserContext);
   const [isEditing, setIsEditing] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -75,25 +77,27 @@ const Profile = ({ isDarkMode, language, userId }) => {
   };
 
   return (
-      <div className={`profile ${isDarkMode ? 'dark-mode' : 'light-mode'} ${language.toLowerCase()}`}>
+      <div className={`profile profile_${isDarkMode ? 'dark-mode' : 'light-mode'} profile_${language.toLowerCase()}`}>
         <h1>{language === 'En' ? 'User Profile' : 'الملف الشخصي'}</h1>
-        <div className="profile-info">
-          <img src={image} alt="Profile" className="profile-img" />
-          <div className="profile-details">
-            <p><strong>{language === 'En' ? 'Name:' : 'الاسم:'}</strong> {userData.first_name + " " + userData.last_name}</p>
+        <div className="profile profile_info">
+          <img src={image} alt="Profile" className="profile profile_img"/>
+          <div className="profile profile_details">
+            <p>
+              <strong>{language === 'En' ? 'Name:' : 'الاسم:'}</strong> {userData.first_name + " " + userData.last_name}
+            </p>
             <p><strong>{language === 'En' ? 'Email:' : 'البريد الإلكتروني:'}</strong> {userData.email}</p>
             <p><strong>{language === 'En' ? 'Role:' : 'الدور:'}</strong> {userData.role}</p>
             <p><strong>{language === 'En' ? 'Code:' : 'الرمز:'}</strong> {userData.id}</p>
           </div>
         </div>
         {!isEditing ? (
-            <button onClick={() => setIsEditing(true)} className="btn edit-btn">
+            <button onClick={() => setIsEditing(true)} className="profile edit_btn">
               {language === 'En' ? 'Edit Profile' : 'تعديل الملف الشخصي'}
             </button>
         ) : (
-            <div className="profile-edit">
+            <div className="profile profile_edit">
               <h2>{language === 'En' ? 'Edit Profile' : 'تعديل الملف الشخصي'}</h2>
-              <div className="form-group">
+              <div className="profile form_group">
                 <label htmlFor="password">{language === 'En' ? 'Password' : 'كلمة المرور'}</label>
                 <input
                     type="password"
@@ -101,9 +105,10 @@ const Profile = ({ isDarkMode, language, userId }) => {
                     value={password}
                     onChange={handlePasswordChange}
                     placeholder={language === 'En' ? 'Enter new password' : 'أدخل كلمة مرور جديدة'}
+                    className="profile input_field"
                 />
               </div>
-              <div className="form-group">
+              <div className="profile form_group">
                 <label htmlFor="confirmPassword">{language === 'En' ? 'Confirm Password' : 'تأكيد كلمة المرور'}</label>
                 <input
                     type="password"
@@ -111,22 +116,24 @@ const Profile = ({ isDarkMode, language, userId }) => {
                     value={confirmPassword}
                     onChange={handleConfirmPasswordChange}
                     placeholder={language === 'En' ? 'Enter new password again to confirm' : 'أدخل كلمة مرور جديدة'}
+                    className="profile input_field"
                 />
               </div>
-              <div className="form-group">
+              <div className="profile form_group">
                 <label htmlFor="image">{language === 'En' ? 'Profile Image' : 'صورة الملف الشخصي'}</label>
                 <input
                     type="file"
                     id="image"
                     accept="image/*"
                     onChange={handleImageChange}
+                    className="profile input_field"
                 />
-                {image && <img src={image} alt="Profile Preview" className="img-preview"/>}
+                {image && <img src={image} alt="Profile Preview" className="profile img_preview"/>}
               </div>
-              <button onClick={handleSave} className="btn save-btn">
+              <button onClick={handleSave} className="profile save_btn">
                 {language === 'En' ? 'Save Changes' : 'حفظ التغييرات'}
               </button>
-              <button onClick={() => setIsEditing(false)} className="btn cancel-btn">
+              <button onClick={() => setIsEditing(false)} className="profile cancel_btn">
                 {language === 'En' ? 'Cancel' : 'إلغاء'}
               </button>
             </div>

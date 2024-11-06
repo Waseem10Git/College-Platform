@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
+import {useContext, useEffect, useState} from 'react';
 import axios from '../../api/axios';
 import CourseSelect from './CourseSelect';
-import styles from './ExamResults.module.css';
+import  './ExamResults.css';
 import {StudentsAssignments, StudentsExams, StudentsInfo} from "../../components";
-import allNotifications from "../AllNotifications/AllNotifications";
+import UserContext from "../../context/UserContext";
 
-function ExamResults({ language, isDarkMode, Role, userId }) {
+function ExamResults() {
+    const { language, isDarkMode, role, userId } = useContext(UserContext);
     const [selectedCourse, setSelectedCourse] = useState('');
     const [selectedOption, setSelectedOption] = useState('');
     const [assignments, setAssignments] = useState([]);
@@ -30,7 +31,7 @@ function ExamResults({ language, isDarkMode, Role, userId }) {
             }
         };
         fetchData();
-    }, [userId, Role]);
+    }, [userId, role]);
 
     const handleCourseSelect = (courseId) => {
         setSelectedCourse(courseId);
@@ -87,15 +88,17 @@ function ExamResults({ language, isDarkMode, Role, userId }) {
     console.log("course id: ", selectedCourse);
 
     return (
-        <div className={isDarkMode ? 'dark-mode' : 'light-mode'}>
+        <div className={isDarkMode ? 'examResults_dark-mode' : 'examResults_light-mode'}>
             <h1>{language === 'En' ? 'Exam Results' : 'نتائج الامتحانات'}</h1>
-            <div className={styles.selectContainer}>
-                <CourseSelect courses={courses} onSelect={handleCourseSelect} language={language} />
+            <div className="examResults_selectContainer">
+                <CourseSelect courses={courses} onSelect={handleCourseSelect} language={language}/>
                 {selectedCourse && (
                     <select onChange={(e) => handleOptionSelect(e.target.value)} value={selectedOption}>
                         <option value="">{language === 'En' ? 'Select Option' : 'اختر الخيار'}</option>
-                        <option value="enrollments">{language === 'En' ? 'Students\' Enrollments' : 'تسجيلات الطلاب'}</option>
-                        <option value="assignments">{language === 'En' ? 'Student Assignments' : 'واجبات الطلاب'}</option>
+                        <option
+                            value="enrollments">{language === 'En' ? 'Students\' Enrollments' : 'تسجيلات الطلاب'}</option>
+                        <option
+                            value="assignments">{language === 'En' ? 'Student Assignments' : 'واجبات الطلاب'}</option>
                         <option value="exams">{language === 'En' ? 'Student Exams' : 'امتحانات الطلاب'}</option>
                     </select>
                 )}
@@ -120,11 +123,12 @@ function ExamResults({ language, isDarkMode, Role, userId }) {
                     </select>
                 )}
                 {selectedOption === 'enrollments' && (
-                    <button onClick={handleEnrollmentsSelect}>{language === 'En' ? 'Show Enrollments' : 'عرض التسجيلات'}</button>
+                    <button
+                        onClick={handleEnrollmentsSelect}>{language === 'En' ? 'Show Enrollments' : 'عرض التسجيلات'}</button>
                 )}
             </div>
             {selectedOption === 'enrollments' && students.length > 0 ? (
-                <StudentsInfo students={students} language={language} />
+                <StudentsInfo students={students} language={language}/>
             ) : (selectedOption === 'assignments' && students.length > 0 ? (
                 <StudentsAssignments students={students} assignmentId={selectedAssignment} language={language} />
             ) : (selectedOption === 'exams' && students.length > 0 ? (

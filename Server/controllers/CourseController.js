@@ -64,11 +64,17 @@ class CourseController {
     }
 
     static async addCourse(req, res) {
+        const { course_code, course_name } = req.body;
         try {
-            const { id, name, description } = req.body;
-            const image = req.file ? req.file.buffer : null;
 
-            await CourseModel.addCourse({ id, name, description, image });
+            if (!course_code || !course_name)
+                return res.status(400).json({ success: false, message: 'All fields are required.' });
+
+            const existingCourse = await CourseModel.getCourseById(course_code);
+            if (existingCourse)
+                return res.status(409).json({ success: false, message: 'Course already exists.' });
+
+            await CourseModel.addCourse({ course_code, course_name });
             return res.send({ success: true });
         } catch (err) {
             console.error('Error inserting into courses:', err);
@@ -78,11 +84,22 @@ class CourseController {
 
     static async updateCourse(req, res) {
         const { id } = req.params;
-        const { name, description } = req.body;
-        const image = req.file ? req.file.buffer : null;
+        const { course_code, course_name } = req.body;
 
         try {
-            await CourseModel.updateCourse({ id, name, description, image });
+            if (!id || !course_code || !course_name)
+                return res.status(400).json({ success: false, message: 'All fields are required.' });
+
+            const existingCourse = await CourseModel.getCourseById(course_code);
+            if (id !== course_code && existingCourse)
+                return res.status(409).json({ success: false, message: 'Course ID already exists.' });
+
+            const isExist = await CourseModel.getCourseByName(course_name);
+            const courseNameExist = isExist ? isExist.course_name : null;
+            if (!(existingCourse.course_name === courseNameExist) && isExist)
+                return res.status(409).json({ success: false, message: 'Course Name already exists.' });
+
+            await CourseModel.updateCourse({ id, course_code, course_name });
             return res.send({ success: true });
         } catch (err) {
             console.error('Error updating course:', err);
@@ -94,6 +111,13 @@ class CourseController {
         const { id } = req.params;
 
         try {
+            if (!id)
+                return res.status(400).json({ success: false, message: 'ID field is required.' });
+
+            const existingCourse = await CourseModel.getCourseById(id);
+            if (!existingCourse)
+                return res.status(409).json({ success: false, message: 'Course is not exists.' });
+
             await CourseModel.deleteCourse(id);
             return res.json({ success: true });
         } catch (err) {
