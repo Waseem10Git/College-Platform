@@ -27,8 +27,8 @@ class ExamController {
 
     static async getExamDetails(req, res) {
         try {
-            const { courseId } = req.params;
-            const examDetails = await ExamModel.getExamDetails(courseId);
+            const { examId } = req.params;
+            const examDetails = await ExamModel.getExamDetails(examId);
             return res.json(examDetails);
         } catch (err) {
             console.error('Error fetching exam details:', err);
@@ -70,7 +70,7 @@ class ExamController {
 
             try {
                 await ExamModel.updateExam(examId, exam_name, duration, start_at);
-
+                console.log(questions);
                 if (questions && questions.length > 0) {
                     for (const question of questions) {
                         await ExamModel.updateQuestion(question);

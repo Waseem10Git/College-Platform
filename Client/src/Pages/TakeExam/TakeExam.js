@@ -5,6 +5,7 @@ import CourseSelect from '../ExamResults/CourseSelect';
 import ExamSelect from '../ExamResults/ExamSelect';
 import {NotificationModal} from '../../components';
 import UserContext from "../../context/UserContext";
+import examApi from "../../api/examApi";
 
 const TakeExam = () => {
   const { isDarkMode, language, role, userId } = useContext(UserContext);
@@ -22,7 +23,10 @@ const TakeExam = () => {
   const [timer, setTimer] = useState(null);
   const [intervalId, setIntervalId] = useState(null);
   const [showResults, setShowResults] = useState(false);
+  const [finalScore, setFinalScore] = useState(null);
   const [notification, setNotification] = useState({ isOpen: false, message: '' }); // State for managing notifications
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [examEndTime, setExamEndTime] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,6 +50,25 @@ const TakeExam = () => {
     }
   }, [intervalId]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date()); // Update the current time every second
+    }, 1000);
+
+    return () => clearInterval(interval); // Cleanup the interval on component unmount
+  }, []);
+
+  useEffect(() => {
+    if (currentTime && examEndTime) {
+      if (currentTime.toLocaleTimeString() > examEndTime.toLocaleTimeString()) {
+        setIsExamEnded(true);
+        setStudentAnswers({});
+      } else {
+        setIsExamEnded(false);
+      }
+    }
+  }, [currentTime, examEndTime, selectedQuizId]);
+
   const handleCourseSelect = (courseId) => {
     console.log('courseId', courseId);
     axios
@@ -60,19 +83,23 @@ const TakeExam = () => {
   };
 
   const handleExamDetailsSelect = (examId) => {
-    console.log('examId: ', examId);
     resetExamState();
     setSelectedQuizId(examId);
-    axios
-        .get(`/api/exams-details/${examId}`)
+    examApi.fetchExamDetails(examId)
         .then((response) => {
           const details = response.data[0];
           setExamDetails(details);
 
+          console.log("exam details: ", examDetails)
+
           const startTime = new Date(formatDate(details.start_at));
+          const newStartTime = new Date(startTime.getTime() + 3 * 60 * 60 * 1000); // Add 3 hours in milliseconds
+
+          console.log("New start time:", newStartTime);
+
           const durationInMilliseconds = details.duration * 60 * 1000;
           const endTime = new Date(startTime.getTime() + durationInMilliseconds);
-          const currentTime = new Date();
+          setExamEndTime(endTime);
 
           if (currentTime >= endTime) {
             setIsExamEnded(true);
@@ -85,8 +112,7 @@ const TakeExam = () => {
           console.error('Error fetching exam details:', error);
         });
 
-    axios
-        .get(`/api/exams-questions/${examId}`)
+    examApi.fetchExamQuestions(examId)
         .then((response) => {
           setExamQuestions(response.data);
         })
@@ -94,8 +120,7 @@ const TakeExam = () => {
           console.error('Error fetching exam questions:', error);
         });
 
-    axios
-        .get(`/api/exams-answers/${examId}`)
+    examApi.fetchExamAnswers(examId)
         .then((response) => {
           setExamAnswers(response.data);
         })
@@ -122,10 +147,12 @@ const TakeExam = () => {
         correctCount += question.points;
       }
     });
-    return correctCount;
+    setFinalScore(correctCount);
   };
 
   const handleSubmit = () => {
+    setFinalScore(null);
+    let finalStudentScore = 0;
     const answers = examQuestions.map((question) => {
       const answerText = studentAnswers[question.question_id] || '';
       const isCorrect = examAnswers.some(
@@ -134,18 +161,22 @@ const TakeExam = () => {
               answer.answer_text === answerText &&
               answer.is_correct === 1
       );
+      let studentQuestionPoints = 0
+      if (isCorrect) {
+        studentQuestionPoints = question.points;
+        finalStudentScore += question.points
+      }
       return {
         questionId: question.question_id,
         answerText,
         isCorrect,
+        studentQuestionPoints,
       };
     });
 
-    axios
-        .post(`/api/student-answers/${userId}`, {
-          answers,
-          examId: selectedQuizId,
-        })
+    calculateScore();
+
+    examApi.setStudentAnswers(userId, answers, selectedQuizId, finalStudentScore)
         .then((response) => {
           setIsSubmitted(true);
           setIsExamEnded(true);
@@ -158,8 +189,7 @@ const TakeExam = () => {
   };
 
   const handleStartExam = () => {
-    axios
-        .get(`/api/student-exam-status/${userId}/${selectedQuizId}`)
+    examApi.fetchStudentExamStatus(userId, selectedQuizId)
         .then((response) => {
           if (response.data.is_submitted) {
             // setIsSubmitted(true);
@@ -206,7 +236,6 @@ const TakeExam = () => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    date.setHours(date.getHours() - 3);
     return date.toLocaleString([], {
       hour: '2-digit',
       minute: '2-digit',
@@ -257,7 +286,7 @@ const TakeExam = () => {
               {isExamStarted && !isExamEnded && (
                   <div>
                     <p>Time Remaining: {formatTime(timer)}</p>
-                    <button onClick={handleStartExam} disabled={isSubmitted}>
+                    <button onClick={() => handleStartExam()} disabled={isSubmitted}>
                       Start Exam
                     </button>
                   </div>
@@ -268,7 +297,7 @@ const TakeExam = () => {
             </div>
         )}
 
-        {isInExam && !showResults && (
+        {isInExam && !showResults && !isExamEnded && (
             <div className="TakeExam_questions-container">
               <div className="TakeExam_timer">{formatTime(timer)}</div>
               {examQuestions.length > 0 && (
@@ -280,35 +309,37 @@ const TakeExam = () => {
                       return (
                           <div className="TakeExam_question-item" key={questionIndex}>
                             <h3>{question.question_text} ?</h3>
-                            {isMCQ ? (
-                                examAnswers
-                                    .filter((answer) => answer.question_id === question.question_id)
-                                    .map((answer, answerIndex) => (
-                                        <button
-                                            key={answerIndex}
-                                            className={`TakeExam_answer-button ${
-                                                studentAnswers[question.question_id] === answer.answer_text
-                                                    ? 'selected'
-                                                    : ''
-                                            }`}
-                                            onClick={() =>
-                                                handleAnswerSelect(question.question_id, answer.answer_text)
-                                            }
-                                            disabled={isSubmitted}
-                                        >
-                                          {answer.answer_text}
-                                        </button>
-                                    ))
-                            ) : (
-                                <input
-                                    type="text"
-                                    id="essayAnswer"
-                                    value={studentAnswers[question.question_id] || ''}
-                                    onChange={(e) => handleAnswerSelect(question.question_id, e.target.value)}
-                                    required
-                                    disabled={isSubmitted}
-                                />
-                            )}
+                            <div className={"TakeExam_answers-section"}>
+                              {isMCQ ? (
+                                  examAnswers
+                                      .filter((answer) => answer.question_id === question.question_id)
+                                      .map((answer, answerIndex) => (
+                                          <button
+                                              key={answerIndex}
+                                              className={`TakeExam_answer-button ${
+                                                  studentAnswers[question.question_id] === answer.answer_text
+                                                      ? 'selected'
+                                                      : ''
+                                              }`}
+                                              onClick={() =>
+                                                  handleAnswerSelect(question.question_id, answer.answer_text)
+                                              }
+                                              disabled={isSubmitted}
+                                          >
+                                            {answer.answer_text}
+                                          </button>
+                                      ))
+                              ) : (
+                                  <input
+                                      type="text"
+                                      id="essayAnswer"
+                                      value={studentAnswers[question.question_id] || ''}
+                                      onChange={(e) => handleAnswerSelect(question.question_id, e.target.value)}
+                                      required
+                                      disabled={isSubmitted}
+                                  />
+                              )}
+                            </div>
                           </div>
                       );
                     })}
@@ -352,7 +383,7 @@ const TakeExam = () => {
                             : '(Essay)'}
                       </td>
 
-                      <td>{studentAnswers[question.question_id]}</td>
+                      <td>{studentAnswers[question.question_id] ? studentAnswers[question.question_id] : '--'}</td>
                       <td>{question.points}</td>
                     </tr>
                 ))}
@@ -361,7 +392,7 @@ const TakeExam = () => {
                     Your score
                   </td>
                   <td colSpan={2} style={{ textAlign: 'center' }}>
-                    {calculateScore()}
+                    {finalScore}
                   </td>
                 </tr>
                 </tbody>

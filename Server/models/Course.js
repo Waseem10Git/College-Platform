@@ -40,7 +40,7 @@ class CourseModel {
     static getAllCoursesForStudent(studentId) {
         return new Promise((resolve, reject) => {
             const query = `
-                SELECT C.course_code, C.course_name, C.description, C.image
+                SELECT C.course_code, C.course_name
                 FROM courses AS C 
                 INNER JOIN departments_courses AS DC ON C.course_code = DC.course_id
                 INNER JOIN instructors_courses AS IC ON DC.id = IC.department_course_id
@@ -59,7 +59,7 @@ class CourseModel {
     static getAllCoursesForInstructor(instructorId) {
         return new Promise((resolve, reject) => {
             const query = `
-                SELECT C.course_code, C.course_name, C.description, C.image
+                SELECT C.course_code, C.course_name
                 FROM instructors_courses AS IC 
                 INNER JOIN departments_courses as DC ON IC.department_course_id = DC.id
                 INNER JOIN courses AS C ON C.course_code = DC.course_id 

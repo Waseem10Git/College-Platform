@@ -36,7 +36,7 @@ input[type="file"] {
     margin-right: 10px;
 }
 
-button {
+.UploadFile_button {
     margin-top: 20px;
     padding: 10px 20px;
     background-color: #007bff;
@@ -48,12 +48,12 @@ button {
     transition: 0.3s;
 }
 
-.file-upload-container button:hover {
+.file-upload-container .UploadFile_button:hover {
     background-color: transparent;
     color: #007bff;
 }
 
-button:disabled , button:disabled:hover {
+button:disabled , .UploadFile_button:disabled:hover {
     opacity: .5;
     background-color: #007bff;
     border: 2px solid #007bff; /* Blue button color */
@@ -98,4 +98,19 @@ button:disabled , button:disabled:hover {
 
 .dark {
     background-color: #161616;
+}
+
+.UploadFile_Select-File {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.UploadFile_upload-icon {
+    width: 30px;
+}
+
+#fileInput {
+    display: none;
 }

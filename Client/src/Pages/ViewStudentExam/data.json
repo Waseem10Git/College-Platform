@@ -1,0 +1,19 @@
+{
+  "questions": [
+    {
+      "id": 101,
+      "text": "What is React?",
+      "answerText": "A JavaScript library",
+      "isCorrect": true,
+      "points": 5
+    },
+    {
+      "id": 102,
+      "text": "Explain useState",
+      "answerText": "For managing state in functional components",
+      "isCorrect": true,
+      "points": 3
+    }
+  ],
+  "totalScore": 8
+}

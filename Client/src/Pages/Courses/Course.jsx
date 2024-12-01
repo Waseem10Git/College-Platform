@@ -1,8 +1,8 @@
 import "./Course.css";
 import { useNavigate, useParams } from "react-router-dom";
-import React, {useContext, useEffect, useState} from "react";
-import axios from '../../api/axios';
+import { useContext, useEffect, useState } from "react";
 import UserContext from "../../context/UserContext";
+import coursesApi from "../../api/coursesApi";
 
 export default function Course() {
     const { isDarkMode, role } = useContext(UserContext);
@@ -13,15 +13,9 @@ export default function Course() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                console.log("userId: ", userId)
-                console.log("role: ",role)
-                let response;
-                if (role === 'student') {
-                    response = await axios.get(`/api/student/${userId}/courses`, {responseType: "json"});
-                } else if (role === 'instructor') {
-                    response = await axios.get(`/api/instructor/${userId}/courses`, {responseType: "json"});
-                }
-                console.log('API response:', response.data); // Log the response
+                console.log(role, userId);
+                const response = await coursesApi.fetchSomeCourses(role, userId);
+
                 if (Array.isArray(response.data)) {
                     setAllCourses(response.data);
                 } else {
@@ -46,9 +40,6 @@ export default function Course() {
                     allCourses.map((item, index) => (
                         <div key={index} className={"Course_coursesCard"}
                              onClick={() => handleCourseClick(item.course_code)}>
-                            <div className={"Course_image"}>
-                                <img src={`data:image/jpeg;base64,${item.image}`} alt={item.course_name}/>
-                            </div>
                             <div className={"Course_content"}>
                                 <div>
                                     <h3>{item.course_name}</h3>

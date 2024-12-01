@@ -43,7 +43,7 @@ const DepartmentsCoursesView = ({ departments }) => {
     };
 
     useEffect(() => {
-        coursesApi.fetchCourses().then(response => {
+        coursesApi.fetchAllCourses().then(response => {
             setCourses(response.data);
         });
         fetchDepartmentsCourses();

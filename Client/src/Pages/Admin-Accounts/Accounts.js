@@ -128,7 +128,7 @@ const Accounts = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const dataToUpdate = {};
     if (formData.newFirstName) dataToUpdate.newFirstName = formData.newFirstName;
@@ -140,7 +140,7 @@ const Accounts = () => {
     dataToUpdate.userID = formData.userID;
 
     if (selectedOption === "update"){
-      accountsApi.updateAccount(dataToUpdate)
+      await accountsApi.updateAccount(dataToUpdate)
           .then(res => {
             if (res.data.Status === "Success") {
               toast.success(language === 'En' ? 'Account updated successfully' : 'تم تحديث الحساب بنجاح');
@@ -161,7 +161,7 @@ const Accounts = () => {
       console.log('Submitted data to update:', dataToUpdate);
     }else if (selectedOption === "add") {
       console.log("form data", formData);
-          accountsApi.addAccount(formData)
+          await accountsApi.addAccount(formData)
           .then(res => {
             if (res.data.Status === "Success") {
               toast.success(language === 'En' ? 'Account added successfully' : 'تم تحديث الحساب بنجاح');
@@ -181,7 +181,7 @@ const Accounts = () => {
           });
       console.log('Submitted data:', formData);
     }else {
-          accountsApi.deleteAccount(formData.userID)
+          await accountsApi.deleteAccount(formData.userID)
           .then(res => {
             if (res.data.Status === "Success") {
               toast.success(language === 'En' ? 'Account deleted successfully' : 'تم حذف الحساب بنجاح');
@@ -246,7 +246,7 @@ const Accounts = () => {
                           {/* Filter input */}
                           <input
                               type="text"
-                              placeholder={language === 'En' ? 'Search...' : 'بحث...'}
+                              placeholder={language === 'En' ? 'Search...BY ID/Name/Email/Role/Department' : 'البحث... حسب المعرف/الاسم/البريد الإلكتروني/الدور/القسم'}
                               value={filter}
                               onChange={handleFilterChange}
                               className="filter-input"

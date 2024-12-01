@@ -35,7 +35,7 @@ class DepartmentCourseController {
             const { id } = req.params;
             const { department_id, course_id, level, semester } = req.body;
 
-            const isExist = await DepartmentCourseModel.getDepartmentCourseById(id)
+            const isExist = await DepartmentCourseModel.checkDepartmentCourseExistence(id)
             if (isExist && id !== department_id +'_'+ course_id)
                 return res.status(409).json({ success: false, message: 'This course-department combination already exists.' });
 

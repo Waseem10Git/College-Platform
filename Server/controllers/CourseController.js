@@ -27,8 +27,6 @@ class CourseController {
             const courses = results.map(course => ({
                 course_code: course.course_code,
                 course_name: course.course_name,
-                description: course.description,
-                image: course.image ? course.image.toString('base64') : null
             }));
             return res.json(courses);
         } catch (err) {
@@ -43,8 +41,6 @@ class CourseController {
             const courses = results.map(course => ({
                 course_code: course.course_code,
                 course_name: course.course_name,
-                description: course.description,
-                image: course.image ? course.image.toString('base64') : null
             }));
             return res.json(courses);
         } catch (err) {

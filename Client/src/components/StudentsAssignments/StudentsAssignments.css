@@ -1,0 +1,68 @@
+.StudentsAssignments_overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 900px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.StudentsAssignments_overlay embed {
+    max-width: 100%;
+}
+
+.StudentsAssignments_overlay button {
+    display: block;
+    margin: 20px auto 0;
+}
+
+.StudentsAssignments_overlay-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* Light mode for overlay and background */
+.StudentsAssignments_overlay {
+    background-color: #ffffff;
+    color: #000;
+    border: 1px solid #ddd;
+}
+
+.StudentsAssignments_overlay-background {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* Dark mode for overlay and background */
+.StudentsAssignments_overlay.dark {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #444;
+}
+
+.StudentsAssignments_overlay-background.dark {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.StudentsAssignments_overlay button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.StudentsAssignments_overlay button:hover {
+    background-color: #0056b3;
+}

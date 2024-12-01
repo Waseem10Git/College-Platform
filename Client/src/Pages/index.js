@@ -18,3 +18,4 @@ export {default as Assignments} from './Assignments/Assignments';
 export {default as UploadAssignment} from './UploadAssignment/UploadAssignment';
 export {default as TakeExam} from './TakeExam/TakeExam';
 export {default as AllNotifications} from './AllNotifications/AllNotifications';
+export {default as ViewStudentExam} from './ViewStudentExam/ViewStudentExam';

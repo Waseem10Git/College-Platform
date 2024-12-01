@@ -1,11 +1,11 @@
 const ExamResultModel = require('../models/ExamResult');
 
 class ExamResultController {
-    static async getExamResultsByExamId(req, res) {
+    static async getStudentsWithExams(req, res) {
         const { examId } = req.params;
 
         try {
-            const examResults = await ExamResultModel.getExamResultsByExamId(examId);
+            const examResults = await ExamResultModel.getStudentsWithExams(examId);
             return res.status(200).json(examResults);
         } catch (err) {
             console.error('Error fetching exam results:', err);

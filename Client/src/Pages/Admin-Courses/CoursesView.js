@@ -27,7 +27,7 @@ const CoursesView = () => {
 
     const fetchCourses = async () => {
         try {
-            const response = await coursesApi.fetchCourses();
+            const response = await coursesApi.fetchAllCourses();
             setCourses(response.data);
         } catch (err) {
             console.log('Error fetching courses data: ', err);
@@ -238,7 +238,8 @@ const CoursesView = () => {
                             onChange={(e) => setNewCourse({...newCourse, course_code: e.target.value})}
                         />
                     </td>
-                    <td>{addingNameErrorMessage && (
+                    <td>
+                        {addingNameErrorMessage && (
                         <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{addingNameErrorMessage}</p>
                     )}
                         {addingNameExistErrorMessage && (

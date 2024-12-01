@@ -20,6 +20,8 @@ function ExamPreviewPage() {
     const [duration, setDuration] = useState(0);
     const [startAt, setStartAt] = useState(null);
     const [editMode, setEditMode] = useState(false);
+    const [currentTime, setCurrentTime] = useState(new Date());
+    const [isExamStarted, setIsExamStarted] = useState(false);
 
     const fetchData = async () => {
         try {
@@ -37,6 +39,24 @@ function ExamPreviewPage() {
     useEffect(() => {
         fetchData();
     }, [userId]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentTime(new Date()); // Update the current time every second
+        }, 1000);
+
+        return () => clearInterval(interval); // Cleanup the interval on component unmount
+    }, []);
+
+    useEffect(() => {
+        if (currentTime && startAt) {
+            if (currentTime.toLocaleTimeString() === startAt.toLocaleTimeString() || currentTime.toLocaleTimeString() > startAt.toLocaleTimeString()) {
+                setIsExamStarted(true);
+            } else {
+                setIsExamStarted(false);
+            }
+        }
+    }, [currentTime, startAt, selectedExamId]);
 
     const handleCourseSelect = (courseId) => {
         axios.get(`/api/exams/${courseId}`)
@@ -134,7 +154,7 @@ function ExamPreviewPage() {
 
     const handleQuestionPointsChange = (index, value) => {
         const updatedQuestions = [...examQuestions];
-        updatedQuestions[index].points = value;
+        updatedQuestions[index].points = parseInt(value);
         setExamQuestions(updatedQuestions);
     };
 
@@ -159,6 +179,7 @@ function ExamPreviewPage() {
                 setExams(exams.filter(exam => exam.exam_id !== selectedExamId));
                 setSelectedExamId('');
                 setCourses([]);
+                setExams([]);
                 fetchData();
             })
             .catch(error => {
@@ -168,7 +189,7 @@ function ExamPreviewPage() {
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        date.setHours(date.getHours() - 3);
+        date.setHours(date.getHours());
         return date.toLocaleString([], {
             hour: '2-digit',
             minute: '2-digit',
@@ -323,12 +344,16 @@ function ExamPreviewPage() {
                                     </div>
                                 );
                             })}
-                            <button className={"ExamPreviewPage_editButton"} onClick={toggleEditMode}>
-                                Edit Exam
-                            </button>
-                            <button onClick={handleDeleteExam} className="ExamPreviewPage_delete-button">
-                                {language === 'En' ? 'Delete Exam' : 'حذف الامتحان'}
-                            </button>
+                            {!isExamStarted && (
+                                <>
+                                    <button className={"ExamPreviewPage_editButton"} onClick={toggleEditMode}>
+                                        Edit Exam
+                                    </button>
+                                    <button onClick={handleDeleteExam} className="ExamPreviewPage_delete-button">
+                                        {language === 'En' ? 'Delete Exam' : 'حذف الامتحان'}
+                                    </button>
+                                </>
+                            )}
                         </div>
                     )}
                 </div>

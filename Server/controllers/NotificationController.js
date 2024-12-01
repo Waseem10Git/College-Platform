@@ -66,7 +66,6 @@ class NotificationController {
 
                 // Get the last inserted notification ID
                 const notificationId = notificationResult.insertId;
-                console.log('notification Id: ', notificationId);
 
                 // Get all students enrolled in the course using the EnrollmentModel
                 const students = await EnrollmentModel.getStudentsForInstructorCourse(instructor_course_id);

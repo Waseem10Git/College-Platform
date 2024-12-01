@@ -1,5 +1,4 @@
 const StudentAssignmentModel = require('../models/StudentAssignment');
-const fs = require('fs');
 
 class StudentAssignmentController {
     static async uploadStudentAssignment(req, res) {
@@ -30,6 +29,51 @@ class StudentAssignmentController {
             } catch (unlinkError) {
                 console.error('Error deleting temporary file:', unlinkError);
             }
+        }
+    }
+
+    static async viewAssignment(req, res) {
+        const {studentAssignmentId} = req.params;
+
+        try {
+            const assignment = await StudentAssignmentModel.getStudentAssignmentById(studentAssignmentId);
+
+            if (!assignment || !assignment.student_file) {
+                return res.status(404).send('File not found');
+            }
+
+            // Set the response headers to indicate a PDF file for inline viewing
+            res.setHeader('content-type', 'application/pdf');
+            res.setHeader('Content-Disposition', `inline; filename="${assignment.student_file_name}"`);
+
+            // Send the buffer content directly
+            res.send(assignment.student_file);
+
+        } catch (err) {
+            console.error('Error viewing student assignment:', err);
+            res.status(500).json({ error: 'An error occurred while viewing the student assignment' });
+        }
+    }
+
+    static async editStudentAssignmentScore(req, res) {
+        const {studentAssignmentId} = req.params;
+        const {score} = req.body;
+
+        try {
+            if (!studentAssignmentId){
+                return res.status(404).json({error: 'There is data messing'});
+            }
+
+            if (!score && score < 0){
+                return res.status(404).json({error: "Score can't be empty and can't be less than 0"});
+            }
+
+            await StudentAssignmentModel.editStudentAssignmentScore(studentAssignmentId, score);
+
+            res.status(200).json({message: 'Editing score successfully'});
+        } catch (err) {
+            console.log('Error editing student assignment score: ', err);
+            res.status(404).json({error: "An error occurred while editing the student's assignment score"})
         }
     }
 }

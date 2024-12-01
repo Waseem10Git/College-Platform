@@ -34,11 +34,12 @@
 
 .Course_coursesCard .Course_image {
     width: 100%;
+
 }
 
 .Course_coursesCard .Course_image img {
     width: 100%;
-    height: auto;
+    height: 200px;
     object-fit: cover;
 }
 

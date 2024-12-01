@@ -1,0 +1,36 @@
+/* Container styling for ExamSelect */
+.ExamSelect_container {
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* Light mode styles */
+.light-mode .ExamSelect_dropdown {
+    background-color: #ffffff;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+/* Dark mode styles */
+.dark-mode .ExamSelect_dropdown {
+    background-color: #444;
+    color: #f1f1f1;
+    border: 1px solid #555;
+}
+
+/* Text color styling */
+.light-text {
+    color: #333;
+}
+
+.dark-text {
+    color: #f1f1f1;
+}
+
+/* Focus styling for dropdown */
+.ExamSelect_dropdown:focus {
+    outline: none;
+    border-color: #007bff;
+}

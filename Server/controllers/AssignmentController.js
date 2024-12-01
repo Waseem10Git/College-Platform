@@ -1,66 +1,62 @@
 const AssignmentModel = require('../models/Assignment');
-const NotificationModel = require('../models/Notification');
-const NotificationController = require('../controllers/NotificationController');
 const InstructorCourseModel = require('../models/InstructorCourse')
-const fs = require('fs');
-const path = require('path');
 const conn = require('../config/db');
+const util = require('util');
+const ChapterModel = require("../models/Chapter");
+
+const MAX_LONG_BLOB_SIZE = 4 * 1024 * 1024 * 1024; // 4GB
 
 class AssignmentController {
     static async uploadAssignment(req, res) {
         const { selectedCourse, userId, assignmentName, assignmentDescription, dueDate } = req.body;
-        const assignmentFile = req.file;
-        const filePath = assignmentFile.path;
+        const fileData = req.file ? req.file.buffer : null;
+        const fileName = req.file ? req.file.originalname : null;
+
+        if (req.file && req.file.size > MAX_LONG_BLOB_SIZE) {
+            return res.status(400).json({
+                message: `File is too large. Maximum size allowed is ${MAX_LONG_BLOB_SIZE / (1024 * 1024)} MB`
+            });
+        }
+
+        // Promisify transaction methods
+        const beginTransaction = util.promisify(conn.beginTransaction).bind(conn);
+        const commit = util.promisify(conn.commit).bind(conn);
+        const rollback = util.promisify(conn.rollback).bind(conn);
 
         try {
-            if (!fs.existsSync(filePath)) {
-                return res.status(404).json({ error: 'File not found' });
+            await beginTransaction();
+
+            // Fetch instructor_course_id
+            const result = await InstructorCourseModel.getInstructorCourseId(userId, selectedCourse);
+
+            if (result.length === 0) {
+                res.status(404).json({ error: 'No matching instructor_course_id found' });
             }
-            const fileData = fs.readFileSync(filePath);
 
-            conn.beginTransaction(async (err) => {
-                if (err) {
-                    console.error('Transaction Error:', err);
-                    return res.status(500).json({ error: 'Transaction Error' });
-                }
+            const instructor_course_id = result[0].id;
 
-                const result = await InstructorCourseModel.getInstructorCourseId(userId, selectedCourse);
+            // Insert assignment
+            const assignmentId = await AssignmentModel.insertAssignment(
+                assignmentName,
+                assignmentDescription || null,
+                fileName,
+                fileData,
+                dueDate
+            );
 
-                if (result.length === 0) {
-                    return conn.rollback(() => {
-                        console.error('No matching instructor_course_id found');
-                        res.status(404).json({ error: 'No matching instructor_course_id found' });
-                    });
-                }
+            // Associate assignment with course
+            await AssignmentModel.associateAssignmentWithCourse(instructor_course_id, assignmentId);
 
-                const instructor_course_id = result[0].id;
-                const assignmentId = await AssignmentModel.insertAssignment(
-                    assignmentName,
-                    assignmentDescription,
-                    assignmentFile.originalname,
-                    fileData,
-                    dueDate
-                );
+            // Associate assignment with students
+            const associationResult = await AssignmentModel.associateAssignmentWithStudents(selectedCourse, userId, assignmentId);
+            console.log(`Associations made: ${associationResult.affectedRows}`);
 
-                await AssignmentModel.associateAssignmentWithCourse(instructor_course_id, assignmentId);
-
-                conn.commit((err) => {
-                    if (err) {
-                        return conn.rollback(() => {
-                            console.error('Transaction commit failed:', err);
-                            res.status(500).json({ error: 'Transaction commit failed' });
-                        });
-                    }
-
-                    res.json({ message: 'Assignment uploaded successfully' });
-
-                    // Cleanup: delete the temporary file after storing in database
-                    AssignmentModel.cleanupTemporaryFile(filePath);
-                });
-            });
+            await commit();
+            res.json({ message: 'Assignment uploaded successfully' });
         } catch (error) {
+            await rollback();
             console.error('Error uploading assignment:', error);
-            res.status(500).json({ error: 'Failed to upload assignment' });
+            res.status(500).json({ error: error.message });
         }
     }
 
@@ -85,6 +81,46 @@ class AssignmentController {
         } catch (err) {
             console.error('Error fetching assignments:', err);
             return res.status(500).json({ message: 'Error fetching assignments' });
+        }
+    }
+
+    static async downloadAssignment(req, res) {
+        const { assignmentId } = req.params;
+        try {
+            const assignment = await AssignmentModel.getAssignmentById(assignmentId);
+
+            if (!assignment) {
+                return res.status(404).send('File not found');
+            }
+
+            res.setHeader('Content-Disposition', 'attachment; filename=' + assignment.assignment_file_name);
+            res.send(assignment.assignment_file);
+
+        } catch (error) {
+            console.error('Error downloading chapter:', error);
+            res.status(500).json({ error: 'An error occurred while downloading the chapter' });
+        }
+    }
+
+    static async viewInstructorAssignment(req, res) {
+        const { assignmentId } = req.params;
+        try {
+            const assignment = await AssignmentModel.getAssignmentById(assignmentId);
+
+            if (!assignment) {
+                return res.status(404).send('File not found');
+            }
+
+            // Set the response headers to indicate a PDF file for inline viewing
+            res.setHeader('content-type', 'application/pdf');
+            res.setHeader('Content-Disposition', `inline; filename="${assignment.assignment_file_name}"`);
+
+            // Send the buffer content directly
+            res.send(assignment.assignment_file);
+
+        } catch (error) {
+            console.error('Error viewing chapter:', error);
+            res.status(500).json({ error: 'An error occurred while viewing the chapter' });
         }
     }
 }

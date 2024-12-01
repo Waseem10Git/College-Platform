@@ -1,0 +1,176 @@
+/* Light Mode - Default Styles */
+.Chapters_course-view {
+    background-color: #ffffff; /* Light mode background */
+    color: #000000; /* Light mode text */
+    padding: 20px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.Chapters_course-view.Chapters_dark-mode {
+    background-color: #1a1a1a; /* Dark mode background */
+    color: #f0f0f0; /* Dark mode text */
+}
+
+.Chapters_file-upload-container {
+    background-color: #f0f0f0; /* Light mode upload container */
+    padding: 15px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.Chapters_course-view.Chapters_dark-mode .Chapters_file-upload-container {
+    background-color: #333; /* Dark mode upload container */
+}
+
+.Chapters_content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.Chapters_Select-Chapter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.Chapters_upload-icon {
+    width: 24px;
+    height: 24px;
+    margin: 0px 10px;
+}
+
+.Chapters_courses-container {
+    margin: 15px;
+}
+
+.Chapters_courses-container.Chapters_dark-mode {
+    background-color: #333;
+}
+
+
+.Chapters_courses {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.Chapters_courses-card {
+    background-color: #f9f9f9; /* Light mode card background */
+    color: #000; /* Light mode text */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    min-width: 200px;
+}
+
+.Chapters_course-view.Chapters_dark-mode .Chapters_courses-card {
+    background-color: #444; /* Dark mode card background */
+    color: #f0f0f0; /* Dark mode text */
+    border: 1px solid #555;
+}
+
+
+.Chapters_courses-card button {
+    background-color: #007bff; /* Button color */
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    max-width: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+
+
+.Chapters_courses-card button:hover {
+    background-color: #0056b3;
+}
+
+.Chapters_course-view.Chapters_dark-mode .Chapters_courses-card button {
+    background-color: #0066cc;
+}
+
+.Chapters_course-view.Chapters_dark-mode .Chapters_courses-card button:hover {
+    background-color: #004080;
+}
+
+.Chapters_overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 900px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.Chapters_overlay embed {
+    max-width: 100%;
+}
+
+.Chapters_overlay button {
+    display: block;
+    margin: 20px auto 0;
+}
+
+.Chapters_overlay-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* Light mode for overlay and background */
+.Chapters_overlay {
+    background-color: #ffffff;
+    color: #000;
+    border: 1px solid #ddd;
+}
+
+.Chapters_overlay-background {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* Dark mode for overlay and background */
+.Chapters_overlay.dark {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #444;
+}
+
+.Chapters_overlay-background.dark {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.Chapters_overlay button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.Chapters_overlay button:hover {
+    background-color: #0056b3;
+}

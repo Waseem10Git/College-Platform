@@ -1,18 +1,16 @@
-
 .examResults_ExamResult {
+  min-height: 100vh;
   text-align: center;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  background: #f8f8f8;
+
 }
 
 /* Titles */
 .examResults_h1, .examResults_h2 {
   color: #333;
   font-weight: 600;
+  font-weight: bolder;
 }
 
 /* Select Components */
@@ -44,7 +42,7 @@
 }
 
 .examResults_tr:nth-child(even) {
-  background-color: #f2f2f2;
+  background-color: #f8f8f8;
 }
 
 .examResults_tr:hover {
@@ -60,4 +58,57 @@
 /* Container for the selectors */
 .examResults_selectContainer {
   margin-bottom: 20px;
+  background-color: #f8f8f8;
+}
+
+.examResults_light-mode{
+  background-color: #f8f8f8;
+}
+
+/* Dark Mode Styles */
+.examResults_dark-mode .examResults_ExamResult {
+  background: #333;
+  color: #f1f1f1;
+}
+
+.examResults_dark-mode .examResults_h1,
+.examResults_dark-mode .examResults_h2,
+.examResults_dark-mode .examResults_h3 {
+  color: #f1f1f1;
+}
+
+.examResults_dark-mode .examResults_select {
+  background-color: #444;
+  color: #f1f1f1;
+  border: 1px solid #555;
+}
+
+.examResults_dark-mode .examResults_table {
+  background: #333;
+  color: #f1f1f1;
+}
+
+.examResults_dark-mode .examResults_th {
+  background-color: #0056b3;
+}
+
+.examResults_dark-mode .examResults_tr:nth-child(even) {
+  background-color: #555;
+}
+
+.examResults_dark-mode .examResults_tr:hover {
+  background-color: #666;
+}
+
+.examResults_dark-mode .examResults_noResults {
+  color: #bbb;
+}
+
+.examResults_dark-mode .examResults_selectContainer {
+  background-color: #1a1a1a;
+}
+
+.examResults_dark-mode select{
+  background-color: #444;
+  color: #f1f1f1;
 }

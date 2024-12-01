@@ -18,23 +18,13 @@ app.use(cors({
     methods: ["POST", "GET", "DELETE", "PUT"],
     credentials: true,
 }));
-// app.options('*', cors());
+
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// app.use((req, res, next) => {
-//     res.header('Access-Control-Allow-Credentials', 'true');
-//     next();
-// });
-
 // Use routes
 require('./routes')(app);
-
-// app.use(express.static('client/build'));
-// app.get('*', (req, res) => {
-//     res.sendFile(`${__dirname}/client/build/index.html`);
-// });
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../Client/build')));
@@ -44,23 +34,28 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../Client/build', 'index.html'));
 });
 
-conn.connect(err => {
-    if (err) {
-        console.error('Database connection failed: ', err.stack);
-        return;
-    }
-    console.log('Connected to MySQL database.');
-
-    createTables()
-        .then(() => {
-            console.log('All tables created successfully');
-
-            server.listen(port, "0.0.0.0", () => {
-                console.log(`Server is running on port ${port}`);
-            });
-        })
-        .catch(err => {
-            console.error('Error creating tables: ', err);
-            process.exit(1);
-        });
+server.listen(port, "0.0.0.0", () => {
+    console.log(`Server is running on port ${port}`);
 });
+
+
+// conn.connect(err => {
+//     if (err) {
+//         console.error('Database connection failed: ', err.stack);
+//         return;
+//     }
+//     console.log('Connected to MySQL database.');
+//
+//     createTables()
+//         .then(() => {
+//             console.log('All tables created successfully');
+//
+//             server.listen(port, "0.0.0.0", () => {
+//                 console.log(`Server is running on port ${port}`);
+//             });
+//         })
+//         .catch(err => {
+//             console.error('Error creating tables: ', err);
+//             process.exit(1);
+//         });
+// });

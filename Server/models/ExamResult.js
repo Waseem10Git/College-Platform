@@ -1,13 +1,22 @@
 const conn = require('../config/db');
 class ExamResultModel {
-    static getExamResultsByExamId(examId) {
+    static getStudentsWithExams(examId) {
         return new Promise((resolve, reject) => {
             const query = `
-                SELECT u.id, u.first_name, u.last_name, ee.score, ee.is_submitted
-                FROM enrollments_exams ee
-                JOIN enrollments e ON ee.enrollment_id = e.id
-                RIGHT JOIN users u ON e.student_id = u.id
-                WHERE ee.exam_id = ?
+                SELECT 
+                    u.id AS student_id,
+                    CONCAT(u.first_name, ' ', u.last_name) AS student_name,
+                    ee.id AS student_exam_id,
+                    ee.is_submitted,
+                    ee.score
+                FROM 
+                    enrollments_exams ee
+                JOIN 
+                    enrollments e ON ee.enrollment_id = e.id
+                RIGHT JOIN 
+                    users u ON e.student_id = u.id
+                WHERE 
+                    ee.exam_id = ?
             `;
             conn.query(query, [examId], (err, results) => {
                 if (err) {

@@ -1,18 +1,25 @@
-/* src/ExamResultDetails.css */
+/* Ensure html and body take full height of the viewport */
+html, body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
 
+/* Container for the quiz results, take full height */
 .examResultDetails_quizResult {
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
+  padding: 10px;
   margin: 0 auto;
+  min-height: 100vh;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;  /* Align content to the top */
+  flex-grow: 1; /* Allow the container to grow and fill available space */
+  width: 100%;
 }
 
-.examResultDetails_selectContainer {
-  margin-bottom: 20px;
-}
-
+/* Select input styles */
 .examResultDetails_select {
   padding: 10px;
   margin: 10px;
@@ -21,6 +28,7 @@
   width: 200px;
 }
 
+/* Results table styles */
 .examResultDetails_resultsTable {
   margin-top: 20px;
 }
@@ -39,30 +47,45 @@
 .examResultDetails_th,
 .examResultDetails_td {
   padding: 10px;
-  text-align: left;
 }
 
-.dark {
+/* Dark mode styles */
+.examResultDetails_quizResult.dark {
   background-color: #161616;
   color: #fff;
 }
 
-.light {
-  background-color: #f7f7f7;
-  color: #333;
-}
-
-.dark .examResultDetails_select {
+.examResultDetails_quizResult.dark .examResultDetails_select {
   background-color: #444;
   color: #fff;
 }
 
-.dark .examResultDetails_h2 {
+.examResultDetails_quizResult.dark .examResultDetails_h2 {
   background-color: #161616;
   color: #fff;
 }
 
-.light .examResultDetails_select {
+/* Light mode styles */
+.examResultDetails_quizResult.light {
+  background-color: #f7f7f7;
+  color: #333;
+}
+
+.examResultDetails_quizResult.light .examResultDetails_select {
   background-color: #fff;
   color: #000;
+}
+
+.examResultDetails_quizResult.light .examResultDetails_h2 {
+  background-color: #f7f7f7;
+  color: #333;
+}
+
+/* Footer: keep it at the bottom */
+footer {
+  margin-top: auto;  /* Push footer to the bottom */
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  padding: 10px;
 }

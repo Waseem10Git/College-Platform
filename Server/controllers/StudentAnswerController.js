@@ -4,7 +4,10 @@ class StudentAnswerController {
     static async submitStudentAnswers(req, res) {
         try {
             const { userId } = req.params;
-            const { answers, examId } = req.body;
+            const { answers, examId, score } = req.body;
+
+            console.log('score: ', score)
+            console.log('body: ', req.body);
 
             // Check if exam is already submitted
             const checkResults = await StudentAnswerModel.checkSubmission(examId, userId);
@@ -16,7 +19,7 @@ class StudentAnswerController {
             await StudentAnswerModel.insertAnswers(answers, examId, userId);
 
             // Mark exam as submitted
-            await StudentAnswerModel.markExamAsSubmitted(examId, userId);
+            await StudentAnswerModel.setSubmissionAndScore(examId, userId, score);
 
             return res.json({ message: 'Score updated and exam submitted successfully' });
         } catch (err) {

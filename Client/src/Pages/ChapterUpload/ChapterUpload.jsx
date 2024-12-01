@@ -1,10 +1,15 @@
-import React, {useState, useEffect, useContext} from 'react';
-import axios from '../../api/axios';
+import {useState, useEffect, useContext} from 'react';
 import { useParams } from 'react-router-dom';
 import { UploadFile, ConfirmDelete } from "../../components";
 import uploadLabel from "../FileUpload/images/uploadLabel.png";
-import styles from "./ChapterUpload.module.css"
+import "./ChapterUpload.css"
 import UserContext from "../../context/UserContext";
+import chaptersApi from "../../api/chaptersApi";
+import {toast} from "react-toastify"
+import notificationApi from "../../api/notificationApi";
+import { SlCloudDownload } from "react-icons/sl";
+import { SlTrash } from "react-icons/sl";
+import { SlBookOpen } from "react-icons/sl";
 
 const ChapterUpload = () => {
     const { isDarkMode, language, role } = useContext(UserContext);
@@ -15,11 +20,12 @@ const ChapterUpload = () => {
     const [uploadingVisible, setUploadingVisible] = useState(false);
     const [deletionVisible, setDeletionVisible] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
+    const [fileErrorMessage, setFileErrorMessage] = useState('');
     const { courseCode, userId } = useParams();
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`/api/courses/${courseCode}/chapters`);
+            const response = await chaptersApi.fetchChapters(courseCode);
             setChapters(response.data);
         } catch (error) {
             console.log('Error fetching data:', error);
@@ -31,31 +37,40 @@ const ChapterUpload = () => {
     }, [courseCode, userId]);
 
     const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
+        const selectedFile = e.target.files[0];
+        if (selectedFile && selectedFile.type !== 'application/pdf') {
+            e.target.value = null;  // Reset the file input
+            return;
+        }
+        setFile(selectedFile);
         setErrorMessage('');
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!file){
+            setFileErrorMessage('Select File First Please');
+            return;
+        }
+
         const formData = new FormData();
         formData.append('file', file);
         formData.append('userId', userId);
 
         try {
-            await axios.post(`/api/courses/${courseCode}/chapters`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-            alert('Chapter uploaded successfully');
-            setFile(null);
+            const uploadResponse = await chaptersApi.addChapter(courseCode, formData);
+            console.log(uploadResponse)
 
-            const notificationMessage = `New Chapter uploaded for course `;
-            await axios.post(`/api/send-notification`, {
-                userId: userId,
-                courseCode: courseCode,
-                message: notificationMessage
-            });
+            if (uploadResponse.status === 200){
+                toast.success(language === 'En' ? 'Chapter uploaded successfully!' : 'تم رفع المحاضرة بنجاح!');
+                setFile(null);
+                setUploadingVisible(false);
+                setFileErrorMessage('');
+
+                const notificationMessage = language === 'En' ? 'New Chapter uploaded for course' : 'تم رفع محاضرة جديدة!';
+                await notificationApi.sendNotification(userId, courseCode, notificationMessage);
+            }
 
             fetchData();
 
@@ -63,16 +78,14 @@ const ChapterUpload = () => {
             if (error.response && error.response.data && error.response.data.message) {
                 setErrorMessage(error.response.data.message);
             } else {
-                console.error('Error uploading chapter', error);
+                toast.error(language === 'En' ? 'Error uploading chapter' : 'خطأ في رفع المحاضرة');
             }
         }
     };
 
     const handleDownload = async (chapterId, fileName) => {
         try {
-            const response = await axios.get(`/api/chapters/${chapterId}/download`, {
-                responseType: 'blob',
-            });
+            const response = await chaptersApi.downloadChapter(chapterId);
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
@@ -87,8 +100,8 @@ const ChapterUpload = () => {
 
     const handleDelete = async (chapterId) => {
         try {
-            await axios.delete(`/api/chapters/${chapterId}`);
-            alert('Chapter deleted successfully');
+            await chaptersApi.deleteChapter(chapterId);
+            toast.error(language === 'En' ? 'Chapter deleted successfully' : 'تم حذف المحاضرة بنجاح!')
             fetchData();
         } catch (error) {
             console.error('Error deleting chapter', error);
@@ -97,14 +110,13 @@ const ChapterUpload = () => {
 
     const handleView = async (chapterId) => {
         try {
-            const response = await axios.get(`/api/chapters/${chapterId}/view`, {
-                responseType: 'blob',
-            });
-            const contentType = response.headers['content-type'];
+            const response = await chaptersApi.viewChapter(chapterId);
+            const contentType = response.headers["content-type"];
             const url = window.URL.createObjectURL(new Blob([response.data], { type: contentType }));
+            console.log(url, contentType)
             setFileView({ url, contentType });
         } catch (error) {
-            console.error('Error viewing chapter', error);
+            console.error("Error viewing chapter", error);
         }
     };
 
@@ -146,17 +158,21 @@ const ChapterUpload = () => {
         >
             {role === 'instructor' ? (
                 <>
-                    <div className={"file-upload-container"}>
-                        <div className={"content"}>
-                            <label onClick={() => setUploadingVisible(true)}>
-                                <img src={uploadLabel} className={"upload-icon"} alt='upload icon'/>
-                                {!!file ? "Change" : "Upload"} File
+                    <div className={"Chapters_file-upload-container"}>
+                        <div className={"Chapters_content"}>
+                            <label className={"Chapters_Select-Chapter"} onClick={() => setUploadingVisible(true)}>
+                                <img src={uploadLabel} className="Chapters_upload-icon" alt='upload icon'/>
+                                <span>
+                                    {!!file ? (language === 'En' ? 'Change' : 'تغير') : (language === 'En' ? 'Select' : 'تحديد')} {language === 'En' ? 'File' : 'ملف'}
+                                </span>
                             </label>
                             <UploadFile
                                 uploadingVisible={uploadingVisible}
                                 handleFileChange={handleFileChange}
                                 file={file}
-                                setUploadingVisible={setUploadingVisible} handleSubmit={handleSubmit}
+                                setUploadingVisible={setUploadingVisible}
+                                handleSubmit={handleSubmit}
+                                errorMessage={fileErrorMessage}
                             />
                         </div>
                     </div>
@@ -165,35 +181,47 @@ const ChapterUpload = () => {
             {
                 errorMessage && <p style={{color: 'red'}}>{errorMessage}</p>
             }
-            <div className={"courses-container"}>
-                <h3>Uploaded Chapters</h3>
-                <div className={"courses"}>
+            <div className={`Chapters_courses-container ${isDarkMode && "Chapters_dark"}`}>
+                <div className="Chapters_courses">
                     {chapters.map(chapter => (
-                        <div key={chapter.id} className="courses-card">
+                        <div key={chapter.id} className="Chapters_courses-card">
                             {chapter.chapter_name}
-                            <button onClick={() => handleDownload(chapter.id, chapter.chapter_name)}>Download</button>
-                            <button onClick={() => handleView(chapter.id)}>View</button>
+                            <button onClick={() => handleDownload(chapter.id, chapter.chapter_name)}>
+                                {language === 'En' ? 'Download:' : 'تنزيل:'}
+                                <SlCloudDownload/>
+                            </button>
+                            <button onClick={() => handleView(chapter.id)}>
+                                {language === 'En' ? 'View:' : 'عرض:'}
+                                <SlBookOpen/>
+                            </button>
                             {role === 'instructor' && (
                                 <>
-                                    <button onClick={() => setDeletionVisible(true)}>Delete</button>
-                                    <ConfirmDelete deletionVisible={deletionVisible} setDeletionVisible={setDeletionVisible} handleDelete={() => handleDelete(chapter.id)} />
+                                    <button onClick={() => setDeletionVisible(true)}>
+                                        {language === 'En' ? 'Delete:' : 'حذف:'}
+                                        <SlTrash/>
+                                    </button>
+                                    <ConfirmDelete deletionVisible={deletionVisible}
+                                                   setDeletionVisible={setDeletionVisible}
+                                                   handleDelete={() => handleDelete(chapter.id)}/>
                                 </>
                             )}
                         </div>
                     ))}
                 </div>
-                {fileView && (
-                    <div>
-                        <h3>File Preview</h3>
-                        {fileView.contentType.startsWith('image/') && (
-                            <img src={fileView.url} alt="File Preview" style={{width: '100%', height: 'auto'}}/>
-                        )}
-                        {fileView.contentType === 'application/pdf' && (
-                            <embed src={fileView.url} type="application/pdf" width="100%" height="600px"/>
-                        )}
-                        <button onClick={() => setFileView(null)}>Close Preview</button>
-                    </div>
-                )}
+                <div>
+                    {fileView && <div className={`Chapters_overlay-background ${isDarkMode ? 'dark' : ''}`} onClick={() => setFileView(null)}></div>}
+                    {fileView && (
+                        <div className={`Chapters_overlay ${isDarkMode ? 'dark' : ''}`} >
+                            <div className="Chapters_overlay-content" >
+                                <h3>{language === 'En' ? 'File preview' : 'عرض الملف'}</h3>
+                                <embed src={fileView.url} type="application/pdf" width="100%" height="600px"/>
+                                <button onClick={() => setFileView(null)}>
+                                    {language === 'En' ? 'Close Preview' : 'إغلاق الملف'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

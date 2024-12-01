@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom';
 import './Assignments.css';
 import axios from '../../api/axios';
 import UserContext from "../../context/UserContext";
+import chaptersApi from "../../api/chaptersApi";
+import {SlBookOpen, SlCloudDownload} from "react-icons/sl";
+import assignmentsApi from "../../api/assignmentsApi";
+import AssignmentsApi from "../../api/assignmentsApi";
 
 const Assignments = () => {
   const { isDarkMode, language, role, userId } = useContext(UserContext);
@@ -11,6 +15,8 @@ const Assignments = () => {
   const [studentFile, setStudentFile] = useState(null);
   const [courses, setCourses] = useState([]);
   const [assignments, setAssignments] = useState([]);
+  const [fileView, setFileView] = useState(null);
+  const [fileErrMessage, setFileErrMessage] = useState('');
 
   useEffect(() => {
     axios.get(`/api/student/${userId}/courses`)
@@ -50,12 +56,19 @@ const Assignments = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    setFileErrMessage('');
+    if (!studentFile) {
+      setFileErrMessage(language === 'En' ? 'Please select a file first' : 'رجاءا اختيار ملف لرفعه');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('userId', userId);
     formData.append('file', studentFile);
     formData.append('courseId', selectedCourse);
     formData.append('assignmentId', selectedAssignment.assignment_id);
-    formData.append('instructorCourseId', selectedAssignment.instructor_course_id);
+    formData.append('instructorCourseId', selectedAssignment.instructors_courses_id);
 
     axios.post('/api/upload-student-assignment', formData)
         .then(response => {
@@ -72,24 +85,62 @@ const Assignments = () => {
         });
   };
 
+  const handleView = async (assignmentId) => {
+    setFileErrMessage('');
+    try {
+      const response = await assignmentsApi.viewInstructorAssignment(assignmentId);
+      const contentType = response.headers["content-type"];
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: contentType }));
+      console.log(url, contentType)
+      setFileView({ url, contentType });
+    } catch (error) {
+      console.error("Error viewing chapter", error);
+    }
+  };
+
+  const handleDownload = async (assignmentId, assignmentName) => {
+    try {
+      const response = await AssignmentsApi.downloadAssignment(assignmentId);
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', assignmentName);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error downloading chapter', error);
+    }
+  };
+
   return (
-      <div
-          className={`Assignments_uploadStudentAssignment ${isDarkMode ? 'Assignments_dark' : 'Assignments_light'} ${language === 'Ar' ? 'Assignments_rtl' : ''}`}>
-        <h2>{language === 'En' ? 'Upload Assignment' : 'رفع الواجب'}</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="Assignments_formGroup">
-            <label htmlFor="courseSelect">{language === 'En' ? 'Select Course:' : 'اختر الدورة الدراسية:'}</label>
-            <select id="courseSelect" value={selectedCourse} onChange={handleCourseChange} required>
-              <option value="" disabled>{language === 'En' ? 'Select course' : 'اختر الدورة الدراسية'}</option>
+      <div className={`UploadAssignment_component ${isDarkMode ? 'dark' : 'light'} ${language === 'Ar' ? 'rtl' : ''}`}>
+        <h2>{language === 'En' ? 'Upload Assignment' : 'رفع التكليف'}</h2>
+        <form onSubmit={handleSubmit} className="UploadAssignment_form">
+          <h3>
+            {language === 'En' ? 'Select Course:' : 'اختر الدورة الدراسية:'}
+          </h3>
+          <div className="UploadAssignment_form-group">
+            <select
+                id="courseSelect"
+                value={selectedCourse}
+                onChange={handleCourseChange}
+                required
+            >
+              <option value="" disabled>
+                {language === 'En' ? 'Select course' : 'اختر الدورة الدراسية'
+                }</option>
               {courses.map((course, index) => (
-                  <option key={index} value={course.course_code}>{course.course_name}</option>
+                  <option key={index} value={course.course_code}>
+                    {course.course_name}
+                  </option>
               ))}
             </select>
           </div>
 
           {selectedCourse && (
               <>
-                <div className="Assignments_formGroup">
+                <div className="UploadAssignment_form-group">
                   <label htmlFor="assignmentSelect">{language === 'En' ? 'Select Assignment:' : 'اختر الواجب:'}</label>
                   <select
                       id="assignmentSelect"
@@ -107,29 +158,66 @@ const Assignments = () => {
                 </div>
 
                 {selectedAssignment && (
-                    <div className="Assignments_assignmentDescription">
-                      <p>
-                        <strong>{language === 'En' ? 'Description:' : 'الوصف:'}</strong> {selectedAssignment.description}
-                      </p>
-                    </div>
+                    <>
+                      {selectedAssignment.description && (
+                          <div className="UploadAssignment_form-group">
+                            <p>
+                              <strong>{language === 'En' ? 'Description:' : 'الوصف:'}</strong>
+                            </p>
+                            <p>
+                              {selectedAssignment.description}
+                            </p>
+                          </div>
+                      )}
+
+                      {selectedAssignment.assignment_file && (
+                          <div className="UploadAssignment_form-group">
+                            <p>
+                              <strong>{language === 'En' ? 'Assignment File:' : 'ملف التكليف:'}</strong>
+                            </p>
+                            <div>
+                              <button onClick={() => handleView(selectedAssignment.assignment_id)}>
+                                {language === 'En' ? 'View:' : 'عرض:'}
+                                <SlBookOpen/>
+                              </button>
+                              <button
+                                  onClick={() => handleDownload(selectedAssignment.assignment_id, selectedAssignment.assignment_file_name)}>
+                                {language === 'En' ? 'Download:' : 'تنزيل:'}
+                                <SlCloudDownload/>
+                              </button>
+                            </div>
+                          </div>
+                      )}
+
+                      <div className="UploadAssignment_form-group">
+                        {fileErrMessage && (
+                            <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{fileErrMessage}</p>
+                        )}
+                        <label
+                            htmlFor="studentFile">{language === 'En' ? 'Upload Your File:' : 'رفع الملف الخاص بك:'}</label>
+                        <input type="file" id="studentFile" onChange={handleFileChange}/>
+                      </div>
+
+                      <button type="submit">{language === 'En' ? 'Upload' : 'رفع'}</button>
+
+                      {fileView && <div className={`Chapters_overlay-background ${isDarkMode ? 'dark' : ''}`} onClick={() => setFileView(null)}></div>}
+                      {fileView && (
+                          <div className={`Chapters_overlay ${isDarkMode ? 'dark' : ''}`} >
+                            <div className="Chapters_overlay-content" >
+                              <h3>{language === 'En' ? 'File preview' : 'عرض الملف'}</h3>
+                              <embed src={fileView.url} type="application/pdf" width="100%" height="600px"/>
+                              <button onClick={() => setFileView(null)}>
+                                {language === 'En' ? 'Close Preview' : 'إغلاق الملف'}
+                              </button>
+                            </div>
+                          </div>
+                      )}
+
+                    </>
                 )}
-
-                <div className="Assignments_formGroup">
-                  <label htmlFor="studentFile">{language === 'En' ? 'Upload Your File:' : 'رفع الملف الخاص بك:'}</label>
-                  <input type="file" id="studentFile" onChange={handleFileChange} required/>
-                </div>
-
-                <button type="submit">{language === 'En' ? 'Upload' : 'رفع'}</button>
               </>
           )}
         </form>
-
-        {role === 'instructor' && (
-            <Link to="/upload-assignment">
-              <button
-                  className="Assignments_uploadAssignmentButton">{language === 'En' ? 'Upload Assignment' : 'رفع واجب'}</button>
-            </Link>
-        )}
       </div>
   );
 };

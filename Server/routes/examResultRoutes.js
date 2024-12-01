@@ -3,7 +3,7 @@ const router = express.Router();
 const ExamResultController = require('../controllers/ExamResultController');
 const asyncHandler = require('express-async-handler');
 
-router.get('/exam-results/:examId', asyncHandler(ExamResultController.getExamResultsByExamId));
+router.get('/exam-results/:examId', asyncHandler(ExamResultController.getStudentsWithExams));
 router.put('/exam-results/:enrollmentId/:examId', asyncHandler(ExamResultController.updateExamScore));
 
 module.exports = router;

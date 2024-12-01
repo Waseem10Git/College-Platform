@@ -5,7 +5,8 @@ class InstructorCourseExamModel {
             INSERT INTO instructors_courses_exams (instructors_courses_id, exam_id) 
             VALUES (
             (
-            SELECT IC.id FROM instructors_courses as IC
+            SELECT IC.id 
+            FROM instructors_courses as IC
             INNER JOIN departments_courses as DC ON IC.department_course_id = DC.id 
             WHERE DC.course_id = ? and IC.instructor_id = ?
             ), ?)`;

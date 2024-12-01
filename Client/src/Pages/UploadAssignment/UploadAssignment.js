@@ -1,25 +1,40 @@
 import React, {useState, useEffect, useContext} from 'react';
-import axios from '../../api/axios';
 import './UploadAssignment.css';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
 import UserContext from "../../context/UserContext";
+import coursesApi from "../../api/coursesApi";
+import assignmentsApi from "../../api/assignmentsApi";
+import notificationApi from "../../api/notificationApi";
+import { toast } from 'react-toastify';
 
 const UploadAssignment = () => {
-    const { isDarkMode, language, userId } = useContext(UserContext);
+    const { isDarkMode, language, userId, role } = useContext(UserContext);
     const [selectedCourse, setSelectedCourse] = useState('');
     const [assignmentName, setAssignmentName] = useState('');
     const [assignmentDescription, setAssignmentDescription] = useState('');
     const [assignmentFile, setAssignmentFile] = useState(null);
-    const [dueDate, setDueDate] = useState(null);
+    const [dueDate, setDueDate] = useState(new Date());
     const [courses, setCourses] = useState([]);
+    const [assignmentContentErrMessage, setAssingmentContentErrMessage] = useState('');
+
+    const fetchCourses = async () => {
+        try {
+            const response = await coursesApi.fetchSomeCourses(role, userId);
+
+            if (Array.isArray(response.data)) {
+                setCourses(response.data);
+            } else {
+                console.error('Expected array but got:', response.data);
+            }
+        } catch (error) {
+            console.log('Error fetching data:', error);
+        }
+    };
 
     useEffect(() => {
-        // Fetch courses
-        axios.get(`/api/instructor/${userId}/courses`)
-            .then(response => setCourses(response.data))
-            .catch(error => console.error('Error fetching courses:', error));
+        fetchCourses();
     }, [userId]);
 
     const handleCourseChange = (e) => {
@@ -30,8 +45,15 @@ const UploadAssignment = () => {
         setAssignmentFile(e.target.files[0]);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setAssingmentContentErrMessage('');
+
+        if (!assignmentDescription.trim() && !assignmentFile){
+            setAssingmentContentErrMessage(language === "En" ? "Please write a description of the assignment, select file , or both." : "الرجاء كتابة وصف للتكيف، أو تحديد ملف، أو كليهما.");
+            return
+        }
+
         const formData = new FormData();
         formData.append('selectedCourse', selectedCourse);
         formData.append('assignmentName', assignmentName);
@@ -42,28 +64,26 @@ const UploadAssignment = () => {
         const adjustedDueDate = dueDate ? moment(dueDate).format() : '';
         formData.append('dueDate', adjustedDueDate);
 
-        axios.post('/api/upload-assignment', formData)
+        await assignmentsApi.uploadAssignmentByInstructor(formData)
             .then(response => {
                 console.log('Assignment uploaded successfully:', response.data);
-                alert(language === 'En' ? 'Assignment uploaded successfully!' : 'تم رفع الواجب بنجاح!');
+                toast.success(language === 'En' ? 'Assignment uploaded successfully!' : 'تم رفع الواجب بنجاح!');
                 // Clear form after submission
                 setSelectedCourse('');
                 setAssignmentName('');
                 setAssignmentDescription('');
                 setAssignmentFile(null);
-                setDueDate(null);
+                setDueDate(new Date());
+                setAssingmentContentErrMessage('');
             })
             .catch(error => {
                 console.error('Error uploading assignment:', error);
-                alert(language === 'En' ? 'Failed to upload assignment!' : 'فشل في رفع الواجب!');
+                toast.error(language === 'En' ? 'Failed to upload assignment!' : 'فشل في رفع الواجب!');
             });
 
-        const notificationMessage = `New Assignment Uploaded for course `;
-        axios.post(`/api/send-notification`, {
-            userId: userId,
-            courseCode: selectedCourse,
-            message: notificationMessage
-        }).then(response => {
+        const notificationMessage = language === "En" ? `New Assignment Uploaded for course ` : 'تم إضافة تكليف جديد لمادة ';
+        await notificationApi.sendNotification(userId, selectedCourse, notificationMessage)
+        .then(response => {
             console.log('send notification {New Assignment Uploaded} for students');
         }).catch(error => {
             console.log('Error sending notification to students');
@@ -73,11 +93,11 @@ const UploadAssignment = () => {
     return (
         <div className={`UploadAssignment_component ${isDarkMode ? 'dark' : 'light'} ${language === 'Ar' ? 'rtl' : ''}`}>
             <h2>{language === 'En' ? 'Upload new Assignment' : 'رفع واجب جديد'}</h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="UploadAssignment_form">
+                <h3>
+                    {language === 'En' ? 'Select Course:' : 'اختر الدورة الدراسية:'}
+                </h3>
                 <div className="UploadAssignment_form-group">
-                    <label htmlFor="courseSelect">
-                        {language === 'En' ? 'Select Course:' : 'اختر الدورة الدراسية:'}
-                    </label>
                     <select
                         id="courseSelect"
                         value={selectedCourse}
@@ -85,7 +105,7 @@ const UploadAssignment = () => {
                         required
                     >
                         <option value="" disabled>
-                            {language === 'En' ? 'Select course' : 'اختر الدورة الدراسية'}
+                            {language === 'En' ? '-- Select Course --' : '-- اختر المادة --'}
                         </option>
                         {courses.map(course => (
                             <option key={course.course_code} value={course.course_code}>
@@ -118,7 +138,7 @@ const UploadAssignment = () => {
                                 value={assignmentDescription}
                                 onChange={(e) => setAssignmentDescription(e.target.value)}
                                 rows="4"
-                                required
+                                placeholder={language === "En" ? "Type a description, upload any type of file, or both." : "اكتب وصفًا، أو قم بتحميل أي نوع من الملفات، أو كليهما."}
                             ></textarea>
                         </div>
                         <div className="UploadAssignment_form-group">
@@ -129,7 +149,6 @@ const UploadAssignment = () => {
                                 type="file"
                                 id="assignmentFile"
                                 onChange={handleFileChange}
-                                required
                             />
                         </div>
                         <div className="UploadAssignment_form-group">
@@ -141,7 +160,7 @@ const UploadAssignment = () => {
                                 onChange={(date) => setDueDate(date)}
                                 showTimeSelect
                                 dateFormat="Pp"
-                                className="UploadAssignment_input-field"
+                                id="UploadAssignment_input-field"
                                 minDate={new Date()}
                                 minTime={
                                     dueDate && dueDate.toDateString() === new Date().toDateString()
@@ -153,6 +172,9 @@ const UploadAssignment = () => {
                             />
 
                         </div>
+                        {assignmentContentErrMessage && (
+                            <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{assignmentContentErrMessage}</p>
+                        )}
                         <button type="submit">
                             {language === 'En' ? 'Upload' : 'رفع'}
                         </button>

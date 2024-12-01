@@ -106,7 +106,7 @@ class ExamModel {
             SET question_text = ?, points = ? 
             WHERE question_id = ?
           `;
-            conn.query(sql, [question.question_text, question.points, question.question_id], (err, result) => {
+            conn.query(sql, [question.question_text, question.question_points, question.question_id], (err, result) => {
                 if (err) {
                     return reject(err);
                 }

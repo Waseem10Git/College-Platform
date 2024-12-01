@@ -1,0 +1,47 @@
+.CourseSelect_container {
+    margin: 0 auto;
+    text-align: center;
+
+}
+
+.examResults_selectContainer{
+    min-height: 100vh;
+}
+/* Light mode styles */
+.light-mode {
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+.light-mode h2 {
+    color: #333;
+}
+
+.courseSelect_dropdown {
+    width: 100%;
+    padding: 8px;
+    margin-top: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+/* Dark mode styles */
+.dark-mode {
+    background-color: #333;
+    color: #f1f1f1;
+}
+
+.dark-mode h2 {
+    color: #f1f1f1;
+}
+
+.dark-mode .courseSelect_dropdown {
+    background-color: #444;
+    color: #f1f1f1;
+    border: 1px solid #555;
+}
+
+.courseSelect_dropdown:focus {
+    outline: none;
+    border-color: #007bff;
+}

@@ -35,7 +35,7 @@ function PagesLinks () {
                 </li>
                 <li className={pathName === "/ExamResults" ? styles.active : ""}>
                     <Link to="/ExamResults">
-                        {language === 'En' ? 'Exam Results' : 'نتائج الإمتحانات'}
+                        {language === 'En' ? 'Students/Results' : 'نتائج/الطلاب'}
                     </Link>
                 </li>
                 <li className={pathName === "/ExamPreview" ? styles.active : ""}>

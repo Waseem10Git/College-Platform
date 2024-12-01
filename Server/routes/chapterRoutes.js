@@ -11,7 +11,7 @@ router.get('/courses/:courseCode/chapters', verifyUser, asyncHandler(ChapterCont
 router.post('/courses/:courseCode/chapters', verifyUser, upload.single('file'), asyncHandler(ChapterController.uploadChapter));
 router.get('/chapters/:chapterId/download', verifyUser, asyncHandler(ChapterController.downloadChapter));
 router.delete('/chapters/:chapterId', verifyUser, asyncHandler(ChapterController.deleteChapter));
-router.put('/chapters/:chapterId', verifyUser, upload.single('file'), asyncHandler(ChapterController.updateChapter));
+router.put('/chapters/:chapterId', verifyUser, upload.single('file'), asyncHandler(ChapterController.updateChapter));//not uses
 router.get('/chapters/:chapterId/view', verifyUser, asyncHandler(ChapterController.viewChapter));
 
 module.exports = router;

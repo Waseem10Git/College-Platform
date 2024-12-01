@@ -26,6 +26,33 @@ class StudentAssignmentModel {
         const unlinkAsync = util.promisify(fs.unlink);
         await unlinkAsync(filePath);
     }
+
+    static getStudentAssignmentById(studentAssignmentId) {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT student_file_name, student_file FROM enrollments_assignments
+                WHERE id = ?
+                `;
+            conn.query(query, [studentAssignmentId], (err, result) => {
+                if (err) return reject(err);
+                resolve(result[0]);
+            })
+        });
+    }
+
+    static editStudentAssignmentScore(studentAssignmentId, score) {
+        return new Promise((resolve, reject) => {
+            const query = `
+                UPDATE enrollments_assignments 
+                SET score = ?
+                WHERE id = ?
+            `;
+            conn.query(query, [score, studentAssignmentId], (err, result) => {
+                if (err) return reject(err);
+                resolve(result[0]);
+            });
+        });
+    }
 }
 
 module.exports = StudentAssignmentModel;

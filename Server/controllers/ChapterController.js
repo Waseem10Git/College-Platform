@@ -50,7 +50,7 @@ class ChapterController {
                         });
                     }
 
-                    res.json({message: 'Chapter uploaded successfully'});
+                    res.status(200).json({message: 'Chapter uploaded successfully'});
                 });
             })
         } catch (error) {
@@ -82,6 +82,12 @@ class ChapterController {
         const chapterId = req.params.chapterId;
 
         try {
+            const chapter = await ChapterModel.getChapterById(chapterId);
+
+            if (!chapter) {
+                return res.status(404).send('File not found');
+            }
+
             await ChapterModel.deleteChapterById(chapterId);
             res.json({ message: 'Chapter deleted successfully' });
 
@@ -115,7 +121,11 @@ class ChapterController {
                 return res.status(404).send('File not found');
             }
 
-            res.setHeader('Content-Type', 'application/octet-stream');
+            // Set the response headers to indicate a PDF file for inline viewing
+            res.setHeader('content-type', 'application/pdf');
+            res.setHeader('Content-Disposition', `inline; filename="${chapter.chapter_name}"`);
+
+            // Send the buffer content directly
             res.send(chapter.chapter_content);
 
         } catch (error) {
@@ -123,6 +133,8 @@ class ChapterController {
             res.status(500).json({ error: 'An error occurred while viewing the chapter' });
         }
     }
+
+
 }
 
 module.exports = ChapterController;

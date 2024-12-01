@@ -2,8 +2,8 @@ const mysql = require('mysql2');
 const env = require('dotenv');
 
 env.config();
-console.log("MYSQL URL is:");
-console.log(process.env.MYSQL_URL);
+// console.log("MYSQL URL is:");
+// console.log(process.env.MYSQL_URL);
 const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
