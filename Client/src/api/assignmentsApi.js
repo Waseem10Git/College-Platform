@@ -13,6 +13,7 @@ const downloadAssignment = assignmentId => axios.get(`/api/assignments/${assignm
 const viewInstructorAssignment = assignmentId => axios.get(`/api/assignments/${assignmentId}/view`, {
     responseType: 'blob',
 });
+const deleteAssignment = assignmentId => axios.delete(`/api/assignments/${assignmentId}`);
 
 const assignmentsApi = {
     fetchAssignmentsForCourse,
@@ -21,6 +22,7 @@ const assignmentsApi = {
     viewAssignment,
     editStudentAssignmentScore,
     downloadAssignment,
-    viewInstructorAssignment
+    viewInstructorAssignment,
+    deleteAssignment
 };
 export default assignmentsApi;

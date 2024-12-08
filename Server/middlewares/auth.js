@@ -6,10 +6,10 @@ env.config();
 
 const verifyUser = (req, res, next) => {
     const token = req.cookies.authToken;
-    if (!token) return res.json({ Error: "You are not authenticated" });
+    if (!token) return res.status(401).json({ Error: "You are not authenticated" });
     jwt.verify(token, process.env.JWT_SECTRET_KEY, (err, decoded) => {
         if (err) {
-            return res.json({ Error: "Token is not valid" });
+            return res.status(401).json({ Error: "Token is not valid" });
         } else {
             req.user = decoded;
             next();

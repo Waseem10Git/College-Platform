@@ -70,7 +70,20 @@ const InstructorsView = () => {
         );
 
         if (isDuplicate) {
-            setAddingExistErr(language === 'En' ? 'This course(s) enrolled to the this student.' : 'تم تسجيل هذه الدورة (الدورات) لهذا الطالب.');
+            setAddingExistErr(language === 'En' ? 'This course(s) enrolled to the this instructor.' : 'تم تسجيل هذه الدورة (الدورات) لهذا المدرس.');
+            return false;
+        }
+
+        const isCourseTaken = instructorsCourses.some((ic) =>
+            courses.some((c) => c === ic.department_course_id)
+        );
+
+        if (isCourseTaken) {
+            setAddingExistErr(
+                language === 'En'
+                    ? 'The course(s) already assigned.'
+                    : 'تم تعيين الدورة (الدورات) بالفعل.'
+            );
             return false;
         }
 
@@ -159,9 +172,18 @@ const InstructorsView = () => {
                                 onChange={(e) => setNewDepartmentCourse(
                                     [...e.target.options].filter(option => option.selected).map(option => option.value))}
                         >
-                            {departmentsCourses.map((dc, index) => (
-                                <option key={index} value={dc.id}>{dc.department_name}_{dc.course_name}</option>
-                            ))}
+                            {departmentsCourses
+                                .filter(
+                                    (dc) =>
+                                        !instructorsCourses.some(
+                                            (ic) => ic.department_course_id === dc.id
+                                        )
+                                )
+                                .map((dc, index) => (
+                                    <option key={index} value={dc.id}>
+                                        {dc.department_name}_{dc.course_name}
+                                    </option>
+                                ))}
                         </select>
                     </td>
                     <td>{addingExistErr && (

@@ -1,4 +1,3 @@
-
 button {
     margin-top: 20px;
     padding: 10px 20px;
@@ -16,46 +15,54 @@ button {
     color: #007bff;
 }
 
-button:disabled , button:disabled:hover {
-    opacity: .5;
+button:disabled,
+button:disabled:hover {
+    opacity: 0.5;
     background-color: #007bff;
     border: 2px solid #007bff; /* Blue button color */
     color: white;
     cursor: auto;
 }
 
-.modal {
-    position: absolute;
+.ConfirmDelete_modal {
+    position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: #00000045;
-    backdrop-filter: blur(5px);
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: .3s;
+    transition: opacity 0.3s ease;
 }
 
-.modal form {
+.ConfirmDelete_modal::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: inherit; /* Use the same background color as the modal */
+    filter: blur(5px); /* Apply the blur here */
+    z-index: -1; /* Ensure this is behind the content */
+}
+
+
+.ConfirmDelete_modal form {
     background-color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-width: 400px ;
+    min-width: 400px;
 }
 
-.modal form h2 {
+.ConfirmDelete_modal form h2 {
     font-size: 1.5rem;
 }
 
-.modal.hidden {
-    opacity: 0 ;
-    pointer-events: none;
-}
-
-.dark .modal form {
+.dark .ConfirmDelete_modal form {
     background: #000;
 }
 

@@ -51,7 +51,7 @@ class ExamModel {
     static getExamQuestions(examId) {
         return new Promise((resolve, reject) => {
             const sql = `
-            SELECT e.exam_id, q.question_id, q.question_text, q.points
+            SELECT e.exam_id, q.question_id, q.question_text, question_type, q.points
             FROM exams as e 
             INNER JOIN questions as q ON e.exam_id = q.exam_id
             WHERE e.exam_id = ?

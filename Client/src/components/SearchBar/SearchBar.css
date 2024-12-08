@@ -1,0 +1,79 @@
+/* Container */
+.SearchBar_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100vh;
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 5px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Light Mode Styles */
+.SearchBar_container.light {
+    background-color: #f5f5f5; /* Light background */
+}
+
+.SearchBar_input.light {
+    background-color: #ffffff;
+    color: #333;
+    border: 1px solid #ccc;
+    font-weight: bolder;
+}
+
+.SearchBar_button {
+    margin: 7px;
+}
+
+.SearchBar_button.light {
+    background-color: #007bff;
+    color: white;
+}
+
+.SearchBar_button.light:hover {
+    background-color: #0056b3;
+}
+
+/* Dark Mode Styles */
+.SearchBar_container.dark {
+    background-color: #333333; /* Dark background */
+}
+
+.SearchBar_input.dark {
+    background-color: #555555;
+    color: #f5f5f5;
+    border: 1px solid #444;
+}
+
+.SearchBar_button.dark {
+    background-color: #007bff;
+    color: white;
+}
+
+.SearchBar_button.dark:hover {
+    background-color: #0056b3;
+}
+
+/* Input Field */
+.SearchBar_input {
+    flex-grow: 1;
+    border: none;
+    padding: 10px;
+    border-radius: 8px 0 0 8px;
+    font-size: 16px;
+    outline: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Search Button */
+.SearchBar_button {
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 0 8px 8px 0;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}

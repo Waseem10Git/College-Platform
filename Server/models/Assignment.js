@@ -72,7 +72,7 @@ class AssignmentModel {
     static getAssignmentsByCourseId(courseId) {
         return new Promise((resolve, reject) => {
             const query = `
-            SELECT a.assignment_id, a.assignment_title, a.description, a.assignment_file_name, a.assignment_file, ica.instructors_courses_id
+            SELECT a.assignment_id, a.assignment_title, a.description, a.due_date, a.assignment_file_name, a.assignment_file, ica.instructors_courses_id
             FROM assignments a
             JOIN instructors_courses_assignments ica ON a.assignment_id = ica.assignment_id
             JOIN instructors_courses ic ON ica.instructors_courses_id = ic.id
@@ -135,6 +135,19 @@ class AssignmentModel {
                 resolve(result[0]);
             });
         });
+    }
+
+    static deleteAssignment(assignmentId) {
+        return new Promise((resolve, reject) => {
+            const query = `
+            DELETE FROM assignments WHERE assignment_id = ?
+            `;
+            conn.query(query, [assignmentId], (err, result) => {
+                if (err)
+                    return reject(err);
+                resolve(result)
+            })
+        })
     }
 }
 

@@ -1,53 +1,50 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import enrollmentsExamsApi from "../../api/enrollmentsExamsApi";
-import {ViewStudentExam} from "../../Pages";
+import { ViewStudentExam } from "../../Pages";
+import UserContext from "../../context/UserContext"; // Assuming you have UserContext for dark mode
+import "./StudentsExams.css";
 
-function StudentsExams({ students, examId, language, refreshData, viewExamDetails, setViewExamDetails }) {
+function StudentsExams({
+                           students,
+                           examId,
+                           language,
+                           refreshData,
+                           viewExamDetails,
+                           setViewExamDetails,
+                       }) {
     const [editingScore, setEditingScore] = useState(null);
     const [newScore, setNewScore] = useState("");
     const [studentId, setStudentId] = useState(null);
-
-    const handleEditClick = (studentId, currentScore) => {
-        setEditingScore(studentId); // Set the student ID for editing
-        setNewScore(currentScore || ""); // Set current score or empty string if no score
-    };
+    const [studentScore, setStudentScore] = useState(null);
+    const { isDarkMode } = useContext(UserContext); // Access dark mode from context
 
     const handleScoreChange = (e) => {
         setNewScore(e.target.value); // Update the score in the input
     };
 
-    const saveScore = async (studentExamId) => {
-        try {
-            console.log(studentExamId, newScore);
-            // Send the updated score to the backend
-            await enrollmentsExamsApi.editExamStudentScore(studentExamId, newScore);
-
-            console.log("Score updated successfully");
-
-            // Call the parent's function to fetch updated data
-            refreshData();
-
-            setEditingScore(null); // Exit editing mode
-        } catch (error) {
-            console.error("Error updating score", error);
-        }
-    };
-
     return (
-        <div>
+        <div className={`StudentsExams_container ${isDarkMode ? "dark" : "light"}`}>
             {!viewExamDetails ? (
                 <div>
                     <h2>{language === "En" ? "Student Results" : "نتائج الطلاب"}</h2>
                     <div>
                         {students.length > 0 ? (
-                            <table>
+                            <table
+                                className={`StudentsExams_table ${
+                                    isDarkMode ? "dark" : "light"
+                                }`}
+                            >
                                 <thead>
                                 <tr>
                                     <th>{language === "En" ? "ID" : "الرقم التعريفي"}</th>
                                     <th>{language === "En" ? "Student Name" : "اسم الطالب"}</th>
                                     <th>{language === "En" ? "Score" : "النتيجة"}</th>
                                     <th>{language === "En" ? "Submitted" : "تم"}</th>
-                                    <th>{language === "En" ? "View / Edit Score" : "عرض / تعديل النتيجة"}</th>
+                                    <th>
+                                        {language === "En"
+                                            ? "View / Edit Score"
+                                            : "عرض / تعديل النتيجة"}
+                                    </th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -62,55 +59,29 @@ function StudentsExams({ students, examId, language, refreshData, viewExamDetail
                                                     value={newScore}
                                                     onChange={handleScoreChange}
                                                     placeholder={
-                                                        language === "En"
-                                                            ? "Enter score"
-                                                            : "أدخل الدرجة"
+                                                        language === "En" ? "Enter score" : "أدخل الدرجة"
                                                     }
                                                 />
+                                            ) : student.score != null && student.score >= 0 ? (
+                                                student.score
                                             ) : (
-                                                student.score != null && student.score >= 0 ? student.score : '--'
+                                                "--"
                                             )}
                                         </td>
                                         <td>{student.is_submitted ? "Yes" : "No"}</td>
                                         <td>
                                             {!editingScore && (
                                                 <button
-                                                    className="submit-edit-button"
+                                                    className={`submit-edit-button ${
+                                                        isDarkMode ? "dark" : ""
+                                                    }`}
                                                     onClick={() => {
                                                         setViewExamDetails(true);
                                                         setStudentId(student.student_id);
+                                                        setStudentScore(student.score);
                                                     }}
                                                 >
-                                                    {language === "En" ? "Exam" : "الامتحان"}
-                                                </button>
-                                            )}
-                                            {editingScore === student.student_exam_id ? (
-                                                <>
-                                                    <button
-                                                        className="submit-edit-button"
-                                                        onClick={() => saveScore(student.student_exam_id)}
-                                                    >
-                                                        {language === "En" ? "Save" : "حفظ"}
-                                                    </button>
-                                                    <button
-                                                        className="submit-edit-button"
-                                                        onClick={() => setEditingScore(null)}
-                                                    >
-                                                        {language === "En" ? "Cancel" : "إلغاء"}
-                                                    </button>
-                                                </>
-                                            ) : (
-                                                <button
-                                                    className="submit-edit-button"
-                                                    onClick={() => handleEditClick(student.student_exam_id, student.score)}
-                                                >
-                                                    {student.score
-                                                        ? language === "En"
-                                                            ? "Edit Score"
-                                                            : "تعديل الدرجة"
-                                                        : language === "En"
-                                                            ? "Give Score"
-                                                            : "إعطاء درجة"}
+                                                    {language === "En" ? "View Exam" : "عرض الإمتحان"}
                                                 </button>
                                             )}
                                         </td>
@@ -119,13 +90,25 @@ function StudentsExams({ students, examId, language, refreshData, viewExamDetail
                                 </tbody>
                             </table>
                         ) : (
-                            <p>{language === "En" ? "No data available" : "لا توجد بيانات متاحة"}</p>
+                            <p>
+                                {language === "En"
+                                    ? "No data available"
+                                    : "لا توجد بيانات متاحة"}
+                            </p>
                         )}
                     </div>
                 </div>
             ) : (
-                <ViewStudentExam studentId={studentId} examId={examId} language={language} setViewExamDetails={setViewExamDetails}/>
-            ) }
+                <ViewStudentExam
+                    isDarkMode={isDarkMode}
+                    studentId={studentId}
+                    examId={examId}
+                    language={language}
+                    setViewExamDetails={setViewExamDetails}
+                    refreshData={refreshData}
+                    studentScore={studentScore}
+                />
+            )}
         </div>
     );
 }

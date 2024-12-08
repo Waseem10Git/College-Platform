@@ -78,13 +78,20 @@ class UserController {
         try {
             const { userID, firstName, lastName, email, password, role, departmentID } = req.body;
 
-            const userExist = await UserModel.getUserById(userID);
+            if (userID.toString().length < 7 || !userID)
+                return res.status(400).json({success: false, message: 'userId empty or less than 7 digit'});
 
-            if (userExist) return res.status(404).json({ Status: "Error", Message: "User ID is exist" });
+            const userIDExist = await UserModel.getUserById(userID);
+
+            if (userIDExist) return res.status(404).json({ status: "Error", message: "User ID is exist" });
+
+            const userEmailExist = await UserModel.getUserByEmail(email);
+
+            if (userEmailExist) return res.status(404).json({ status: "Error", message: "User Email is exist" });
 
             await UserModel.addAccount({ userID, firstName, lastName, email, password, role, departmentID });
 
-            return res.status(200).json({ Status: "Success" });
+            return res.status(200).json({ status: "Success" });
         } catch (error) {
             console.error("Error adding account:", error);
             return res.status(500).json({ Status: "Error", Error: error });

@@ -12,5 +12,6 @@ router.get('/assignments/:courseId', verifyUser, asyncHandler(AssignmentControll
 router.get('/assignments/:assignmentId/students', asyncHandler(AssignmentController.getStudentsWithAssignments));
 router.get('/assignments/:assignmentId/download', asyncHandler(AssignmentController.downloadAssignment));
 router.get('/assignments/:assignmentId/view', asyncHandler(AssignmentController.viewInstructorAssignment));
+router.delete('/assignments/:assignmentId', asyncHandler(AssignmentController.deleteAssignment));
 
 module.exports = router;

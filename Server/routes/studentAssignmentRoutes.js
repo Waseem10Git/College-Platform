@@ -11,6 +11,7 @@ const upload = multer({ storage: storage });
 
 router.post('/upload-student-assignment', verifyUser, upload.single('file'), asyncHandler(StudentAssignmentController.uploadStudentAssignment));
 router.get('/studentAssignment/:studentAssignmentId/view', asyncHandler(StudentAssignmentController.viewAssignment));
+router.get('/studentAssignment/checkAssignmentSubmission', asyncHandler(StudentAssignmentController.checkAssignmentSubmission));
 router.put('/studentAssignmentScore/:studentAssignmentId', asyncHandler(StudentAssignmentController.editStudentAssignmentScore));
 
 module.exports = router;

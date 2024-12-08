@@ -2,9 +2,8 @@ const StudentAssignmentModel = require('../models/StudentAssignment');
 
 class StudentAssignmentController {
     static async uploadStudentAssignment(req, res) {
-        const { courseId, assignmentId, userId, instructorCourseId } = req.body;
+        const { assignmentId, userId, instructorCourseId } = req.body;
         const studentFile = req.file;
-        console.log("student file", studentFile);
 
         try {
             const enrollmentResult = await StudentAssignmentModel.getEnrollmentId(userId, instructorCourseId);
@@ -18,7 +17,6 @@ class StudentAssignmentController {
 
             await StudentAssignmentModel.insertStudentFile(enrollmentId, assignmentId, fileData, studentFile.originalname);
 
-            console.log('Student assignment uploaded successfully');
             res.json({ message: 'Assignment uploaded successfully' });
         } catch (error) {
             console.error('Error:', error);
@@ -49,6 +47,19 @@ class StudentAssignmentController {
             // Send the buffer content directly
             res.send(assignment.student_file);
 
+        } catch (err) {
+            console.error('Error viewing student assignment:', err);
+            res.status(500).json({ error: 'An error occurred while viewing the student assignment' });
+        }
+    }
+
+    static async checkAssignmentSubmission(req, res) {
+        const {assignmentId, userId, instructorCourseId} = req.query;
+
+        try {
+            const assignment = await StudentAssignmentModel.getAssignmentSubmission(assignmentId, userId, instructorCourseId);
+
+            res.status(200).json(assignment);
         } catch (err) {
             console.error('Error viewing student assignment:', err);
             res.status(500).json({ error: 'An error occurred while viewing the student assignment' });

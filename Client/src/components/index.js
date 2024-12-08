@@ -15,3 +15,4 @@ export {default as NotificationModal} from './NotificationModal/NotificationModa
 export {default as StudentsInfo} from './StudentsInfo/StudentsInfo'
 export {default as StudentsExams} from './StudentsExams/StudentsExams'
 export {default as StudentsAssignments} from './StudentsAssignments/StudentsAssignments'
+export {default as SearchBar} from './SearchBar/SearchBar'

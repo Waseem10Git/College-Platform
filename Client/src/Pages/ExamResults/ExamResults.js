@@ -94,9 +94,6 @@ function ExamResults() {
                 console.error('Error fetching enrollments:', error);
             });
     };
-    // console.log("exams data: ", exams);
-    console.log("course id: ", selectedCourse);
-    console.log("students: ", students);
 
     return (
         <div className={`examResults ${isDarkMode ? 'examResults_dark-mode' : 'examResults_light-mode'}`}>
@@ -104,8 +101,7 @@ function ExamResults() {
                 <h3 className='examResults_h2'>{language === 'En' ? 'Students/Result' : 'نتائج/الطلاب'}</h3>
                 {!viewExamDetails ? (
                     <>
-                        <CourseSelect courses={courses} onSelect={handleCourseSelect} language={language}
-                                      isDarkMode={isDarkMode}/>
+                        <CourseSelect courses={courses} onSelect={handleCourseSelect} selectedCourse={selectedCourse}/>
                         {selectedCourse && (
                             <select onChange={(e) => handleOptionSelect(e.target.value)} value={selectedOption}>
                                 <option value="" disabled>{language === 'En' ? 'Select Option' : 'اختر الخيار'}</option>

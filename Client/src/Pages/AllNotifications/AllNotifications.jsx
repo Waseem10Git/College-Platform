@@ -34,7 +34,7 @@ function AllNotifications() {
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        date.setHours(date.getHours() - 3); // Adjusting the time zone if needed
+        date.setHours(date.getHours()); // Adjusting the time zone if needed
         return date.toLocaleString([], { hour: '2-digit', minute: '2-digit', hour12: true, day: '2-digit', month: '2-digit', year: 'numeric' });
     };
 

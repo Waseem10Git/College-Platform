@@ -35,6 +35,11 @@ class AssignmentController {
 
             const instructor_course_id = result[0].id;
 
+            const assignmentTitleExistence = await InstructorCourseModel.checkAssignmentTitleExistence(instructor_course_id, assignmentName.trim());
+
+            if (assignmentTitleExistence)
+                return res.status(409).json({ success: false, message: 'Assignment Title is exist.' });
+
             // Insert assignment
             const assignmentId = await AssignmentModel.insertAssignment(
                 assignmentName,
@@ -98,7 +103,7 @@ class AssignmentController {
 
         } catch (error) {
             console.error('Error downloading chapter:', error);
-            res.status(500).json({ error: 'An error occurred while downloading the chapter' });
+            res.status(500).json({ error: 'An error occurred while downloading the assignment' });
         }
     }
 
@@ -120,7 +125,26 @@ class AssignmentController {
 
         } catch (error) {
             console.error('Error viewing chapter:', error);
-            res.status(500).json({ error: 'An error occurred while viewing the chapter' });
+            res.status(500).json({ error: 'An error occurred while viewing the assignment' });
+        }
+    }
+
+    static async deleteAssignment(req, res) {
+        const { assignmentId } = req.params;
+        try {
+            if (!assignmentId)
+                return res.status(404).send({success: false, message: 'Assignment id is required'});
+
+            const exist = await AssignmentModel.getAssignmentById(assignmentId);
+
+            if (!exist)
+                return res.status(404).send({success: false, message: 'Assignment Not Found'})
+
+            await AssignmentModel.deleteAssignment(assignmentId);
+
+            return res.status(200).send({success: true, message: 'Assignment deleted successfully'});
+        } catch (err) {
+            res.status(500).json({ error: 'An error occurred while deleting the assignment'});
         }
     }
 }

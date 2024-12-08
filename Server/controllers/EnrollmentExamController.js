@@ -54,9 +54,9 @@ class EnrollmentExamController {
     }
     static async editEssayQuestionPoints(req, res) {
         const {questionId} = req.params;
-        const {newQuestionPoints, enrollmentExamId} = req.body;
+        const {newQuestionPoints, enrollmentExamId, examId} = req.body;
         try{
-            if (!questionId || !newQuestionPoints || !enrollmentExamId)
+            if (!questionId || newQuestionPoints < 0 || !enrollmentExamId || !examId)
                 return res.status(404).json({error: 'There is data messing'});
 
             const questionType = await EnrollmentExamModel.getQuestionType(questionId);
@@ -70,6 +70,8 @@ class EnrollmentExamController {
                 return res.status(404).json({error: `Points can't be less than 0 or greater than ${questionPoints}`});
 
             await EnrollmentExamModel.editEssayQuestionPoints(questionId, newQuestionPoints, enrollmentExamId);
+
+            await EnrollmentExamModel.editStudentTotalScore(examId);
 
             res.status(200).json({message: 'Editing question point successfully'});
         } catch (err) {

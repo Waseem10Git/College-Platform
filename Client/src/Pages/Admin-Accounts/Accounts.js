@@ -1,4 +1,4 @@
-import {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import './Accounts.css';
 import UserContext from "../../context/UserContext";
 import { toast } from 'react-toastify';
@@ -14,6 +14,7 @@ const Accounts = () => {
   const [departments, setDepartments] = useState([]);
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState('');
+  const [idErrMessage, setIdErrMessage] = useState('');
   const [formData, setFormData] = useState({
     firstName: '',
     lastName:'',
@@ -122,11 +123,20 @@ const Accounts = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevData => ({
+
+    setFormData((prevData) => ({
       ...prevData,
-      [name]: name === "userID" || name === "departmentID" || name === "newDepartmentID" ? parseInt(value) : value,
+      [name]:
+          name === "firstName" || name === "lastName" || name === "newFirstName" || name === "newLastName"
+              ? /^[a-zA-Z]*$/.test(value)
+                  ? value
+                  : prevData[name]
+              : name === "userID" || name === "departmentID" || name === "newDepartmentID"
+                  ? parseInt(value, 10)
+                  : value,
     }));
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -137,7 +147,13 @@ const Accounts = () => {
     if (formData.newPassword) dataToUpdate.newPassword = formData.newPassword;
     if (formData.newRole) dataToUpdate.newRole = formData.newRole;
     if (formData.newDepartmentID) dataToUpdate.newDepartmentID = formData.newDepartmentID;
-    dataToUpdate.userID = formData.userID;
+    if (formData.userID.toString().length < 7 || !formData.userID) {
+      setIdErrMessage("User Id can't be empty or less than 7 digit");
+      return;
+    } else {
+      dataToUpdate.userID = formData.userID;
+      setIdErrMessage('');
+    }
 
     if (selectedOption === "update"){
       await accountsApi.updateAccount(dataToUpdate)
@@ -173,7 +189,7 @@ const Accounts = () => {
           .catch(err => {
             console.error(err);
             if (err.response && err.response.status === 404) {
-              toast.error(language === 'En' ? 'ID number used' : 'الرقم التعريفي مستخدم');
+              toast.error(err.response.message);
             } else {
               console.error(err);
               toast.error(language === 'En' ? 'Failed' : 'فشل');
@@ -313,6 +329,13 @@ const Accounts = () => {
                             {language === 'En' ? 'Upload' : 'رفع'}
                           </button>
                         </div>
+                    )}
+                    {idErrMessage && (
+                        <p style={{
+                          color: 'red',
+                          marginBottom: '8px',
+                          fontStyle: 'italic'
+                        }}>{idErrMessage}</p>
                     )}
                     {selectedOption === 'add' && (
                         <>

@@ -85,13 +85,14 @@ body .MakeExam_dark {
 }
 
 /* Select field */
-.MakeExam_selectField, .MakeExam_inputField ,.MakeExam_correctAnswerSelect, input[type="text"], input[type="number"], select, .MakeExam_datePicker {
+.MakeExam_selectField, .MakeExam_inputField ,.MakeExam_correctAnswerSelect, .MakeExam_inputWrapper input[type="text"], .MakeExam_inputWrapper input[type="number"], select, .MakeExam_datePicker {
   width: 100%;
   font-size: 16px;
   padding: 8px;
   margin: 5px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
+  text-align: left;
 }
 
 .MakeExam_customDatePickerWidth {

@@ -151,6 +151,28 @@ class InstructorCourseModel {
         });
     }
 
+    static checkAssignmentTitleExistence(instructor_course_id, assignmentName) {
+        return new Promise((resolve, reject) => {
+            const sql = `
+            SELECT EXISTS (
+                SELECT 1
+                FROM instructors_courses_assignments AS ica
+                INNER JOIN instructors_courses AS ic
+                    ON ica.instructors_courses_id = ic.id
+                INNER JOIN assignments AS a
+                    ON ica.assignment_id = a.assignment_id
+                WHERE ic.id = ?
+                AND a.assignment_title = ?
+            ) AS exist;
+        `;
+            conn.query(sql, [instructor_course_id, assignmentName], (err, result) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(result[0].exist === 1);
+            });
+        });
+    }
 }
 
 module.exports = InstructorCourseModel;

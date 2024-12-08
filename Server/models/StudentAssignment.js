@@ -16,10 +16,17 @@ class StudentAssignmentModel {
 
     static async insertStudentFile(enrollmentId, assignmentId, fileData, fileName) {
         const query = `
-            INSERT INTO enrollments_assignments (enrollment_id, assignment_id, student_file, student_file_name)
-            VALUES (?, ?, ?, ?)
+            UPDATE
+                enrollments_assignments
+            SET
+                student_file = ?,
+                student_file_name = ?,
+                created_at = NOW(), 
+                is_submitted = TRUE
+            WHERE
+                enrollment_id = ? AND assignment_id = ?
         `;
-        return await queryAsync(query, [enrollmentId, assignmentId, fileData, fileName]);
+        return await queryAsync(query, [fileData, fileName, enrollmentId, assignmentId]);
     }
 
     static async deleteFile(filePath) {
@@ -36,6 +43,30 @@ class StudentAssignmentModel {
             conn.query(query, [studentAssignmentId], (err, result) => {
                 if (err) return reject(err);
                 resolve(result[0]);
+            })
+        });
+    }
+
+    static getAssignmentSubmission(assignmentId, studentId, instructorCourseId) {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT
+                is_submitted
+            FROM
+                enrollments_assignments
+            WHERE
+                assignment_id = ? AND enrollment_id = (
+                SELECT
+                    id
+                FROM
+                    enrollments
+                WHERE
+                    student_id = ? AND instructor_course_id = ?
+                )
+                `;
+            conn.query(query, [assignmentId, studentId, instructorCourseId], (err, result) => {
+                if (err) return reject(err);
+                resolve(result[0].is_submitted);
             })
         });
     }

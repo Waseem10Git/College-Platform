@@ -211,10 +211,8 @@ const MakeExam = () => {
       // Save each question and its options to the database
       console.log(questions)
       for (let question of questions) {
-        console.log(question.question, question.type, question.points);
         const questionResponse = await questionsApi.addQuestionsToExam(exam_id, question.question, question.type, question.points);
         const question_id = questionResponse.data.question_id;
-        console.log("question id: ", question_id);
 
         if (question.type === 'MCQ') {
           for (let i = 0; i < question.options.length; i++) {
@@ -388,6 +386,7 @@ const MakeExam = () => {
                     onChange={(e) => setCorrectAnswer(e.target.value)}
                     className="MakeExam_correctAnswerSelect"
                 >
+                  <option value="" disabled>{language === 'En' ? '-- Select Answer --' : '-- اختر إجابة --'}</option>
                   {options.map((_, index) => (
                       <option key={index} value={alphabet[index]}>
                         {alphabet[index]}

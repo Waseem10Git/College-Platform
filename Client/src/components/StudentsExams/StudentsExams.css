@@ -1,62 +1,64 @@
+/* Container */
+.StudentsExams_container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
 /* Table Styling */
-.examResultDetails_table {
+.StudentsExams_table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
 }
 
-.examResultDetails_th,
-.examResultDetails_td {
+.StudentsExams_table th,
+.StudentsExams_table td {
     padding: 12px;
     text-align: left;
     border: 1px solid #ddd;
 }
 
-.examResultDetails_th {
+.StudentsExams_table th {
     background-color: #f2f2f2;
 }
 
-.examResultDetails_tr:nth-child(even) {
+.StudentsExams_table tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
 /* Light Mode Styles */
-.ViewStudentExam_container.light {
+.StudentsExams_container.light {
     background-color: #ffffff;
     color: #333;
 }
 
-.examResultDetails_th.light {
+.StudentsExams_table.light th {
     background-color: #f5f5f5;
     color: #333;
 }
 
-.examResultDetails_td.light {
+.StudentsExams_table.light td {
     background-color: #ffffff;
     color: #333;
 }
 
-.examResultDetails_tr.light:nth-child(even) {
-    background-color: #f9f9f9;
+/* Dark Mode Styles */
+.StudentsExams_container.dark {
+    background-color: #1a1a1a;
+    color: #f5f5f5;
 }
 
-/* Dark Mode Styles */
-.ViewStudentExam_container.dark {
+.StudentsExams_table.dark th {
     background-color: #333;
     color: #f5f5f5;
 }
 
-.examResultDetails_th.dark {
+.StudentsExams_table.dark td {
     background-color: #444;
     color: #f5f5f5;
 }
 
-.examResultDetails_td.dark {
-    background-color: #555;
-    color: #f5f5f5;
-}
-
-.examResultDetails_tr.dark:nth-child(even) {
+.StudentsExams_table.dark :hover {
     background-color: #666;
 }
 
@@ -85,20 +87,17 @@
     background-color: #5a6268;
 }
 
+/* Input field for editing scores */
+.StudentsExams_table input[type="number"] {
+    padding: 5px;
+    width: 80px;
+    text-align: center;
+}
+
 /* No data message */
 .no-data-message {
     font-size: 18px;
     color: #888;
     text-align: center;
     margin-top: 20px;
-}
-
-
-
-.examResultDetails_td input[type='number'] {
-    width: 100px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    text-align: left;
 }

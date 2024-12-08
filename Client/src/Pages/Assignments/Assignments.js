@@ -1,12 +1,8 @@
-import React, {useState, useEffect, useContext} from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useContext } from 'react';
 import './Assignments.css';
 import axios from '../../api/axios';
 import UserContext from "../../context/UserContext";
-import chaptersApi from "../../api/chaptersApi";
-import {SlBookOpen, SlCloudDownload} from "react-icons/sl";
-import assignmentsApi from "../../api/assignmentsApi";
-import AssignmentsApi from "../../api/assignmentsApi";
+import { toast } from "react-toastify";
 
 const Assignments = () => {
   const { isDarkMode, language, role, userId } = useContext(UserContext);
@@ -15,27 +11,54 @@ const Assignments = () => {
   const [studentFile, setStudentFile] = useState(null);
   const [courses, setCourses] = useState([]);
   const [assignments, setAssignments] = useState([]);
-  const [fileView, setFileView] = useState(null);
   const [fileErrMessage, setFileErrMessage] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [canUpload, setCanUpload] = useState(true); // State to track if the due date allows uploads
 
   useEffect(() => {
     axios.get(`/api/student/${userId}/courses`)
         .then(response => setCourses(response.data))
-        .catch(error => console.error('Error fetching courses:', error));
+        .catch(error => toast.error('Error fetching courses:', error));
   }, [role, userId]);
-
-  console.log("courses: ", courses);
 
   useEffect(() => {
     if (selectedCourse) {
       // Fetch assignments for the selected course from backend
       axios.get(`/api/assignments/${selectedCourse}`)
           .then(response => setAssignments(response.data))
-          .catch(error => console.error('Error fetching assignments:', error));
+          .catch(error => toast.error('Error fetching assignments:', error));
     }
   }, [selectedCourse]);
 
-  console.log("assignments: ", assignments);
+  useEffect(() => {
+    if (selectedAssignment) {
+      // Check assignment submission status
+      axios.get('/api/studentAssignment/checkAssignmentSubmission', {
+        params: {
+          assignmentId: selectedAssignment.assignment_id,
+          userId,
+          instructorCourseId: selectedAssignment.instructors_courses_id
+        },
+      })
+          .then(response => {
+            setIsSubmitted(response.data);
+          })
+          .catch(error => {
+            toast.error('Error checking submission status:', error);
+          });
+
+      // Set up a timer to check the due date every minute
+      const interval = setInterval(() => {
+        setCanUpload(checkDueDate(selectedAssignment.due_date));
+      }, 60000);
+
+      // Initial check
+      setCanUpload(checkDueDate(selectedAssignment.due_date));
+
+      // Cleanup timer on component unmount or when selectedAssignment changes
+      return () => clearInterval(interval);
+    }
+  }, [selectedAssignment, userId]);
 
   const handleCourseChange = (e) => {
     const course = e.target.value;
@@ -47,8 +70,8 @@ const Assignments = () => {
     const assignmentId = parseInt(e.target.value, 10);
     const assignment = assignments.find((a) => a.assignment_id === assignmentId);
     setSelectedAssignment(assignment);
+    setFileErrMessage('');
   };
-  console.log("Selected assignment", selectedAssignment)
 
   const handleFileChange = (e) => {
     setStudentFile(e.target.files[0]);
@@ -72,45 +95,19 @@ const Assignments = () => {
 
     axios.post('/api/upload-student-assignment', formData)
         .then(response => {
-          console.log('Student Assignment Uploaded:', response.data);
-          alert(language === 'En' ? 'Assignment uploaded successfully!' : 'تم رفع الواجب بنجاح!');
+          toast.success(language === 'En' ? 'Assignment uploaded successfully!' : 'تم رفع الواجب بنجاح!');
           // Clear form after submission
           setSelectedCourse('');
           setSelectedAssignment(null);
           setStudentFile(null);
         })
         .catch(error => {
-          console.error('Error uploading assignment:', error);
-          alert(language === 'En' ? 'Failed to upload assignment!' : 'فشل في رفع الواجب!');
+          toast.error(language === 'En' ? 'Failed to upload assignment!' : 'فشل في رفع الواجب!');
         });
   };
 
-  const handleView = async (assignmentId) => {
-    setFileErrMessage('');
-    try {
-      const response = await assignmentsApi.viewInstructorAssignment(assignmentId);
-      const contentType = response.headers["content-type"];
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: contentType }));
-      console.log(url, contentType)
-      setFileView({ url, contentType });
-    } catch (error) {
-      console.error("Error viewing chapter", error);
-    }
-  };
-
-  const handleDownload = async (assignmentId, assignmentName) => {
-    try {
-      const response = await AssignmentsApi.downloadAssignment(assignmentId);
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', assignmentName);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error('Error downloading chapter', error);
-    }
+  const checkDueDate = (dueDate) => {
+    return new Date() <= new Date(dueDate);
   };
 
   return (
@@ -128,8 +125,8 @@ const Assignments = () => {
                 required
             >
               <option value="" disabled>
-                {language === 'En' ? 'Select course' : 'اختر الدورة الدراسية'
-                }</option>
+                {language === 'En' ? 'Select course' : 'اختر الدورة الدراسية'}
+              </option>
               {courses.map((course, index) => (
                   <option key={index} value={course.course_code}>
                     {course.course_name}
@@ -159,60 +156,48 @@ const Assignments = () => {
 
                 {selectedAssignment && (
                     <>
-                      {selectedAssignment.description && (
-                          <div className="UploadAssignment_form-group">
-                            <p>
-                              <strong>{language === 'En' ? 'Description:' : 'الوصف:'}</strong>
-                            </p>
-                            <p>
-                              {selectedAssignment.description}
-                            </p>
-                          </div>
-                      )}
-
-                      {selectedAssignment.assignment_file && (
-                          <div className="UploadAssignment_form-group">
-                            <p>
-                              <strong>{language === 'En' ? 'Assignment File:' : 'ملف التكليف:'}</strong>
-                            </p>
-                            <div>
-                              <button onClick={() => handleView(selectedAssignment.assignment_id)}>
-                                {language === 'En' ? 'View:' : 'عرض:'}
-                                <SlBookOpen/>
-                              </button>
-                              <button
-                                  onClick={() => handleDownload(selectedAssignment.assignment_id, selectedAssignment.assignment_file_name)}>
-                                {language === 'En' ? 'Download:' : 'تنزيل:'}
-                                <SlCloudDownload/>
-                              </button>
+                      {canUpload ? (
+                          <>
+                            <div className="UploadAssignment_form-group">
+                              {fileErrMessage && (
+                                  <p style={{
+                                    color: 'red',
+                                    marginBottom: '8px',
+                                    fontStyle: 'italic'
+                                  }}>{fileErrMessage}</p>
+                              )}
+                              {isSubmitted ? (
+                                  <>
+                                    <p style={{
+                                      color: 'green',
+                                      marginBottom: '8px',
+                                      fontStyle: 'italic'
+                                    }}>{language === 'En' ? 'You already uploaded this assignment' : 'لقد قمت بالفعل برفع هذا التكليف'}</p>
+                                    <label
+                                        htmlFor="studentFile">{language === 'En' ? 'Change Your File:' : 'تغيير الملف الخاص بك:'}
+                                    </label>
+                                  </>
+                              ) : (
+                                  <label
+                                      htmlFor="studentFile">{language === 'En' ? 'Upload Your File:' : 'رفع الملف الخاص بك:'}
+                                  </label>
+                              )}
+                              <input type="file" id="studentFile" onChange={handleFileChange} />
                             </div>
+
+                            {isSubmitted ? (
+                                <button type="submit">{language === 'En' ? 'Change file' : 'تغيير الملف'}</button>
+                            ) : (
+                                <button type="submit">{language === 'En' ? 'Upload' : 'رفع'}</button>
+                            )}
+                          </>
+                      ) : (
+                          <div className="UploadAssignment_form-group">
+                            {language === 'En' ?
+                                'The deadline for submitting the assignment has passed.' :
+                                'لقد انتهى الموعد النهائي لتسليم المهمة'}
                           </div>
                       )}
-
-                      <div className="UploadAssignment_form-group">
-                        {fileErrMessage && (
-                            <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{fileErrMessage}</p>
-                        )}
-                        <label
-                            htmlFor="studentFile">{language === 'En' ? 'Upload Your File:' : 'رفع الملف الخاص بك:'}</label>
-                        <input type="file" id="studentFile" onChange={handleFileChange}/>
-                      </div>
-
-                      <button type="submit">{language === 'En' ? 'Upload' : 'رفع'}</button>
-
-                      {fileView && <div className={`Chapters_overlay-background ${isDarkMode ? 'dark' : ''}`} onClick={() => setFileView(null)}></div>}
-                      {fileView && (
-                          <div className={`Chapters_overlay ${isDarkMode ? 'dark' : ''}`} >
-                            <div className="Chapters_overlay-content" >
-                              <h3>{language === 'En' ? 'File preview' : 'عرض الملف'}</h3>
-                              <embed src={fileView.url} type="application/pdf" width="100%" height="600px"/>
-                              <button onClick={() => setFileView(null)}>
-                                {language === 'En' ? 'Close Preview' : 'إغلاق الملف'}
-                              </button>
-                            </div>
-                          </div>
-                      )}
-
                     </>
                 )}
               </>

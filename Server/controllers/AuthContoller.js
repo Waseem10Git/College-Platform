@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const UserModel = require("../models/User");
 const env = require('dotenv')
@@ -8,7 +8,7 @@ env.config();
 class authController {
     static async getUserInfo(req, res) {
         const { firstName, role, id } = req.user;
-        return res.json({ Status: "Success", firstName, role, id });
+        return res.status(200).json({ Status: "Success", firstName, role, id });
     }
 
     static async signIn(req, res) {
@@ -27,15 +27,15 @@ class authController {
                         sameSite: 'None'
                     });
 
-                    return res.json({ Status: "Success" });
+                    return res.status(200).json({ Status: "Success" });
                 } else {
-                    return res.json({ Error: "Password not matched" });
+                    return res.status(401).json({ Error: "Invalid email or password" });
                 }
             } else {
-                return res.json({ Error: "No email existed" });
+                return res.status(401).json({ Error: "Invalid email or password" });
             }
         } catch (err) {
-            return res.json({ Error: "Login error" });
+            return res.status(500).json({ Error: "Internal server error" });
         }
     }
 
@@ -45,7 +45,7 @@ class authController {
                 secure: true,
                 sameSite: 'None'
         });
-        return res.json({ Status: "Success" });
+        return res.status(200).json({ Status: "Success" });
     }
 }
 module.exports = authController;

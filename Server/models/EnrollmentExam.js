@@ -82,6 +82,25 @@ class EnrollmentExamModel {
         })
     }
 
+    static editStudentTotalScore(examId) {
+        return new Promise((resolve, reject) => {
+            const query = `
+            UPDATE enrollments_exams ee
+            SET ee.score = (
+                SELECT SUM(COALESCE(sa.student_answer_points, 0))
+                FROM student_answers sa
+                INNER JOIN questions q ON sa.question_id = q.question_id
+                WHERE sa.enrollment_exam_id = ee.id
+            )
+                WHERE ee.exam_id = ?;
+            `;
+            conn.query(query, [examId], (err, result) => {
+                if (err) return reject(err);
+                resolve(result[0]);
+            })
+        })
+    }
+
     static getQuestionType(questionId) {
         return new Promise((resolve, reject) => {
             const query = `

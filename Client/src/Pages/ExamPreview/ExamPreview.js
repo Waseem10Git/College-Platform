@@ -17,6 +17,7 @@ function ExamPreviewPage() {
     const [examAnswers, setExamAnswers] = useState([]);
     const [examName, setExamName] = useState('');
     const [selectedExamId, setSelectedExamId] = useState('');
+    const [selectedCourseId, setSelectedCourseId] = useState('');
     const [duration, setDuration] = useState(0);
     const [startAt, setStartAt] = useState(null);
     const [editMode, setEditMode] = useState(false);
@@ -50,15 +51,12 @@ function ExamPreviewPage() {
 
     useEffect(() => {
         if (currentTime && startAt) {
-            if (currentTime.toLocaleTimeString() === startAt.toLocaleTimeString() || currentTime.toLocaleTimeString() > startAt.toLocaleTimeString()) {
-                setIsExamStarted(true);
-            } else {
-                setIsExamStarted(false);
-            }
+            setIsExamStarted(currentTime >= startAt);
         }
     }, [currentTime, startAt, selectedExamId]);
 
     const handleCourseSelect = (courseId) => {
+        setSelectedCourseId(courseId);
         axios.get(`/api/exams/${courseId}`)
             .then(response => {
                 setExams(response.data);
@@ -96,6 +94,7 @@ function ExamPreviewPage() {
         await axios.get(`/api/exams-answers/${examId}`)
             .then(response => {
                 setExamAnswers(response.data);
+                console.log('answers:', response.data);
             })
             .catch(error => {
                 console.error('Error fetching exam answers:', error);
@@ -114,37 +113,37 @@ function ExamPreviewPage() {
     };
 
     const handleEditSubmit = () => {
-        console.log("examQuestions: ", examQuestions)
         const startAtUTC = moment(startAt).format();
         const updatedExam = {
             exam_name: examName,
             duration: duration,
             start_at: startAtUTC,
-            questions: examQuestions.map(question => ({
+            questions: examQuestions.map((question) => ({
                 question_id: question.question_id,
                 question_text: question.question_text,
-                question_points:question.points,
+                question_points: question.points,
                 options: examAnswers
-                    .filter(answer => answer.question_id === question.question_id)
-                    .map(answer => ({
+                    .filter((answer) => answer.question_id === question.question_id)
+                    .map((answer) => ({
                         answer_id: answer.answer_id,
                         answer_text: answer.answer_text,
-                        is_correct: answer.is_correct
-                    }))
-            }))
+                        is_correct: answer.is_correct,
+                    })),
+            })),
         };
-        console.log("updated exam: ", updatedExam)
 
         axios.put(`/api/exams/${selectedExamId}`, updatedExam)
-            .then(response => {
+            .then((response) => {
                 setExamDetails(response.data);
                 fetchExamDetails(selectedExamId);
                 setEditMode(false);
+                setSelectedCourseId('');
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error('Error updating exam:', error);
             });
     };
+
 
     const handleQuestionChange = (index, value) => {
         const updatedQuestions = [...examQuestions];
@@ -171,6 +170,15 @@ function ExamPreviewPage() {
         }
     };
 
+    const handleCorrectAnswerChange = (questionIndex, answerId) => {
+        const updatedAnswers = examAnswers.map((answer) =>
+            answer.question_id === examQuestions[questionIndex].question_id
+                ? { ...answer, is_correct: answer.answer_id === answerId ? 1 : 0 }
+                : answer
+        );
+        setExamAnswers(updatedAnswers);
+    };
+
     const handleDeleteExam = () => {
         axios.delete(`/api/exams/${selectedExamId}`)
             .then(response => {
@@ -178,6 +186,7 @@ function ExamPreviewPage() {
                 setEditMode(false);
                 setExams(exams.filter(exam => exam.exam_id !== selectedExamId));
                 setSelectedExamId('');
+                setSelectedCourseId('');
                 setCourses([]);
                 setExams([]);
                 fetchData();
@@ -204,7 +213,7 @@ function ExamPreviewPage() {
         <div className={isDarkMode ? 'dark-mode' : 'light-mode'}>
             {!editMode ? (
                 <div className={"ExamPreviewPage_select-container"}>
-                    <CourseSelect courses={courses} onSelect={handleCourseSelect} language={language} />
+                    <CourseSelect courses={courses} onSelect={handleCourseSelect} selectedCourse={selectedCourseId}/>
                     <ExamSelect exams={exams} onSelect={handleExamSelect} language={language} />
                 </div>
             ) : null}
@@ -225,37 +234,39 @@ function ExamPreviewPage() {
                                         className="ExamPreviewPage_input-field"
                                     />
                                 </div>
-                                <div className="ExamPreviewPage_input-wrapper">
-                                    <label className="ExamPreviewPage_input-label">
-                                        {language === 'En' ? 'Duration:' : 'مدة الامتحان'}
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={duration}
-                                        onChange={(e) => setDuration(parseInt(e.target.value))}
-                                        className="ExamPreviewPage_input-field"
-                                    />
-                                </div>
-                                <div className="ExamPreviewPage_input-wrapper">
-                                    <label className="ExamPreviewPage_input-label">
-                                        {language === 'En' ? 'Start At:' : 'تاريخ البدء'}
-                                    </label>
-                                    <DatePicker
-                                        selected={startAt}
-                                        onChange={(date) => setStartAt(date)}
-                                        showTimeSelect
-                                        dateFormat="Pp"
-                                        className="ExamPreviewPage_input-field"
-                                        minDate={new Date()}
-                                        minTime={
-                                            startAt && startAt.toDateString() === new Date().toDateString()
-                                                ? new Date()  // If today, set minTime to now
-                                                : new Date(new Date().setHours(0, 0, 0, 0))  // If another day, set minTime to start of day
-                                        }
-                                        maxTime={new Date(new Date().setHours(23, 59, 59, 999))} // Max time is the end of the day
-                                        required
-                                    />
+                                <div className="ExamPreviewPage_inputRow">
+                                    <div className="ExamPreviewPage_input-wrapper">
+                                        <label className="ExamPreviewPage_input-label">
+                                            {language === 'En' ? 'Duration:' : 'مدة الامتحان'}
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={duration}
+                                            onChange={(e) => setDuration(parseInt(e.target.value))}
+                                            className="ExamPreviewPage_input-field"
+                                        />
+                                    </div>
+                                    <div className="ExamPreviewPage_input-wrapper">
+                                        <label className="ExamPreviewPage_input-label" style={{display: 'block'}}>
+                                            {language === 'En' ? 'Start At:' : 'تاريخ البدء'}
+                                        </label>
+                                        <DatePicker
+                                            selected={startAt}
+                                            onChange={(date) => setStartAt(date)}
+                                            showTimeSelect
+                                            dateFormat="Pp"
+                                            className="ExamPreviewPage_input-field ExamPreviewPage_customWidth"
+                                            minDate={new Date()}
+                                            minTime={
+                                                startAt && startAt.toDateString() === new Date().toDateString()
+                                                    ? new Date()  // If today, set minTime to now
+                                                    : new Date(new Date().setHours(0, 0, 0, 0))  // If another day, set minTime to start of day
+                                            }
+                                            maxTime={new Date(new Date().setHours(23, 59, 59, 999))} // Max time is the end of the day
+                                            required
+                                        />
 
+                                    </div>
                                 </div>
                                 {examQuestions.map((question, questionIndex) => {
                                     const answersForQuestion = examAnswers.filter(
@@ -264,7 +275,7 @@ function ExamPreviewPage() {
                                     return (
                                         <div key={questionIndex} className="ExamPreviewPage_question-edit">
                                             <div className="ExamPreviewPage_input-wrapper">
-                                                <label className="ExamPreviewPage_input-label" style={{borderTop: '1px solid #ccc'}}>
+                                                <label className="ExamPreviewPage_input-question-label">
                                                     {language === 'En' ? `Question ${questionIndex + 1}:` : `السؤال ${questionIndex + 1}:`}
                                                 </label>
                                                 <input
@@ -287,6 +298,30 @@ function ExamPreviewPage() {
                                                     />
                                                 </div>
                                             ))}
+                                            {answersForQuestion.length > 0 && (
+                                                <div className="ExamPreviewPage_input-wrapper">
+                                                    <label className="ExamPreviewPage_input-label">
+                                                        {language === 'En' ? `Correct Answer:` : `الإختيار الصحيح:`}
+                                                    </label>
+                                                    <select
+                                                        value={
+                                                            answersForQuestion.find((answer) => answer.is_correct === 1)?.answer_id || ''
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleCorrectAnswerChange(questionIndex, parseInt(e.target.value))
+                                                        }
+                                                        className="ExamPreviewPage_select"
+                                                    >
+                                                        {answersForQuestion.map((answer) => (
+                                                            <option key={answer.answer_id} value={answer.answer_id}>
+                                                                {answer.answer_text}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            )}
+
+
                                             {/*new input to handle points of the question*/}
                                             <div className="ExamPreviewPage_input-wrapper">
                                                 <label className="ExamPreviewPage_input-label">
@@ -314,8 +349,8 @@ function ExamPreviewPage() {
                     {selectedExamId && !editMode && (
                         <div className={"ExamPreviewPage_exam-container"}>
                             <div className="ExamPreviewPage_exam-details">
-                                <div className={"ExamPreviewPage_input-wrapper"}>
-                                <h3>{examDetails.exam_name}</h3>
+                            <div className={"ExamPreviewPage_input-wrapper"}>
+                                    <h3>{examDetails.exam_name}</h3>
                                 </div>
                                 <div className={"ExamPreviewPage_input-wrapper"}>
                                     <p>Duration: {examDetails.duration} minutes</p>
@@ -335,8 +370,8 @@ function ExamPreviewPage() {
                                             examAnswers
                                                 .filter((answer) => answer.question_id === question.question_id)
                                                 .map((answer, answerIndex) => (
-                                                    <div key={answerIndex}>
-                                                        Option {answerIndex + 1}: {answer.answer_text}
+                                                    <div key={answerIndex} style={{marginLeft: answer.is_correct === 1 ? '66px' : ''}}>
+                                                        Option {answerIndex + 1}: {answer.answer_text} {answer.is_correct === 1 ? ('{Correct}') : null}
                                                     </div>
                                                 ))
                                         ) : null}
@@ -349,11 +384,11 @@ function ExamPreviewPage() {
                                     <button className={"ExamPreviewPage_editButton"} onClick={toggleEditMode}>
                                         Edit Exam
                                     </button>
-                                    <button onClick={handleDeleteExam} className="ExamPreviewPage_delete-button">
-                                        {language === 'En' ? 'Delete Exam' : 'حذف الامتحان'}
-                                    </button>
                                 </>
                             )}
+                            <button onClick={handleDeleteExam} className="ExamPreviewPage_delete-button">
+                                {language === 'En' ? 'Delete Exam' : 'حذف الامتحان'}
+                            </button>
                         </div>
                     )}
                 </div>

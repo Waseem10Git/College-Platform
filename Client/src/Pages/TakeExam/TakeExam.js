@@ -10,6 +10,7 @@ import examApi from "../../api/examApi";
 const TakeExam = () => {
   const { isDarkMode, language, role, userId } = useContext(UserContext);
   const [selectedQuizId, setSelectedQuizId] = useState('');
+  const [selectedCourseId, setSelectedCourseId] = useState('');
   const [courses, setCourses] = useState([]);
   const [exams, setExams] = useState([]);
   const [examDetails, setExamDetails] = useState([]);
@@ -70,6 +71,7 @@ const TakeExam = () => {
   }, [currentTime, examEndTime, selectedQuizId]);
 
   const handleCourseSelect = (courseId) => {
+    setSelectedCourseId(courseId);
     console.log('courseId', courseId);
     axios
         .get(`/api/exams/${courseId}`)
@@ -261,13 +263,14 @@ const TakeExam = () => {
     setShowResults(false);
     setIsInExam(false);
     setSelectedQuizId('');
+    setSelectedCourseId('');
   };
 
   return (
       <div className={`TakeExam_component ${isDarkMode ? 'dark' : 'light'}`}>
         {!isInExam && !showResults && (
             <div className="TakeExam_select-container">
-              <CourseSelect language={language} courses={courses} onSelect={handleCourseSelect} />
+              <CourseSelect language={language} courses={courses} onSelect={handleCourseSelect} selectedCourse={selectedCourseId}/>
               <ExamSelect language={language} exams={exams} onSelect={handleExamDetailsSelect} />
             </div>
         )}
@@ -332,6 +335,7 @@ const TakeExam = () => {
                               ) : (
                                   <input
                                       type="text"
+                                      className={'TakeExam_answers-section-essayAnswer'}
                                       id="essayAnswer"
                                       value={studentAnswers[question.question_id] || ''}
                                       onChange={(e) => handleAnswerSelect(question.question_id, e.target.value)}

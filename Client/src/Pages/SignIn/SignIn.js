@@ -3,6 +3,7 @@ import './SignIn.css';
 import axios from '../../api/axios';
 import { useNavigate } from "react-router-dom";
 import UserContext from "../../context/UserContext";
+import {toast} from "react-toastify";
 
 const SignIn = () => {
     const { language, isDarkMode } = useContext(UserContext);
@@ -22,12 +23,12 @@ const SignIn = () => {
                     navigate('/', { replace: true });
                     window.location.reload();
                 } else {
-                    alert(res.data.Error);
+                    toast.error(res.data.Error);
                 }
             })
             .catch(err => {
                 console.error(err);
-                // alert("Failed");
+                toast.error("Failed");
             });
         console.log('Submitted data:', formData);
     };

@@ -42,3 +42,30 @@
 .ExamPreviewPage_edit-button:hover {
   background-color: #0056b3;
 }
+
+.ExamPreviewPage_input-field, .ExamPreviewPage_input-field input[type='number'] {
+  width: 100%;
+  font-size: 16px;
+  padding: 8px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  text-align: left;
+}
+
+.ExamPreviewPage_inputRow {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.ExamPreviewPage_customWidth {
+  width: 278px !important;
+}
+
+.ExamPreviewPage_input-question-label {
+  border-top: 2px solid rgb(204, 204, 204);
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+}

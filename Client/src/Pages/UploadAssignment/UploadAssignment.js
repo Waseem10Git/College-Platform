@@ -17,8 +17,9 @@ const UploadAssignment = () => {
     const [assignmentFile, setAssignmentFile] = useState(null);
     const [dueDate, setDueDate] = useState(new Date());
     const [courses, setCourses] = useState([]);
-    const [assignmentContentErrMessage, setAssingmentContentErrMessage] = useState('');
-
+    const [assignmentContentErrMessage, setAssignmentContentErrMessage] = useState('');
+    const [error, setError] = useState(false);
+    
     const fetchCourses = async () => {
         try {
             const response = await coursesApi.fetchSomeCourses(role, userId);
@@ -47,10 +48,10 @@ const UploadAssignment = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setAssingmentContentErrMessage('');
+        setAssignmentContentErrMessage('');
 
         if (!assignmentDescription.trim() && !assignmentFile){
-            setAssingmentContentErrMessage(language === "En" ? "Please write a description of the assignment, select file , or both." : "الرجاء كتابة وصف للتكيف، أو تحديد ملف، أو كليهما.");
+            setAssignmentContentErrMessage(language === "En" ? "Please write a description of the assignment, select file , or both." : "الرجاء كتابة وصف للتكيف، أو تحديد ملف، أو كليهما.");
             return
         }
 
@@ -74,20 +75,29 @@ const UploadAssignment = () => {
                 setAssignmentDescription('');
                 setAssignmentFile(null);
                 setDueDate(new Date());
-                setAssingmentContentErrMessage('');
+                setAssignmentContentErrMessage('');
+                setError(false);
             })
             .catch(error => {
-                console.error('Error uploading assignment:', error);
-                toast.error(language === 'En' ? 'Failed to upload assignment!' : 'فشل في رفع الواجب!');
+                if (error.response && error.response.data && error.response.data.message){
+                    toast.error(error.response.data.message);
+                    setError(true)
+                } else {
+                    console.error('Error uploading assignment:', error);
+                    toast.error(language === 'En' ? 'Failed to upload assignment!' : 'فشل في رفع الواجب!');
+                    setError(true)
+                }
             });
 
-        const notificationMessage = language === "En" ? `New Assignment Uploaded for course ` : 'تم إضافة تكليف جديد لمادة ';
-        await notificationApi.sendNotification(userId, selectedCourse, notificationMessage)
-        .then(response => {
-            console.log('send notification {New Assignment Uploaded} for students');
-        }).catch(error => {
-            console.log('Error sending notification to students');
-        });
+        if (!error) {
+            const notificationMessage = language === "En" ? `New Assignment Uploaded for course ` : 'تم إضافة تكليف جديد لمادة ';
+            await notificationApi.sendNotification(userId, selectedCourse, notificationMessage)
+                .then(response => {
+                    console.log('send notification {New Assignment Uploaded} for students');
+                }).catch(error => {
+                    console.log('Error sending notification to students');
+                });
+        }
     };
 
     return (
