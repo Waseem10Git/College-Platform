@@ -62,7 +62,7 @@
     flex-grow: 1;
     border: none;
     padding: 10px;
-    border-radius: 8px 0 0 8px;
+    border-radius: 8px;
     font-size: 16px;
     outline: none;
     transition: background-color 0.3s ease, color 0.3s ease;
@@ -73,7 +73,7 @@
     border: none;
     padding: 10px 15px;
     cursor: pointer;
-    border-radius: 0 8px 8px 0;
+    border-radius: 8px;
     font-size: 16px;
     transition: background-color 0.3s ease;
 }

@@ -70,8 +70,9 @@ class NotificationController {
                 // Get all students enrolled in the course using the EnrollmentModel
                 const students = await EnrollmentModel.getStudentsForInstructorCourse(instructor_course_id);
 
-                // Insert the notification ID and student IDs into the user_notifications table using the NotificationModel
-                await NotificationModel.sendNotification(students, notificationId);
+                if (students.length > 0) {
+                    await NotificationModel.sendNotification(students, notificationId);
+                }
 
                 // Commit the transaction
                 conn.commit((err) => {

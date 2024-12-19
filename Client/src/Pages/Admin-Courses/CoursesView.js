@@ -2,7 +2,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import UserContext from "../../context/UserContext";
 import coursesApi from "../../api/coursesApi";
 import { toast } from 'react-toastify';
-import {ConfirmDelete} from "../../components";
+import {ConfirmDelete, SearchBar} from "../../components";
 
 const CoursesView = () => {
     const { isDarkMode, language } = useContext(UserContext);
@@ -24,6 +24,7 @@ const CoursesView = () => {
     const [editingIDExistErrorMessage, setIDEditingExistErrorMessage] = useState('');
     const [deletionVisible, setDeletionVisible] = useState(false);
     const [departmentToDelete, setDepartmentToDelete] = useState(null);
+    const [filter, setFilter] = useState('');
 
     const fetchCourses = async () => {
         try {
@@ -164,59 +165,26 @@ const CoursesView = () => {
         setDeletionVisible(true);
     };
 
-
-    const [resizing, setResizing] = useState(false);
-    const [start, setStart] = useState(null);
-    const [startWidth, setStartWidth] = useState(null);
-
-    const handleMouseDown = (e) => {
-        setStart(e.clientX);
-        setStartWidth(e.target.clientWidth);
-        setResizing(true);
-        document.body.style.userSelect = 'none';
-    };
-
-    const handleMouseMove = (e) => {
-        if (resizing) {
-            const newWidth = startWidth + (e.clientX - start);
-            e.target.style.width = `${newWidth}px`;
-        }
-    };
-
-    const handleMouseUp = () => {
-        setResizing(false);
-        document.body.style.userSelect = 'auto';
-    };
-
-    const handleMouseEnter = (e) => {
-        e.target.style.cursor = 'col-resize';
-    };
-
-    const handleMouseLeave = (e) => {
-        e.target.style.cursor = 'auto';
-    };
-
+    const filteredData = courses.filter((course) =>
+        (course.course_code && course.course_code.toLowerCase().includes(filter)) ||
+        (course.course_name && course.course_name.toLowerCase().includes(filter))
+    );
 
     return (
         <>
+            <div>
+                <SearchBar
+                    filter={filter}
+                    setFilter={setFilter}
+                    searchText={language === "En" ? "Search by course code or course name" : "البحث حسب الرقم التعريفي للمادة أو اسم المادة"}
+                />
+            </div>
             <table className="CoursesView_course-table">
                 <thead>
                 <tr>
-                    <th onMouseDown={handleMouseDown}
-                        onMouseMove={handleMouseMove}
-                        onMouseUp={handleMouseUp}
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}>{language === 'En' ? 'Course ID' : 'رقم الدورة'}</th>
-                    <th onMouseDown={handleMouseDown}
-                        onMouseMove={handleMouseMove}
-                        onMouseUp={handleMouseUp}
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}>{language === 'En' ? 'Course Name' : 'اسم الدورة'}</th>
-                    <th onMouseDown={handleMouseDown}
-                        onMouseMove={handleMouseMove}
-                        onMouseUp={handleMouseUp}
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}>{language === 'En' ? 'Actions' : 'الإجراءات'}</th>
+                    <th>{language === 'En' ? 'Course ID' : 'رقم الدورة'}</th>
+                    <th>{language === 'En' ? 'Course Name' : 'اسم الدورة'}</th>
+                    <th>{language === 'En' ? 'Actions' : 'الإجراءات'}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -233,15 +201,20 @@ const CoursesView = () => {
                         )}
                         <input
                             type="text"
-                            placeholder="Course ID"
+                            className={"AdminCourses_input-field"}
+                            placeholder={language === 'En' ? "Course ID" : "الرقم التعريفي للمادة"}
                             value={newCourse.course_code}
                             onChange={(e) => setNewCourse({...newCourse, course_code: e.target.value})}
                         />
                     </td>
                     <td>
                         {addingNameErrorMessage && (
-                        <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{addingNameErrorMessage}</p>
-                    )}
+                            <p style={{
+                                color: 'red',
+                                marginBottom: '8px',
+                                fontStyle: 'italic'
+                            }}>{addingNameErrorMessage}</p>
+                        )}
                         {addingNameExistErrorMessage && (
                             <p style={{
                                 color: 'red',
@@ -251,7 +224,8 @@ const CoursesView = () => {
                         )}
                         <input
                             type="text"
-                            placeholder="Course Name"
+                            className={"AdminCourses_input-field"}
+                            placeholder={language === 'En' ? "Course Name" : "اسم المادة"}
                             value={newCourse.course_name}
                             onChange={(e) => setNewCourse({...newCourse, course_name: e.target.value})}
                         />
@@ -261,7 +235,7 @@ const CoursesView = () => {
                     </td>
                 </tr>
 
-                {courses.map((course, index) => (
+                {filteredData && filteredData.map((course, index) => (
                     <tr key={index}>
                         <td>
                             {editingCourse === course.course_code ? (
@@ -326,8 +300,10 @@ const CoursesView = () => {
                         <td>
                             {editingCourse === course.course_code ? (
                                 <>
-                                    <button onClick={() => updateCourse(updatedCourse)}>Update</button>
-                                    <button onClick={() => setEditingCourse(null)}>Cancel</button>
+                                    <button
+                                        onClick={() => updateCourse(updatedCourse)}>{language === 'En' ? 'Update' : 'تحديث'}</button>
+                                    <button
+                                        onClick={() => setEditingCourse(null)}>{language === 'En' ? 'Cancel' : 'إلغاء'}</button>
                                 </>
                             ) : (
                                 <>
@@ -338,9 +314,10 @@ const CoursesView = () => {
                                         setIDAddingErrorMessage('');
                                         setIDExistErrorMessage('');
                                         setNameExistErrorMessage('');
-                                    }}>Edit
+                                    }}>{language === 'En' ? 'Edit' : 'تعديل'}
                                     </button>
-                                    <button onClick={() => confirmDelete(course.course_code)}>Delete</button>
+                                    <button
+                                        onClick={() => confirmDelete(course.course_code)}>{language === 'En' ? 'Delete' : 'حذف'}</button>
                                 </>
                             )}
                         </td>

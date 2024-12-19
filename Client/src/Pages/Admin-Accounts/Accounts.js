@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import './Accounts.css';
 import UserContext from "../../context/UserContext";
 import { toast } from 'react-toastify';
@@ -6,6 +6,7 @@ import accountsApi from "../../api/accountsApi";
 import departmentsApi from "../../api/departmentsApi";
 import usersApi from "../../api/usersApi";
 import { IoMdDownload } from "react-icons/io";
+import {ErrorDetails} from "../../components";
 
 const Accounts = () => {
   const { language, isDarkMode } = useContext(UserContext);
@@ -15,6 +16,9 @@ const Accounts = () => {
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState('');
   const [idErrMessage, setIdErrMessage] = useState('');
+  const [uploadErrors, setUploadErrors] = useState(null);
+  const [uploadSummaryError, setUploadSummaryError] = useState('');
+  const [lastUserId, setLastUserId] = useState(null);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName:'',
@@ -54,7 +58,7 @@ const Accounts = () => {
       const response = await departmentsApi.fetchDepartment()
       setDepartments(response.data);
     } catch (error) {
-      toast.error(language === 'En' ? 'fetch departments failed' : 'فشل جلب الأقسام');
+      console.error(language === 'En' ? 'fetch departments failed' : 'فشل جلب الأقسام');
     }
   };
 
@@ -63,13 +67,26 @@ const Accounts = () => {
       const response = await usersApi.fetchUsers();
       setUsers(response.data);
     } catch (error) {
-      toast.error(language === 'En' ? 'fetch users failed' : 'فشل جلب المستخدمين');
+      console.error(language === 'En' ? 'fetch users failed' : 'فشل جلب المستخدمين');
     }
   };
+
+  const fetchLastUserId = async () => {
+    try {
+      const response = await usersApi.fetchLastUserId();
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        userID: parseInt(response.data.id) + 1
+      }));
+    } catch (error) {
+      console.error(language === 'En' ? 'fetch last user id failed' : 'فشل جلب معرف المستخدم الأخير')
+    }
+  }
 
   useEffect(() => {
     fetchDepartments();
     fetchUsers();
+    fetchLastUserId()
   }, [users]);
 
   // Function to handle filtering
@@ -84,7 +101,7 @@ const Accounts = () => {
       (user.last_name && user.last_name.toLowerCase().includes(filter)) ||
       (user.email && user.email.toLowerCase().includes(filter)) ||
       (user.role && user.role.toLowerCase().includes(filter)) ||
-      (user.department_id && user.department_id.toString().includes(filter))
+      (user.department_name && user.department_name.toLowerCase().includes(filter))
   );
 
   const handleOptionClick = (option) => {
@@ -97,6 +114,8 @@ const Accounts = () => {
   };
 
   const handleFileUpload = async () => {
+    setUploadErrors(null);
+    setUploadSummaryError('');
     if (!file) {
       toast.error(language === 'En' ? 'Please select a file first' : 'رجاءاً أختر ملف');
       return;
@@ -109,11 +128,14 @@ const Accounts = () => {
     try {
       // Send the file directly to the backend
       const response = await accountsApi.uploadAccounts(formData);
+      console.log('upload file response:', response.data);
       if (response.data.Status === "Success") {
         toast.success(language === 'En' ? 'Accounts added successfully' : 'تمت إضافة الحسابات بنجاح');
         resetFormData();
       } else {
-        toast.error(language === 'En' ? 'Failed to add accounts' : 'فشل في إضافة الحسابات');
+        toast.success(language === 'En' ? 'Part of the accounts have been added successfully' : 'تم إضافة جزء من الحسابات بنجاح');
+        setUploadErrors(response.data.Errors);
+        setUploadSummaryError(response.data.Message);
       }
     } catch (error) {
       console.error(error);
@@ -179,11 +201,10 @@ const Accounts = () => {
       console.log("form data", formData);
           await accountsApi.addAccount(formData)
           .then(res => {
-            if (res.data.Status === "Success") {
-              toast.success(language === 'En' ? 'Account added successfully' : 'تم تحديث الحساب بنجاح');
+            console.log(res.data)
+            if (res.data.status === "Success") {
+              toast.success(language === 'En' ? 'Account added successfully' : 'تم إضافة الحساب بنجاح');
               resetFormData();
-            } else {
-              toast.error(language === 'En' ? 'Account added failed' : 'فشل في تحديث الحساب');
             }
           })
           .catch(err => {
@@ -306,31 +327,38 @@ const Accounts = () => {
                   <form onSubmit={handleSubmit}>
                     {selectedOption === 'upload' && (
                         <div className={"accounts_component_form-group"}>
-                          <a
-                              href="/user_template.xlsx"
-                              download
-                              style={{
-                                textDecoration: 'none',
-                                color: 'white',
-                                backgroundColor: '#007bff',
-                                padding: '5px 10px',
-                                marginBottom: '20px',
-                                borderRadius: '5px'
-                              }}
-                          >
-                            <IoMdDownload/> {language === 'En' ? 'Download Template' : 'تحميل القالب'}
-                          </a>
-                          <input
-                              type="file"
-                              accept=".xlsx"
-                              onChange={handleFileChange}
-                          />
-                          <button type="button" onClick={handleFileUpload}>
-                            {language === 'En' ? 'Upload' : 'رفع'}
-                          </button>
+                          <div>
+                            <a
+                                href="/user_template.xlsx"
+                                download
+                                style={{
+                                  textDecoration: 'none',
+                                  color: 'white',
+                                  backgroundColor: '#007bff',
+                                  padding: '5px 10px',
+                                  marginBottom: '20px',
+                                  borderRadius: '5px'
+                                }}
+                            >
+                              <IoMdDownload/> {language === 'En' ? 'Download Template' : 'تحميل القالب'}
+                            </a>
+                            <input
+                                type="file"
+                                accept=".xlsx"
+                                onChange={handleFileChange}
+                            />
+                            <button type="button" onClick={handleFileUpload}>
+                              {language === 'En' ? 'Upload' : 'رفع'}
+                            </button>
+                          </div>
+                          <div>
+                            {uploadErrors && uploadErrors.length > 0 ? (
+                                <ErrorDetails summary={uploadSummaryError} errors={uploadErrors}/>
+                            ) : null}
+                          </div>
                         </div>
                     )}
-                    {idErrMessage && (
+                    {idErrMessage && !uploadErrors && (
                         <p style={{
                           color: 'red',
                           marginBottom: '8px',
@@ -394,7 +422,7 @@ const Accounts = () => {
                         <div className="accounts_component_form-group">
                           <label
                               htmlFor="userID">{language === 'En' ? 'According user ID:' : 'تبقا لمعرف المستخدم:'}</label>
-                          <input type="number" id="userID" name="userID" value={formData.userID}
+                          <input type="number" id="userID" name={"userID"} value={formData.userID}
                                  onChange={handleInputChange}/>
                         </div>
                         <div className="accounts_component_form-group">

@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const UserModel = require('../models/User');
+const DepartmentModel = require('../models/Department');
 const XLSX = require('xlsx');
 const saltRounds = 10;
 
@@ -32,6 +33,25 @@ class UserController {
         }
     }
 
+    static async getLastUserId(req, res) {
+        try {
+            const lastUserId = await UserModel.getLastUserId();
+
+            // Check if the result is empty
+            if (!lastUserId || lastUserId.length === 0) {
+                return res.status(404).json({ message: "User not found (last user id)" });
+            }
+
+            // Send the first result (the latest user ID)
+            return res.json(lastUserId[0]); // Assuming you want the ID object
+        } catch (err) {
+            return res.status(500).json({
+                message: "Server Error in GET Students with endpoint: /api/user/lastUserId"
+            });
+        }
+    }
+
+
     static async getUser(req, res) {
         const userID = req.params.id;
         try {
@@ -57,10 +77,10 @@ class UserController {
                 updatePromises.push(UserModel.updatePassword(userId, hashedPassword));
             }
 
-            if (image) {
-                const imageData = image.buffer;
-                updatePromises.push(UserModel.updateImage(userId, imageData));
-            }
+            // if (image) {
+            //     const imageData = image.buffer;
+            //     updatePromises.push(UserModel.updateImage(userId, imageData));
+            // }
 
             // Wait for all update queries to complete
             await Promise.all(updatePromises);
@@ -87,7 +107,7 @@ class UserController {
 
             const userEmailExist = await UserModel.getUserByEmail(email);
 
-            if (userEmailExist) return res.status(404).json({ status: "Error", message: "User Email is exist" });
+            if (userEmailExist.length > 0) return res.status(404).json({ status: "Error", message: "User Email is exist" });
 
             await UserModel.addAccount({ userID, firstName, lastName, email, password, role, departmentID });
 
@@ -144,25 +164,76 @@ class UserController {
             const data = allData.slice(1);
             console.log('header: ', header);
 
-            // Process the JSON data
-            for (const account of data) {
-                await UserModel.addAccount({
-                    userID: account[0],
-                    firstName: account[1],
-                    lastName: account[2],
-                    email: account[3],
-                    password: account[4],
-                    role: account[5],
-                    departmentID: account[6]
+            const departments = await DepartmentModel.getAllDepartments();
+            const validDepartmentIDs = departments.map(dept => dept.department_id);
+
+            const errors = [];
+
+            for (let i = 0; i < data.length; i++) {
+                const account = data[i];
+                const rowNumber = i + 2;
+
+                const userID = account[0];
+                const firstName = account[1];
+                const lastName = account[2];
+                const email = account[3];
+                const password = account[4];
+                const role = account[5];
+                const departmentID = account[6];
+
+                const validationErrors = [];
+
+                if (!userID || userID.toString().length < 7) validationErrors.push("UserID is missing or less than 7 digit");
+                if (!firstName) validationErrors.push("FirstName is missing");
+                if (!lastName || !/^[a-zA-Z]*$/.test(lastName)) validationErrors.push("LastName is missing");
+                if (!email || !/^[\w.-]+@fcai\.usc\.edu\.eg$/.test(email)) validationErrors.push("Invalid email or domain. Email must end with '@fcai.ucs.edu.eg'");
+                if (!password) validationErrors.push("Password is missing");
+                if (!role) validationErrors.push("Role is missing");
+                if (departmentID && !validDepartmentIDs.includes(departmentID)) {
+                    validationErrors.push(`Invalid departmentID. It must be one of: ${validDepartmentIDs.join(', ')}`);
+                }
+
+                const userIDExistence = await UserModel.getUserById(userID);
+                if (userIDExistence) validationErrors.push(`User id (${userID}) is exist before`);
+
+                const userEmailExistence = await UserModel.getUserByEmail(email);
+                if (userEmailExistence.length > 0) validationErrors.push(`User email (${email}) is exist before`);
+
+                if (validationErrors.length > 0) {
+                    errors.push({ row: rowNumber, errors: validationErrors });
+                    continue;
+                }
+
+                try {
+                    await UserModel.addAccount({
+                        userID,
+                        firstName,
+                        lastName,
+                        email,
+                        password,
+                        role,
+                        departmentID
+                    });
+                } catch (dbError) {
+                    errors.push({ row: rowNumber, errors: [`Database error: ${dbError.message}`] });
+                }
+            }
+
+            if (errors.length > 0) {
+                return res.status(200).json({
+                    Status: "Partial Success",
+                    Message: "Some rows failed to process.",
+                    Errors: errors
                 });
             }
 
-            return res.status(200).json({ Status: "Success" });
+            return res.status(200).json({ Status: "Success", Message: "All rows processed successfully." });
         } catch (error) {
             console.error("Error uploading accounts:", error);
             return res.status(500).json({ Status: "Error", Error: error });
         }
     }
+
 }
 
 module.exports = UserController;

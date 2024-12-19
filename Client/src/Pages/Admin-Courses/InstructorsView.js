@@ -4,7 +4,7 @@ import UserContext from "../../context/UserContext";
 import instructorsCoursesApi from "../../api/instructorsCoursesApi";
 import departmentsCoursesApi from "../../api/departmentsCoursesApi";
 import usersApi from "../../api/usersApi";
-import {ConfirmDelete} from "../../components";
+import {ConfirmDelete, SearchBar} from "../../components";
 
 const InstructorsView = () => {
     const { language } = useContext(UserContext);
@@ -18,6 +18,7 @@ const InstructorsView = () => {
     const [addingExistErr, setAddingExistErr] = useState('');
     const [deletionVisible, setDeletionVisible] = useState(false);
     const [departmentToDelete, setDepartmentToDelete] = useState(null);
+    const [filter, setFilter] = useState('');
 
     const fetchInstructorsCourses = async () => {
         try {
@@ -143,8 +144,24 @@ const InstructorsView = () => {
         setAddingExistErr('');
     };
 
+    const filteredData = instructorsCourses.filter((ic) =>
+        (ic.first_name && ic.first_name.toLowerCase().includes(filter)) ||
+        (ic.last_name && ic.last_name.toLowerCase().includes(filter)) ||
+        (ic.department_name && ic.department_name.toLowerCase().includes(filter)) ||
+        (ic.course_name && ic.course_name.toLowerCase().includes(filter))
+    );
+
     return (
         <>
+            <div>
+                <SearchBar
+                    filter={filter}
+                    setFilter={setFilter}
+                    searchText={language === "En"
+                        ? "Search by instructor first/last name, department name or course name"
+                        : "البحث حسب الاسم الأول/الأخير للمدرس، أو اسم القسم أو اسم المادة"}
+                />
+            </div>
             <table className="InstructorsView_course-table">
                 <thead>
                 <tr>
@@ -156,17 +173,26 @@ const InstructorsView = () => {
                 <tbody>
                 <tr>
                     <td>{addingErrInstructorMessage && (
-                        <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{addingErrInstructorMessage}</p>
+                        <p style={{
+                            color: 'red',
+                            marginBottom: '8px',
+                            fontStyle: 'italic'
+                        }}>{addingErrInstructorMessage}</p>
                     )}
                         <select value={selectedInstructor} onChange={(e) => setSelectedInstructor(e.target.value)}>
                             <option value="">{language === 'En' ? 'Select Instructor' : 'اختر الدكتور'}</option>
                             {instructors.map((instructor, index) => (
-                                <option key={index} value={instructor.id}>{instructor.first_name} {instructor.last_name}</option>
+                                <option key={index}
+                                        value={instructor.id}>{instructor.first_name} {instructor.last_name}</option>
                             ))}
                         </select>
                     </td>
                     <td>{addingErrCoursesMessage && (
-                        <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{addingErrCoursesMessage}</p>
+                        <p style={{
+                            color: 'red',
+                            marginBottom: '8px',
+                            fontStyle: 'italic'
+                        }}>{addingErrCoursesMessage}</p>
                     )}
                         <select multiple value={newDepartmentCourse}
                                 onChange={(e) => setNewDepartmentCourse(
@@ -194,7 +220,7 @@ const InstructorsView = () => {
                         </button>
                     </td>
                 </tr>
-                {instructorsCourses.map((ic, index) => (
+                {filteredData && filteredData.map((ic, index) => (
                     <tr key={index}>
                         <td>
                             {ic.first_name} {ic.last_name}
@@ -203,7 +229,8 @@ const InstructorsView = () => {
                             {ic.department_name + "_" + ic.course_name}
                         </td>
                         <td>
-                            <button onClick={() => confirmDelete(ic.instructor_course_id)}>{language === 'En' ? 'Delete' : 'حذف'}</button>
+                            <button
+                                onClick={() => confirmDelete(ic.instructor_course_id)}>{language === 'En' ? 'Delete' : 'حذف'}</button>
                         </td>
                     </tr>
                 ))}

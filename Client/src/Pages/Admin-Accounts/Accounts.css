@@ -170,7 +170,6 @@ form button:hover {
 }
 
 .accounts-container_dark #role {
-  background-color: #555; /* Darker background color in dark mode */
   color: #fff; /* White text color in dark mode */
   border-color: #ccc; /* Lighter border color in dark mode */
 }
@@ -203,12 +202,21 @@ form button:hover {
 
 
 .accounts_component_form-group .filter-input {
-  width: 100%; /* Full width */
-  padding: 10px; /* Padding inside the input */
-  margin-bottom: 15px; /* Space below the input */
-  font-size: 16px; /* Adjust font size */
-  border: 1px solid #ddd; /* Light border */
-  border-radius: 5px; /* Rounded corners */
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.accounts-container_dark .accounts_component_form-group .filter-input {
+background-color: #111111;
+  color: #dddddd;
+}
+
+.accounts-container_dark .accounts_component_form-group .filter-input::placeholder {
+color: #dddddd;
 }
 
 /* Styling for when no data is available */
@@ -242,7 +250,9 @@ form button:hover {
   background-color: #f1f1f1; /* Highlight row on hover */
 }
 
-
+.accounts-container_dark .accounts_component_form-group tr:hover {
+  background-color: gray; /* Highlight row on hover */
+}
 
 .accounts_component_form-group th,
 .accounts_component_form-group td {

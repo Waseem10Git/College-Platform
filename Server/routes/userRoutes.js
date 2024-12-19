@@ -7,6 +7,7 @@ const { verifyUser, isAdmin } = require('../middlewares/auth');
 
 router.get('/user/:id', verifyUser, asyncHandler(UserController.getUser));
 router.put('/user/update', verifyUser, upload.single('image'), asyncHandler(UserController.updateUser));
+router.get('/users/lastUserId', verifyUser, isAdmin, asyncHandler(UserController.getLastUserId));
 router.get('/users', verifyUser, isAdmin, asyncHandler(UserController.getAllUsers));
 router.get('/instructors', verifyUser, isAdmin, asyncHandler(UserController.getAllInstructors));
 router.get('/students', verifyUser, isAdmin, asyncHandler(UserController.getAllStudents));

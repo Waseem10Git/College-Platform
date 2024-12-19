@@ -1,6 +1,6 @@
-import uploadLabel from "../../Pages/FileUpload/images/uploadLabel.png";
-import "./UploadFile.css"
-import React, {useContext} from "react";
+import uploadLabel from "./images/uploadLabel.png";
+import "./UploadFile.css";
+import {useContext} from "react";
 import UserContext from "../../context/UserContext";
 
 const UploadFile = ({ handleFileChange, file, uploadingVisible, setUploadingVisible, handleSubmit, errorMessage }) => {

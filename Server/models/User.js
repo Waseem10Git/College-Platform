@@ -5,7 +5,7 @@ class UserModel {
 
     static getAllUsers() {
         return new Promise((resolve, reject) => {
-            const sql = "SELECT * FROM users";
+            const sql = "SELECT * FROM users LEFT JOIN departments USING(department_id)";
             conn.query(sql, (err, results) => {
                 if (err) {
                     return reject(err);
@@ -33,6 +33,18 @@ class UserModel {
             const sql = "SELECT * FROM users WHERE role = ?";
             const value = "student";
             conn.query(sql, [value], (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(results);
+            });
+        });
+    }
+
+    static getLastUserId() {
+        return new Promise((resolve, reject) => {
+            const sql = "SELECT id FROM users ORDER BY id DESC LIMIT 1";
+            conn.query(sql, (err, results) => {
                 if (err) {
                     return reject(err);
                 }
@@ -90,7 +102,7 @@ class UserModel {
                     return reject("Error hashing password");
                 }
 
-                const departmentValue = departmentID === 0 ? null : departmentID;
+                const departmentValue = !departmentID ? null : departmentID;
 
                 const values = [userID, firstName, lastName, email, hash, role, departmentValue];
                 conn.query(sql, values, (err, result) => {

@@ -2,8 +2,8 @@ import {useEffect, useState} from 'react';
 import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {NavBar, Footer, Header, MobileHeader, PublicUser, AdminUser, StudentInstructorUser, InstructorUser} from './components'
-import {FileUpload, Home, Contact, SignIn, Accounts, MakeExam, ExamPreview, ExamResults, ExamResultDetails, TakeExam,
+import {NavBar, Footer, Header, MobileHeader} from './components'
+import {Home, SignIn, Accounts, MakeExam, ExamPreview, ExamResults, ExamResultDetails, TakeExam,
     ChapterUpload, ChapterInstall, AdminCourses, Course, Profile, UploadAssignment, Assignments, AllNotifications} from './Pages'
 
 import axios from './api/axios';
@@ -14,14 +14,31 @@ function App() {
     const [name, setName] = useState('');
     const [role, setRole] = useState('');
     const [userId, setUserId] = useState(null);
-    const [language, setLanguage] = useState(localStorage.getItem('language') || 'En');
-    const [isDarkMode, setIsDarkMode] = useState(localStorage.getItem('darkMode') === 'true');
+    const [language, setLanguage] = useState(
+        localStorage.getItem("language") || "En"
+    );
+    const [isDarkMode, setIsDarkMode] = useState(
+        localStorage.getItem("isDarkMode") === "true"
+    );
+
+    useEffect(() => {
+        document.documentElement.setAttribute(
+            "dir",
+            language === "Ar" ? "rtl" : "ltr"
+        );
+        localStorage.setItem("language", language);
+    }, [language]);
+
+    useEffect(() => {
+        localStorage.setItem("isDarkMode", isDarkMode);
+    }, [isDarkMode]);
+
     const toggleLanguage = () => {
-        setLanguage(prevLanguage => (prevLanguage === 'En' ? 'Ar' : 'En'));
-        document.documentElement.setAttribute('dir', language === 'En' ? 'rtl' : 'ltr');
+        setLanguage((prevLanguage) => (prevLanguage === "En" ? "Ar" : "En"));
     };
+
     const toggleTheme = () => {
-        setIsDarkMode(prevMode => !prevMode);
+        setIsDarkMode((prevMode) => !prevMode);
     };
 
     const userValues = {
@@ -75,7 +92,6 @@ function App() {
                           <Route path="/MakeExam" element={ <MakeExam/> }/>
                           <Route path="/ExamPreview" element={ <ExamPreview/> }/>
                           <Route path="/ExamResults" element={ <ExamResults/> }/>
-                          <Route path="/FileUpload" element={<FileUpload/> }/>
                           <Route path="/UploadAssignment" element={ <UploadAssignment/> }/>
                           <Route path="/Course/:userId" element={ <Course/> }/>
                           <Route path="/ExamResultDetails" element={ <ExamResultDetails/> }/>

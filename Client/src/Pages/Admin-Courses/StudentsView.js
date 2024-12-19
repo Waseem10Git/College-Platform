@@ -4,7 +4,7 @@ import UserContext from "../../context/UserContext";
 import studentsEnrollmentsApi from "../../api/studentsEnrollmentsApi";
 import instructorsCoursesApi from "../../api/instructorsCoursesApi";
 import usersApi from "../../api/usersApi";
-import {ConfirmDelete} from "../../components";
+import {ConfirmDelete, SearchBar} from "../../components";
 
 const InstructorsView = () => {
     const { language } = useContext(UserContext);
@@ -18,6 +18,7 @@ const InstructorsView = () => {
     const [addingExistErr, setAddingExistErr] = useState('');
     const [deletionVisible, setDeletionVisible] = useState(false);
     const [departmentToDelete, setDepartmentToDelete] = useState(null);
+    const [filter, setFilter] = useState('');
 
     const fetchStudentsEnrollments = async () => {
         try {
@@ -127,8 +128,25 @@ const InstructorsView = () => {
         setNewStudentEnrollment([]);
     };
 
+    const filteredData = studentsEnrollments.filter((se) =>
+        (se.student_fname && se.student_fname.toLowerCase().includes(filter)) ||
+        (se.student_lname && se.student_lname.toLowerCase().includes(filter)) ||
+        (se.instructor_fname && se.instructor_fname.toLowerCase().includes(filter)) ||
+        (se.instructor_lname && se.instructor_lname.toLowerCase().includes(filter)) ||
+        (se.course_name && se.course_name.toLowerCase().includes(filter))
+    );
+
     return (
         <>
+            <div>
+                <SearchBar
+                    filter={filter}
+                    setFilter={setFilter}
+                    searchText={language === "En"
+                        ? "Search by students first/last name, instructor first/last name or course name"
+                        : "البحث حسب الاسم الأول/الأخير للطالب، أو الاسم الأول/الأخير للمدرس أو اسم المادة"}
+                />
+            </div>
             <table className="StudentsView_course-table">
                 <thead>
                 <tr>
@@ -141,7 +159,11 @@ const InstructorsView = () => {
                 <tr>
                     <td>
                         {addingErrStudentsMessage && (
-                            <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{addingErrStudentsMessage}</p>
+                            <p style={{
+                                color: 'red',
+                                marginBottom: '8px',
+                                fontStyle: 'italic'
+                            }}>{addingErrStudentsMessage}</p>
                         )}
                         <select value={selectedStudent} onChange={(e) => setSelectedStudent(e.target.value)}>
                             <option value="">{language === 'En' ? 'Select Student' : 'اختر الطالب'}</option>
@@ -152,14 +174,19 @@ const InstructorsView = () => {
                     </td>
                     <td>
                         {addingErrCoursesMessage && (
-                            <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{addingErrCoursesMessage}</p>
+                            <p style={{
+                                color: 'red',
+                                marginBottom: '8px',
+                                fontStyle: 'italic'
+                            }}>{addingErrCoursesMessage}</p>
                         )}
                         <select multiple value={newStudentEnrollment}
                                 onChange={(e) => setNewStudentEnrollment(
                                     [...e.target.options].filter(option => option.selected).map(option => option.value))}
                         >
                             {instructorsCourses.map(ic => (
-                                <option key={ic.id} value={ic.instructor_course_id}>{ic.first_name} {ic.last_name}_{ic.course_name}</option>
+                                <option key={ic.id}
+                                        value={ic.instructor_course_id}>{ic.first_name} {ic.last_name}_{ic.course_name}</option>
                             ))}
                         </select>
                     </td>
@@ -172,7 +199,7 @@ const InstructorsView = () => {
                         </button>
                     </td>
                 </tr>
-                {studentsEnrollments.map((se, index) => (
+                {filteredData && filteredData.map((se, index) => (
                     <tr key={index}>
                         <td>
                             {se.student_fname} {se.student_lname}

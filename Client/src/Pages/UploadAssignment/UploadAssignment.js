@@ -95,7 +95,7 @@ const UploadAssignment = () => {
                 .then(response => {
                     console.log('send notification {New Assignment Uploaded} for students');
                 }).catch(error => {
-                    console.log('Error sending notification to students');
+                    console.log('Error sending notification to students', error);
                 });
         }
     };

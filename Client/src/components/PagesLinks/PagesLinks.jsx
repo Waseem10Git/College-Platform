@@ -44,7 +44,7 @@ function PagesLinks () {
                     </Link>
                 </li>
                 <li className={pathName === `/UploadAssignment` ? styles.active : ""}>
-                    <Link to={`/UploadAssignment`}>{language === 'En' ? 'Upload Assignment' : 'دورة'}</Link>
+                    <Link to={`/UploadAssignment`}>{language === 'En' ? 'Upload Assignment' : 'رفع تكليف'}</Link>
                 </li>
             </> : null}
             {(role === "student") ? <>
@@ -57,7 +57,7 @@ function PagesLinks () {
                     </Link>
                 </li>
                 <li className={pathName === `/Assignments` ? styles.active : ""}>
-                    <Link to={`/Assignments`}>{language === 'En' ? 'Assignments' : 'دورة'}</Link>
+                    <Link to={`/Assignments`}>{language === 'En' ? 'Assignments' : 'التكليفات'}</Link>
                 </li>
             </> : null}
             {(role === "admin") ? <>
@@ -65,7 +65,7 @@ function PagesLinks () {
                     <Link to="/Accounts">{language === 'En' ? 'Accounts Management' : 'ادارة الحسابات'}</Link>
                 </li>
                 <li className={pathName === "/AdminCourse" ? styles.active : ""}>
-                    <Link to="/AdminCourse">{language === 'En' ? 'Structure Management' : 'ادارة الهيكل'}</Link>
+                    <Link to="/AdminCourse">{language === 'En' ? 'Courses Management' : 'ادارة المواد'}</Link>
                 </li>
             </> : null}
         </ul>

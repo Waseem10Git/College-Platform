@@ -38,6 +38,32 @@ html, body {
     margin: 0; /* Remove default margins */
 }
 
+.AdminCourses_input-field {
+    width: 70%;
+    font-size: 16px;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.AdminCourses_input-field:focus {
+    border: 1px solid #007bff !important;
+    outline: none;
+    box-shadow: 0 0 5px #007bff;
+}
+
+.AdminCourses_courses-container select {
+    width: 100%;
+    font-size: 16px;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: left;
+}
+
 .AdminCourses_courses-container.dark-mode,
 .AdminCourses_courses-container.dark-mode select,
 .AdminCourses_courses-container.dark-mode input[type='text'] {

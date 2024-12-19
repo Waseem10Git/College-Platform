@@ -92,7 +92,7 @@ class CourseController {
 
             const isExist = await CourseModel.getCourseByName(course_name);
             const courseNameExist = isExist ? isExist.course_name : null;
-            if (!(existingCourse.course_name === courseNameExist) && isExist)
+            if (isExist && existingCourse && !(existingCourse.course_name === courseNameExist))
                 return res.status(409).json({ success: false, message: 'Course Name already exists.' });
 
             await CourseModel.updateCourse({ id, course_code, course_name });

@@ -2,7 +2,7 @@ import {useState, useEffect, useContext} from 'react';
 import UserContext from "../../context/UserContext";
 import departmentsApi from "../../api/departmentsApi";
 import { toast } from 'react-toastify';
-import {ConfirmDelete} from "../../components";
+import {ConfirmDelete, SearchBar} from "../../components";
 
 const DepartmentsView = ({ departments, fetchDepartments }) => {
     const { language } = useContext(UserContext);
@@ -13,6 +13,7 @@ const DepartmentsView = ({ departments, fetchDepartments }) => {
     const [editingErrorMessage, setEditingErrorMessage] = useState('');
     const [deletionVisible, setDeletionVisible] = useState(false);
     const [departmentToDelete, setDepartmentToDelete] = useState(null);
+    const [filter, setFilter] = useState('');
 
 
     useEffect(() => {
@@ -101,54 +102,24 @@ const DepartmentsView = ({ departments, fetchDepartments }) => {
         setDeletionVisible(true);
     };
 
-
-    const [resizing, setResizing] = useState(false);
-    const [start, setStart] = useState(null);
-    const [startWidth, setStartWidth] = useState(null);
-
-    const handleMouseDown = (e) => {
-        setStart(e.clientX);
-        setStartWidth(e.target.clientWidth);
-        setResizing(true);
-        document.body.style.userSelect = 'none';
-    };
-
-    const handleMouseMove = (e) => {
-        if (resizing) {
-            const newWidth = startWidth + (e.clientX - start);
-            e.target.style.width = `${newWidth}px`;
-        }
-    };
-
-    const handleMouseUp = () => {
-        setResizing(false);
-        document.body.style.userSelect = 'auto';
-    };
-
-    const handleMouseEnter = (e) => {
-        e.target.style.cursor = 'col-resize';
-    };
-
-    const handleMouseLeave = (e) => {
-        e.target.style.cursor = 'auto';
-    };
-
+    const filteredData = departments.filter((department) =>
+        (department.department_name && department.department_name.toLowerCase().includes(filter))
+    );
 
     return(
         <>
+            <div>
+                <SearchBar
+                    filter={filter}
+                    setFilter={setFilter}
+                    searchText={language === "En" ? "Search by Department name" : "البحث حسب اسم القسم"}
+                />
+            </div>
             <table className={"DepartmentsView_course-table"}>
                 <thead>
                 <tr>
-                    <th onMouseDown={handleMouseDown}
-                        onMouseMove={handleMouseMove}
-                        onMouseUp={handleMouseUp}
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}>{language === 'En' ? 'Department Name' : 'اسم القسم'}</th>
-                    <th onMouseDown={handleMouseDown}
-                        onMouseMove={handleMouseMove}
-                        onMouseUp={handleMouseUp}
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}>{language === 'En' ? 'Actions' : 'الإجراءات'}</th>
+                    <th>{language === 'En' ? 'Department Name' : 'اسم القسم'}</th>
+                    <th>{language === 'En' ? 'Actions' : 'الإجراءات'}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -159,6 +130,7 @@ const DepartmentsView = ({ departments, fetchDepartments }) => {
                         )}
                         <input
                             type="text"
+                            className={"AdminCourses_input-field"}
                             required
                             placeholder={language === 'En' ? 'Department Name' : 'اسم القسم'}
                             value={newDepartmentName}
@@ -176,7 +148,7 @@ const DepartmentsView = ({ departments, fetchDepartments }) => {
                         </button>
                     </td>
                 </tr>
-                {departments && departments.map(department => (
+                {filteredData && filteredData.map(department => (
                     <tr key={department.department_id}>
                         <td>
                             {editingDepartment === department.department_id ? (

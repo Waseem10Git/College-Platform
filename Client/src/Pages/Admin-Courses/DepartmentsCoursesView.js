@@ -3,7 +3,7 @@ import UserContext from "../../context/UserContext";
 import departmentsCoursesApi from "../../api/departmentsCoursesApi";
 import coursesApi from "../../api/coursesApi";
 import { toast } from 'react-toastify';
-import {ConfirmDelete} from "../../components";
+import {ConfirmDelete, SearchBar} from "../../components";
 
 const DepartmentsCoursesView = ({ departments }) => {
     const { language } = useContext(UserContext);
@@ -32,6 +32,7 @@ const DepartmentsCoursesView = ({ departments }) => {
     const [editingErrNewCourseDepartmentMessage, setEditingErrNewCourseDepartmentMessage] = useState('');
     const [deletionVisible, setDeletionVisible] = useState(false);
     const [departmentToDelete, setDepartmentToDelete] = useState(null);
+    const [filter, setFilter] = useState('');
 
     const fetchDepartmentsCourses = async () => {
         try {
@@ -217,8 +218,23 @@ const DepartmentsCoursesView = ({ departments }) => {
         setEditingErrNewCourseDepartmentMessage('');
     };
 
+    const filteredData = departmentsCourses.filter((dc) =>
+        (dc.course_name && dc.course_name.toLowerCase().includes(filter)) ||
+        (dc.department_name && dc.department_name.toLowerCase().includes(filter)) ||
+        (dc.level && dc.level.toString().includes(filter))
+    );
+
     return (
         <>
+            <div>
+                <SearchBar
+                    filter={filter}
+                    setFilter={setFilter}
+                    searchText={language === "En"
+                        ? "Search by department name, course name or level"
+                        : "البحث حسب اسم القسم أو اسم المادة أو المستوى"}
+                />
+            </div>
             <table className="DepartmentsCoursesView_course-table">
                 <thead>
                 <tr>
@@ -305,7 +321,7 @@ const DepartmentsCoursesView = ({ departments }) => {
                         </button>
                     </td>
                 </tr>
-                {departmentsCourses.map(dc => (
+                {filteredData && filteredData.map(dc => (
                     <tr key={dc.id}>
                         <td>
                             {editingErrCourseMessage && (

@@ -1,0 +1,50 @@
+.error-details-container {
+    width: 90%;
+    margin: 1rem 0;
+    border: 1px solid #f44336;
+    border-radius: 8px;
+    background-color: #fff6f5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.error-summary {
+    padding: 1rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    color: #d32f2f;
+}
+
+.error-summary:hover {
+    background-color: #fdecea;
+}
+
+#error-details-toggle-button {
+    border: none;
+    background-color: transparent;
+    color: #d32f2f;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.error-details-toggle-button:hover {
+    text-decoration: underline;
+}
+
+.error-details {
+    padding: 1rem;
+    border-top: 1px solid #f44336;
+    background-color: #fff6f5;
+}
+
+.error-details ul {
+    margin: 0;
+    padding-left: 1.5rem;
+    list-style-type: disc;
+}
+
+.error-details li {
+    margin: 0.5rem 0;
+}

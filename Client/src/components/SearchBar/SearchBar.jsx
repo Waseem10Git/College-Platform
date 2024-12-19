@@ -1,17 +1,12 @@
-import React, { useState, useContext } from "react";
+import { useContext } from "react";
 import UserContext from "../../context/UserContext";
 import "./SearchBar.css";
 
-const SearchBar = ({ onSearch, searchText }) => {
+const SearchBar = ({ filter, setFilter, searchText }) => {
     const { isDarkMode } = useContext(UserContext); // Get theme & language from context
-    const [query, setQuery] = useState("");
 
     const handleInputChange = (e) => {
-        setQuery(e.target.value);
-    };
-
-    const handleSearch = () => {
-        if (onSearch) onSearch(query);
+        setFilter(e.target.value.toLowerCase());
     };
 
     return (
@@ -20,15 +15,9 @@ const SearchBar = ({ onSearch, searchText }) => {
                 type="text"
                 className={`SearchBar_input ${isDarkMode ? "dark" : "light"}`}
                 placeholder={searchText}
-                value={query}
+                value={filter}
                 onChange={handleInputChange}
             />
-            <button
-                className={`SearchBar_button ${isDarkMode ? "dark" : "light"}`}
-                onClick={handleSearch}
-            >
-                🔍
-            </button>
         </div>
     );
 };

@@ -1,7 +1,7 @@
 import {useState, useEffect, useContext} from 'react';
 import { useParams } from 'react-router-dom';
 import { UploadFile, ConfirmDelete } from "../../components";
-import uploadLabel from "../FileUpload/images/uploadLabel.png";
+import uploadLabel from "../../components/UploadFile/images/uploadLabel.png";
 import "./ChapterUpload.css"
 import UserContext from "../../context/UserContext";
 import chaptersApi from "../../api/chaptersApi";
@@ -183,43 +183,9 @@ const ChapterUpload = () => {
     };
     console.log('assignments: ', assignments)
 
-    // const handleDragOver = (event) => {
-    //     event.preventDefault();
-    //     if (role === "instructor") {
-    //         setIsDragging(true);
-    //     }
-    // };
-    //
-    // const handleDragEnter = (event) => {
-    //     event.preventDefault();
-    //     if (role === "instructor") {
-    //         setIsDragging(true);
-    //     }
-    // };
-    //
-    // const handleDragLeave = () => {
-    //     setIsDragging(false);
-    // };
-    //
-    // const handleDrop = (event) => {
-    //     event.preventDefault();
-    //     if (role === "instructor") {
-    //         setIsDragging(false);
-    //         const files = event.dataTransfer.files;
-    //         if (files.length > 0) {
-    //             setFile(files);
-    //         }
-    //     }
-    // };
-
     return (
         <>
-            <div className={`course-view ${isDarkMode ? 'dark-mode' : 'light-mode'} ${language.toLowerCase()}`}
-                // onDragOver={handleDragOver}
-                // onDragEnter={handleDragEnter}
-                // onDragLeave={handleDragLeave}
-                // onDrop={handleDrop}
-            >
+            <div className={`course-view ${isDarkMode ? 'dark-mode' : 'light-mode'} ${language.toLowerCase()}`}>
                 {role === 'instructor' ? (
                     <>
                         <div className={"Chapters_file-upload-container"}>
@@ -230,14 +196,6 @@ const ChapterUpload = () => {
                                     {!!file ? (language === 'En' ? 'Change' : 'تغير') : (language === 'En' ? 'Select' : 'تحديد')} {language === 'En' ? 'File' : 'ملف'}
                                 </span>
                                 </label>
-                                <UploadFile
-                                    uploadingVisible={uploadingVisible}
-                                    handleFileChange={handleFileChange}
-                                    file={file}
-                                    setUploadingVisible={setUploadingVisible}
-                                    handleSubmit={handleSubmit}
-                                    errorMessage={fileErrorMessage}
-                                />
                             </div>
                         </div>
                     </>
@@ -280,9 +238,13 @@ const ChapterUpload = () => {
                         ))}
                     </div>
 
-                    <br/>
-                    <hr/>
-                    <br/>
+                    {assignments.length > 0 ? (
+                        <>
+                            <br/>
+                            <hr/>
+                            <br/>
+                        </>
+                    ) : null}
 
                     <div className="Chapters_courses">
                         {assignments.map(assignment => (
@@ -372,6 +334,16 @@ const ChapterUpload = () => {
                     </div>
                 </div>
             </div>
+            {uploadingVisible && (
+                <UploadFile
+                    uploadingVisible={uploadingVisible}
+                    handleFileChange={handleFileChange}
+                    file={file}
+                    setUploadingVisible={setUploadingVisible}
+                    handleSubmit={handleSubmit}
+                    errorMessage={fileErrorMessage}
+                />
+            )}
             {chapterDeletionVisible && (
                 <ConfirmDelete deletionVisible={chapterDeletionVisible}
                                setDeletionVisible={setChapterDeletionVisible}

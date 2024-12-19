@@ -25,7 +25,7 @@
     transition: transform 0.3s ease;
     cursor: pointer;
     width: 275px;
-    height: 375px;
+    height: 100px;
 }
 
 .Course_coursesCard:hover {
