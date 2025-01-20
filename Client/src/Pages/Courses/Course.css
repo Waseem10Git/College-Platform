@@ -74,6 +74,10 @@
     margin: 0;
 }
 
+.Course_courses p {
+    font-size: 18px;
+}
+
 /* Dark mode styling */
 .Course_coursesContainer.Course_dark {
     background-color: #1a1a1a;
@@ -86,6 +90,10 @@
 
 .Course_dark .Course_coursesCard h4 {
     color: #ADB1B4;
+}
+
+.Course_coursesContainer.Course_dark .Course_courses p {
+    color: #f0f0f0;
 }
 
 /* Responsive adjustments */

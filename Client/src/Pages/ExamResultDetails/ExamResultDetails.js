@@ -31,6 +31,7 @@ const ExamResultDetails = () => {
   }, []);
 
   const handleCourseSelect = (courseId) => {
+    setQuestions([])
     setSelectedCourseId(courseId);
     console.log('courseId', courseId);
     axios
@@ -101,10 +102,14 @@ const ExamResultDetails = () => {
           className={`examResultDetails_quizResult ${isDarkMode ? 'dark' : 'light'}`}
           dir={language === 'Ar' ? 'rtl' : 'ltr'}
       >
-        <div className="TakeExam_select-container">
+        <div className="examResultDetails_select-container">
           <CourseSelect language={language} courses={courses} onSelect={handleCourseSelect} selectedCourse={selectedCourseId}/>
-          <ExamSelect language={language} exams={exams} onSelect={handleExamDetailsSelect}/>
-        </div>
+          {selectedCourseId && exams.length > 0 ? (
+              <ExamSelect language={language} exams={exams} onSelect={handleExamDetailsSelect}/>
+          ) : selectedCourseId && (
+              <h3>{language === 'En' ? 'No exams for selected course' : 'ليس هناك أي إمتحان لهاذه المادة'}</h3>
+          )}
+          </div>
 
         {!isLoading ? (
             <>
@@ -137,7 +142,7 @@ const ExamResultDetails = () => {
                                 </td>
                                 :
                                 <td className="examResultDetails_td">
-                                  (Essay)
+                                  {language === 'En' ? '(Essay)' : '(مقالي)'}
                                 </td>
                             }
                             <td className="examResultDetails_td">{question.student_answer ? question.student_answer : '--'}</td>

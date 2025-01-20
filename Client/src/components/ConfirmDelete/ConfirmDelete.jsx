@@ -1,7 +1,10 @@
-import React, { memo } from "react";
+import {memo, useContext} from "react";
 import "./ConfirmDelete.css";
+import UserContext from "../../context/UserContext";
 
 const ConfirmDelete = memo(({ deletionVisible, setDeletionVisible, handleDelete }) => {
+    const { language } = useContext(UserContext);
+
     if (!deletionVisible) return null;
 
     const handleFormSubmit = (e) => {
@@ -14,11 +17,11 @@ const ConfirmDelete = memo(({ deletionVisible, setDeletionVisible, handleDelete 
         <div className="ConfirmDelete_modal">
             <form onSubmit={handleFormSubmit}>
                 <div className="modal-header">
-                    <h2>Confirming Deletion</h2>
+                    <h2>{language === 'En' ? 'Confirming Deletion' : 'تأكيد الحذف'}</h2>
                 </div>
                 <div>
-                    <button type="submit" style={{ marginRight: "5px"}}>Delete</button>
-                    <button type="button" onClick={() => setDeletionVisible(false)}>Cancel</button>
+                    <button id={'ConfirmDelete_upload-button'} type="submit" style={{ marginRight: "5px"}}>{language === 'En' ? 'Delete' : 'حذف'}</button>
+                    <button id={'ConfirmDelete_cancel-button'} type="button" onClick={() => setDeletionVisible(false)}>{language === 'En' ? 'Cancel' : 'إلغاء'}</button>
                 </div>
             </form>
         </div>

@@ -3,14 +3,17 @@ const InstructorCourseModel = require('../models/InstructorCourse')
 const conn = require('../config/db');
 const util = require('util');
 const ChapterModel = require("../models/Chapter");
+const fs = require('fs');
 
 const MAX_LONG_BLOB_SIZE = 4 * 1024 * 1024 * 1024; // 4GB
 
 class AssignmentController {
     static async uploadAssignment(req, res) {
         const { selectedCourse, userId, assignmentName, assignmentDescription, dueDate } = req.body;
-        const fileData = req.file ? req.file.buffer : null;
         const fileName = req.file ? req.file.originalname : null;
+        const filePath = req.file ? req.file.path : null;
+        const fileSize = req.file ? req.file.size : null;
+        const fileMimeType = req.file ? req.file.mimetype: null;
 
         if (req.file && req.file.size > MAX_LONG_BLOB_SIZE) {
             return res.status(400).json({
@@ -35,17 +38,19 @@ class AssignmentController {
 
             const instructor_course_id = result[0].id;
 
-            const assignmentTitleExistence = await InstructorCourseModel.checkAssignmentTitleExistence(instructor_course_id, assignmentName.trim());
-
-            if (assignmentTitleExistence)
-                return res.status(409).json({ success: false, message: 'Assignment Title is exist.' });
+            // const assignmentTitleExistence = await InstructorCourseModel.checkAssignmentTitleExistence(instructor_course_id, assignmentName.trim());
+            //
+            // if (assignmentTitleExistence)
+            //     return res.status(409).json({ success: false, message: 'Assignment Title is exist.' });
 
             // Insert assignment
             const assignmentId = await AssignmentModel.insertAssignment(
                 assignmentName,
                 assignmentDescription || null,
                 fileName,
-                fileData,
+                filePath,
+                fileSize,
+                fileMimeType,
                 dueDate
             );
 
@@ -98,9 +103,7 @@ class AssignmentController {
                 return res.status(404).send('File not found');
             }
 
-            res.setHeader('Content-Disposition', 'attachment; filename=' + assignment.assignment_file_name);
-            res.send(assignment.assignment_file);
-
+            res.download(assignment.assignment_file_path, assignment.assignment_file_name);
         } catch (error) {
             console.error('Error downloading chapter:', error);
             res.status(500).json({ error: 'An error occurred while downloading the assignment' });
@@ -116,12 +119,12 @@ class AssignmentController {
                 return res.status(404).send('File not found');
             }
 
-            // Set the response headers to indicate a PDF file for inline viewing
-            res.setHeader('content-type', 'application/pdf');
-            res.setHeader('Content-Disposition', `inline; filename="${assignment.assignment_file_name}"`);
+            res.setHeader("Content-Type", assignment.assignment_mime_type);
+            res.setHeader("Content-Disposition", "inline"); // Render in browser
 
-            // Send the buffer content directly
-            res.send(assignment.assignment_file);
+            // Stream the file to the client
+            const fileStream = fs.createReadStream(assignment.assignment_file_path);
+            fileStream.pipe(res);
 
         } catch (error) {
             console.error('Error viewing chapter:', error);
@@ -135,14 +138,25 @@ class AssignmentController {
             if (!assignmentId)
                 return res.status(404).send({success: false, message: 'Assignment id is required'});
 
-            const exist = await AssignmentModel.getAssignmentById(assignmentId);
+            const assignment = await AssignmentModel.getAssignmentById(assignmentId);
 
-            if (!exist)
+            if (!assignment)
                 return res.status(404).send({success: false, message: 'Assignment Not Found'})
 
-            await AssignmentModel.deleteAssignment(assignmentId);
+            if (!assignment.assignment_file_path) {
+                await AssignmentModel.deleteAssignment(assignmentId);
+                return res.status(200).send({success: true, message: 'Assignment deleted successfully'});
+            } else {
+                fs.unlink(assignment.assignment_file_path, async (err) => {
+                    if (err) {
+                        console.error("Error deleting file from filesystem:", err);
+                        return res.status(500).json({ error: "Failed to delete file from filesystem" });
+                    }
 
-            return res.status(200).send({success: true, message: 'Assignment deleted successfully'});
+                    await AssignmentModel.deleteAssignment(assignmentId);
+                    return res.status(200).send({success: true, message: 'Assignment deleted successfully'});
+                });
+            }
         } catch (err) {
             res.status(500).json({ error: 'An error occurred while deleting the assignment'});
         }

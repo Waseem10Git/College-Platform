@@ -1,5 +1,5 @@
 button {
-    margin-top: 20px;
+    margin: 20px 5px 0 5px;
     padding: 10px 20px;
     background-color: #007bff;
     border: 2px solid #007bff; /* Blue button color */
@@ -51,7 +51,7 @@ button:disabled:hover {
 
 
 .ConfirmDelete_modal form {
-    background-color: white;
+    background-color: wheat;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -60,6 +60,7 @@ button:disabled:hover {
 
 .ConfirmDelete_modal form h2 {
     font-size: 1.5rem;
+    color: darkred;
 }
 
 .dark .ConfirmDelete_modal form {
@@ -69,3 +70,15 @@ button:disabled:hover {
 .dark {
     background-color: #161616;
 }
+
+#ConfirmDelete_upload-button {
+    background-color: #D32F2F;
+    border: 2px solid #D32F2F;
+}
+
+#ConfirmDelete_upload-button:hover {
+    background-color: transparent;
+    border: 2px solid #D32F2F;
+    color: #D32F2F;
+}
+

@@ -16,13 +16,14 @@ class ChapterModel {
         return results.length > 0;
     }
 
-    static async insertChapter(courseCode, fileName, fileContent) {
-        const query = 'INSERT INTO chapters (course_id, chapter_name, chapter_content) VALUES (?, ?, ?)';
-        return await queryAsync(query, [courseCode, fileName, fileContent]);
+    static async insertChapter(courseCode, originalname, mimetype, size, filePath) {
+        const query = `INSERT INTO chapters (course_id, chapter_name, chapter_path, chapter_size, chapter_mime_type) 
+                                VALUES (?, ?, ?, ?, ?)`;
+        return await queryAsync(query, [courseCode, originalname, filePath, size, mimetype]);
     }
 
     static async getChapterById(chapterId) {
-        const query = 'SELECT chapter_name, chapter_content FROM chapters WHERE id = ?';
+        const query = 'SELECT chapter_name, chapter_path FROM chapters WHERE id = ?';
         const results = await queryAsync(query, [chapterId]);
         return results.length > 0 ? results[0] : null;
     }
@@ -32,13 +33,13 @@ class ChapterModel {
         return await queryAsync(query, [chapterId]);
     }
 
-    static async updateChapter(chapterId, fileName, fileContent) {
-        const query = 'UPDATE chapters SET chapter_name = ?, chapter_content = ? WHERE id = ?';
-        return await queryAsync(query, [fileName, fileContent, chapterId]);
+    static async updateChapter(chapterId, fileName, mimetype, size, filePath) {
+        const query = 'UPDATE chapters SET chapter_name = ?, chapter_path = ?, chapter_size = ?, chapter_mime_type WHERE id = ?';
+        return await queryAsync(query, [fileName, filePath, size, mimetype, chapterId]);
     }
 
     static async getChapterContentById(chapterId) {
-        const query = 'SELECT chapter_name, chapter_content FROM chapters WHERE id = ?';
+        const query = 'SELECT chapter_name, chapter_path, chapter_mime_type FROM chapters WHERE id = ?';
         const results = await queryAsync(query, [chapterId]);
         return results.length > 0 ? results[0] : null;
     }

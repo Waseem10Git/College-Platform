@@ -138,7 +138,7 @@ const DepartmentsView = ({ departments, fetchDepartments }) => {
                         />
                     </td>
                     <td>
-                        <button onClick={
+                        <button id={'AdminCourses_add-button'} onClick={
                             () => {
                                 addDepartment(newDepartmentName)
                                 setEditingDepartment(null);
@@ -162,6 +162,7 @@ const DepartmentsView = ({ departments, fetchDepartments }) => {
                                     )}
                                     <input
                                         type="text"
+                                        className={"AdminCourses_input-field"}
                                         value={updatedDepartmentName}
                                         onChange={(e) => setUpdatedDepartmentName(e.target.value)}
                                     />
@@ -173,11 +174,11 @@ const DepartmentsView = ({ departments, fetchDepartments }) => {
                         <td>
                             {editingDepartment === department.department_id ? (
                                 <>
-                                    <button
+                                    <button id={'AdminCourses_edit-button'}
                                         onClick={() => updateDepartment(department.department_id, updatedDepartmentName)}>
                                         {language === 'En' ? 'Update' : 'تحديث'}
                                     </button>
-                                    <button onClick={() => {
+                                    <button id={'AdminCourses_delete-button'} onClick={() => {
                                         setEditingDepartment(null);
                                         setEditingErrorMessage('');
                                     }}>
@@ -186,14 +187,14 @@ const DepartmentsView = ({ departments, fetchDepartments }) => {
                                 </>
                             ) : (
                                 <>
-                                    <button onClick={() => {
+                                    <button id={'AdminCourses_edit-button'} onClick={() => {
                                         setEditingDepartment(department.department_id);
                                         setUpdatedDepartmentName(department.department_name);
                                         setAddingErrorMessage('');
                                     }}>
                                         {language === 'En' ? 'Edit' : 'تعديل'}
                                     </button>
-                                    <button onClick={() => confirmDelete(department.department_id)}>
+                                    <button id={'AdminCourses_delete-button'} onClick={() => confirmDelete(department.department_id)}>
                                         {language === 'En' ? 'Delete' : 'حذف'}
                                     </button>
                                 </>

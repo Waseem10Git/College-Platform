@@ -22,6 +22,9 @@
 }
 
 #error-details-toggle-button {
+    width: fit-content;
+    margin: 0;
+    padding: 0;
     border: none;
     background-color: transparent;
     color: #d32f2f;
@@ -47,4 +50,12 @@
 
 .error-details li {
     margin: 0.5rem 0;
+}
+
+.accounts-container_dark .error-details-container, .accounts-container_dark .error-details {
+    background: #1a1a1a;
+}
+
+.accounts-container_dark .error-summary:hover {
+    background: darkslategray;
 }

@@ -7,6 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment/moment";
 import UserContext from "../../context/UserContext";
+import {ConfirmDelete} from "../../components";
 
 function ExamPreviewPage() {
     const { isDarkMode, language, userId } = useContext(UserContext);
@@ -23,7 +24,7 @@ function ExamPreviewPage() {
     const [editMode, setEditMode] = useState(false);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isExamStarted, setIsExamStarted] = useState(false);
-
+    const [deletionVisible, setDeletionVisible] = useState(false);
     const fetchData = async () => {
         try {
             const response = await axios.get(`/api/instructor/${userId}/courses`);
@@ -50,6 +51,7 @@ function ExamPreviewPage() {
     }, []);
 
     useEffect(() => {
+        // console.log('times : ', currentTime, startAt);
         if (currentTime && startAt) {
             setIsExamStarted(currentTime >= startAt);
         }
@@ -210,6 +212,7 @@ function ExamPreviewPage() {
     };
 
     return (
+        <>
         <div className={isDarkMode ? 'dark-mode' : 'light-mode'}>
             {!editMode ? (
                 <div className={"ExamPreviewPage_select-container"}>
@@ -337,10 +340,10 @@ function ExamPreviewPage() {
                                         </div>
                                     );
                                 })}
-                                <button onClick={handleEditSubmit} className="ExamPreviewPage_submit-edit-button">
-                                    {language === 'En' ? 'Submit Edit' : 'إرسال التعديل'}
+                                <button onClick={handleEditSubmit} className="ExamPreviewPage_edit-button">
+                                    {language === 'En' ? 'Submit Edit' : 'تأكيد التعديل'}
                                 </button>
-                                <button className={"ExamPreviewPage_editButton"} onClick={toggleEditMode}>
+                                <button className={"ExamPreviewPage_delete-button"} onClick={toggleEditMode}>
                                     {language === 'En' ? 'Cancel Edit' : 'الغاء التعديل'}
                                 </button>
                             </div>
@@ -353,10 +356,10 @@ function ExamPreviewPage() {
                                     <h3>{examDetails.exam_name}</h3>
                                 </div>
                                 <div className={"ExamPreviewPage_input-wrapper"}>
-                                    <p>Duration: {examDetails.duration} minutes</p>
+                                    <p>{language === 'En' ? 'Duration:' : 'المدة:'} {examDetails.duration} {language === 'En' ? 'minutes' : 'دقيقة'}</p>
                                 </div>
                                 <div className={"ExamPreviewPage_input-wrapper"}>
-                                    <p>{`Start Time: ${formatDate(examDetails.start_at)}`}</p>
+                                    <p>{`${language === 'En' ? 'Start Time:' : 'موعد بدء الوقت:'} ${formatDate(examDetails.start_at)}`}</p>
                                 </div>
                             </div>
                             {examQuestions.map((question, questionIndex) => {
@@ -365,28 +368,28 @@ function ExamPreviewPage() {
                                 );
                                 return (
                                     <div className="ExamPreviewPage_question-item" key={questionIndex}>
-                                        <h3>{question.question_text} ?</h3>
+                                        <h3>{question.question_text} {language === 'En' ? '?' : '؟'}</h3>
                                         {isMCQ ? (
                                             examAnswers
                                                 .filter((answer) => answer.question_id === question.question_id)
                                                 .map((answer, answerIndex) => (
                                                     <div key={answerIndex} style={{marginLeft: answer.is_correct === 1 ? '66px' : ''}}>
-                                                        Option {answerIndex + 1}: {answer.answer_text} {answer.is_correct === 1 ? ('{Correct}') : null}
+                                                        {language === 'En' ? 'Option' : 'إختيار'} {answerIndex + 1}: {answer.answer_text} {answer.is_correct === 1 ? (language === 'En' ? '{Correct}' : '{الإجابة الصحيحة}') : null}
                                                     </div>
                                                 ))
                                         ) : null}
-                                        <p>Point({question.points})</p>
+                                        <p>{language === 'En' ? 'Points' : 'الدرجة'}({question.points})</p>
                                     </div>
                                 );
                             })}
                             {!isExamStarted && (
                                 <>
-                                    <button className={"ExamPreviewPage_editButton"} onClick={toggleEditMode}>
-                                        Edit Exam
+                                    <button className={"ExamPreviewPage_edit-button"} onClick={toggleEditMode}>
+                                        {language === 'En' ? 'Edit Exam' : 'تعديل الإمتحان'}
                                     </button>
                                 </>
                             )}
-                            <button onClick={handleDeleteExam} className="ExamPreviewPage_delete-button">
+                            <button onClick={() => setDeletionVisible(true)} className="ExamPreviewPage_delete-button">
                                 {language === 'En' ? 'Delete Exam' : 'حذف الامتحان'}
                             </button>
                         </div>
@@ -394,6 +397,14 @@ function ExamPreviewPage() {
                 </div>
             </div>
         </div>
+            {deletionVisible && (
+                <ConfirmDelete
+                    deletionVisible={deletionVisible}
+                    setDeletionVisible={setDeletionVisible}
+                    handleDelete={() => handleDeleteExam()}
+                />
+            )}
+        </>
     );
 }
 

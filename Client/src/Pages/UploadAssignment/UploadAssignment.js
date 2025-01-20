@@ -90,7 +90,7 @@ const UploadAssignment = () => {
             });
 
         if (!error) {
-            const notificationMessage = language === "En" ? `New Assignment Uploaded for course ` : 'تم إضافة تكليف جديد لمادة ';
+            const notificationMessage = `New Assignment Uploaded for course `;
             await notificationApi.sendNotification(userId, selectedCourse, notificationMessage)
                 .then(response => {
                     console.log('send notification {New Assignment Uploaded} for students');
@@ -102,10 +102,10 @@ const UploadAssignment = () => {
 
     return (
         <div className={`UploadAssignment_component ${isDarkMode ? 'dark' : 'light'} ${language === 'Ar' ? 'rtl' : ''}`}>
-            <h2>{language === 'En' ? 'Upload new Assignment' : 'رفع واجب جديد'}</h2>
+            <h2>{language === 'En' ? 'Upload New Assignment' : 'رفع واجب جديد'}</h2>
             <form onSubmit={handleSubmit} className="UploadAssignment_form">
                 <h3>
-                    {language === 'En' ? 'Select Course:' : 'اختر الدورة الدراسية:'}
+                    {language === 'En' ? 'Select Course:' : 'اختر المادة الدراسية:'}
                 </h3>
                 <div className="UploadAssignment_form-group">
                     <select

@@ -17,7 +17,7 @@
 .examResults_select {
   width: 100%;
   padding: 8px;
-  margin: 10px 0;
+  margin: 10px 20px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -66,6 +66,10 @@
 }
 
 /* Dark Mode Styles */
+.examResults_dark-mode {
+  background: #1a1a1a;
+}
+
 .examResults_dark-mode .examResults_ExamResult {
   background: #333;
   color: #f1f1f1;

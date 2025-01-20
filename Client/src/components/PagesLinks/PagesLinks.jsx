@@ -24,13 +24,13 @@ function PagesLinks () {
             </li>
             {(role === "student" || role === "instructor") ? <>
                 <li className={pathName === `/Course/${userId}` ? styles.active : ""}>
-                    <Link to={`/Course/${userId}`}>{language === 'En' ? 'Course' : 'دورة'}</Link>
+                    <Link to={`/Course/${userId}`}>{language === 'En' ? 'Courses' : 'المواد'}</Link>
                 </li>
             </> : null}
             {(role === "instructor") ? <>
                 <li className={pathName === "/MakeExam" ? styles.active : ""}>
                     <Link to="/MakeExam">
-                        {language === 'En' ? 'Make Exam' : 'عمل إمتحان'}
+                        {language === 'En' ? 'Make Exam' : 'إنشاء إمتحان'}
                     </Link>
                 </li>
                 <li className={pathName === "/ExamResults" ? styles.active : ""}>

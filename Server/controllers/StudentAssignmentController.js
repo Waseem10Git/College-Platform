@@ -1,9 +1,11 @@
 const StudentAssignmentModel = require('../models/StudentAssignment');
+const fs = require("fs");
 
 class StudentAssignmentController {
     static async uploadStudentAssignment(req, res) {
         const { assignmentId, userId, instructorCourseId } = req.body;
         const studentFile = req.file;
+        const { originalname: fileName, mimetype, size, path: filePath } = studentFile;
 
         try {
             const enrollmentResult = await StudentAssignmentModel.getEnrollmentId(userId, instructorCourseId);
@@ -13,9 +15,8 @@ class StudentAssignmentController {
             }
 
             const enrollmentId = enrollmentResult[0].id;
-            const fileData = studentFile.buffer;
 
-            await StudentAssignmentModel.insertStudentFile(enrollmentId, assignmentId, fileData, studentFile.originalname);
+            await StudentAssignmentModel.insertStudentFile(enrollmentId, assignmentId, fileName, mimetype, size, filePath);
 
             res.json({ message: 'Assignment uploaded successfully' });
         } catch (error) {
@@ -36,16 +37,16 @@ class StudentAssignmentController {
         try {
             const assignment = await StudentAssignmentModel.getStudentAssignmentById(studentAssignmentId);
 
-            if (!assignment || !assignment.student_file) {
+            if (!assignment || !assignment.student_file_path) {
                 return res.status(404).send('File not found');
             }
 
-            // Set the response headers to indicate a PDF file for inline viewing
-            res.setHeader('content-type', 'application/pdf');
-            res.setHeader('Content-Disposition', `inline; filename="${assignment.student_file_name}"`);
+            res.setHeader("Content-Type", assignment.student_mime_type);
+            res.setHeader("Content-Disposition", "inline"); // Render in browser
 
-            // Send the buffer content directly
-            res.send(assignment.student_file);
+            // Stream the file to the client
+            const fileStream = fs.createReadStream(assignment.student_file_path);
+            fileStream.pipe(res);
 
         } catch (err) {
             console.error('Error viewing student assignment:', err);
@@ -84,6 +85,22 @@ class StudentAssignmentController {
             res.status(200).json({message: 'Editing score successfully'});
         } catch (err) {
             console.log('Error editing student assignment score: ', err);
+            res.status(404).json({error: "An error occurred while editing the student's assignment score"})
+        }
+    }
+
+    static async getStudentAssignmentScore(req, res) {
+        const {studentId, assignmentId} = req.params;
+
+        try {
+            if (!studentId && !assignmentId){
+                return res.status(404).json({error: 'There is data messing'});
+            }
+
+            const score = await StudentAssignmentModel.getStudentAssignmentScore(studentId, assignmentId);
+
+            res.status(200).json(score);
+        } catch (err) {
             res.status(404).json({error: "An error occurred while editing the student's assignment score"})
         }
     }

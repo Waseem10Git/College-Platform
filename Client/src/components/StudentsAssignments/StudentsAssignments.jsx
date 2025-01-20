@@ -10,14 +10,10 @@ function StudentsAssignments({ students, refreshData }) {
     const [editingScore, setEditingScore] = useState(null);
     const [newScore, setNewScore] = useState(0);
     console.log(students);
-    const handleView = async (studentAssignmentId) => {
+    const handleView = (studentAssignmentId) => {
         try {
-            const response = await assignmentsApi.viewAssignment(studentAssignmentId);
-            const contentType = response.headers["content-type"];
-            const url = window.URL.createObjectURL(
-                new Blob([response.data], { type: contentType })
-            );
-            setFileView({ url, contentType });
+            const url = assignmentsApi.viewAssignment(studentAssignmentId);
+            setFileView({ url });
         } catch (error) {
             if (
                 error.response &&
@@ -76,12 +72,13 @@ function StudentsAssignments({ students, refreshData }) {
             }`}
         >
             <h2>{language === "En" ? "Student Results" : "نتائج الطلاب"}</h2>
-            <div>
+            <div style={{margin: '10px 20px'}}>
                 {students.length > 0 ? (
                     <table
                         className={`StudentsAssignments_table ${
                             isDarkMode ? "dark" : "light"
                         }`}
+                        style={language === 'En' ? {textAlign: "left"} : {textAlign:'right'}}
                     >
                         <thead>
                         <tr>
@@ -137,9 +134,9 @@ function StudentsAssignments({ students, refreshData }) {
                                         : "--"}
                                 </td>
                                 <td>
-                                    {!editingScore && student.student_file && (
+                                    {!editingScore && student.student_file_path && (
                                         <button
-                                            className={`submit-edit-button ${
+                                            className={`StudentsAssignments_submit-edit-button ${
                                                 isDarkMode ? "dark" : ""
                                             }`}
                                             onClick={() =>
@@ -152,7 +149,7 @@ function StudentsAssignments({ students, refreshData }) {
                                     {editingScore === student.student_assignment_id ? (
                                         <>
                                             <button
-                                                className={`submit-edit-button ${
+                                                className={`StudentsAssignments_submit-edit-button ${
                                                     isDarkMode ? "dark" : ""
                                                 }`}
                                                 onClick={() =>
@@ -162,7 +159,8 @@ function StudentsAssignments({ students, refreshData }) {
                                                 {language === "En" ? "Save" : "حفظ"}
                                             </button>
                                             <button
-                                                className={`submit-edit-button ${
+                                                id={'StudentsAssignments_red-button'}
+                                                className={`StudentsAssignments_submit-edit-button ${
                                                     isDarkMode ? "dark" : ""
                                                 }`}
                                                 onClick={() => setEditingScore(null)}
@@ -172,7 +170,8 @@ function StudentsAssignments({ students, refreshData }) {
                                         </>
                                     ) : (
                                         <button
-                                            className={`submit-edit-button ${
+                                            id={'StudentsAssignments_orange-button'}
+                                            className={`StudentsAssignments_submit-edit-button ${
                                                 isDarkMode ? "dark" : ""
                                             }`}
                                             onClick={() =>

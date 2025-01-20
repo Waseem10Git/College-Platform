@@ -2,14 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "../../api/axios";
 import './ViewStudentExam.css'
 
-function ViewStudentExam({
-                             examId,
-                             studentId,
-                             setViewExamDetails,
-                             language,
-                             isDarkMode,
-                            refreshData
-                         }) {
+function ViewStudentExam({examId, studentId, setViewExamDetails, language, isDarkMode, refreshData}) {
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -124,6 +117,7 @@ function ViewStudentExam({
             </h2>
             <table
                 className={`examResultDetails_table ${isDarkMode ? "dark" : "light"}`}
+                style={language === 'En' ? {textAlign: "left"} : {textAlign:'right'}}
             >
                 <thead>
                 <tr>
@@ -195,7 +189,7 @@ function ViewStudentExam({
                                     isDarkMode ? "dark" : "light"
                                 }`}
                             >
-                                (Essay)
+                                {language === 'En' ? '(Essay)' : '(مقالي)'}
                             </td>
                         )}
                         <td
@@ -235,20 +229,22 @@ function ViewStudentExam({
                                 editingPoints === question.question_id ? (
                                     <>
                                         <button
-                                            className={`submit-edit-button ${isDarkMode ? "dark" : ""}`}
+                                            className={`examResultDetails_submit-edit-button ${isDarkMode ? "dark" : ""}`}
                                             onClick={() => editQuestionPoints(question.question_id)}
                                         >
                                             {language === "En" ? "Save" : "حفظ"}
                                         </button>
                                         <button
-                                            className={`submit-edit-button ${isDarkMode ? "dark" : ""}`}
+                                            id={'examResultDetails_red-button'}
+                                            className={`examResultDetails_submit-edit-button ${isDarkMode ? "dark" : ""}`}
                                             onClick={() => setEditingPoints(null)}>
                                             {language === "En" ? "Cancel" : "إلغاء"}
                                         </button>
                                     </>
                                 ) : (
                                     <button
-                                        className={`submit-edit-button ${isDarkMode ? "dark" : ""}`}
+                                        id={'examResultDetails_orange-button'}
+                                        className={`examResultDetails_submit-edit-button ${isDarkMode ? "dark" : ""}`}
                                         onClick={() => {
                                             setEditingPoints(question.question_id)
                                             setNewQuestionPoints(question.student_answer_points)
@@ -268,7 +264,8 @@ function ViewStudentExam({
                 </tbody>
             </table>
             <button
-                className={`submit-edit-button ${isDarkMode ? "dark" : ""}`}
+                id={'examResultDetails_gray-button'}
+                className={`examResultDetails_submit-edit-button ${isDarkMode ? "dark" : ""}`}
                 onClick={() => setViewExamDetails(false)}
             >
                 {language === "En" ? "Back" : "رجوع"}

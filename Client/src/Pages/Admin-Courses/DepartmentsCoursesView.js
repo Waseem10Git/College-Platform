@@ -72,7 +72,7 @@ const DepartmentsCoursesView = ({ departments }) => {
             dc => dc.department_id.toString() === department && dc.course_code === course
         );
         if (isDuplicate) {
-            setAddingErrNewCourseDepartmentMessage(language === 'En' ? 'This course-department combination already exists.' : 'هذا الجمع بين الدورة والقسم موجود بالفعل.');
+            setAddingErrNewCourseDepartmentMessage(language === 'En' ? 'This course-department combination already exists.' : 'هذا الجمع بين المادة والقسم موجود بالفعل.');
             return false;
         }
 
@@ -105,7 +105,7 @@ const DepartmentsCoursesView = ({ departments }) => {
             dc => dc.department_id.toString() === department && dc.course_code === course && dc.id !== editingCourse
         );
         if (isDuplicate) {
-            setEditingErrNewCourseDepartmentMessage(language === 'En' ? 'This course-department combination already exists.' : 'هذا الجمع بين الدورة والقسم موجود بالفعل.');
+            setEditingErrNewCourseDepartmentMessage(language === 'En' ? 'This course-department combination already exists.' : 'هذا الجمع بين المادة والقسم موجود بالفعل.');
             return false;
         }
 
@@ -238,7 +238,7 @@ const DepartmentsCoursesView = ({ departments }) => {
             <table className="DepartmentsCoursesView_course-table">
                 <thead>
                 <tr>
-                    <th>{language === 'En' ? 'Course' : 'الدورة'}</th>
+                    <th>{language === 'En' ? 'Course' : 'المادة'}</th>
                     <th>{language === 'En' ? 'Department' : 'القسم'}</th>
                     <th>{language === 'En' ? 'Level' : 'المستوى'}</th>
                     <th>{language === 'En' ? 'Semester' : 'الفصل'}</th>
@@ -256,7 +256,7 @@ const DepartmentsCoursesView = ({ departments }) => {
                             }}>{addingErrCourseMessage}</p>
                         )}
                         <select value={newCourse} onChange={(e) => setNewCourse(e.target.value)}>
-                            <option value="" disabled>{language === 'En' ? 'Select Course' : 'اختر الدورة'}</option>
+                            <option value="" disabled>{language === 'En' ? 'Select Course' : 'اختر المادة'}</option>
                             {courses.map((course, index) => (
                                 <option key={index} value={course.course_code}>{course.course_name}</option>
                             ))}
@@ -316,7 +316,7 @@ const DepartmentsCoursesView = ({ departments }) => {
                                 fontStyle: 'italic'
                             }}>{addingErrNewCourseDepartmentMessage}</p>
                         )}
-                        <button onClick={handleAdd}>
+                        <button id={'AdminCourses_add-button'} onClick={handleAdd}>
                             {language === 'En' ? 'Add' : 'اضافة'}
                         </button>
                     </td>
@@ -334,7 +334,7 @@ const DepartmentsCoursesView = ({ departments }) => {
                             {editingCourse === dc.id ? (
                                 <select value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)}>
                                     <option value=""
-                                            disabled>{language === 'En' ? 'Select Course' : 'اختر الدورة'}</option>
+                                            disabled>{language === 'En' ? 'Select Course' : 'اختر المادة'}</option>
                                     {courses.map((course, index) => (
                                         <option key={index} value={course.course_code}>{course.course_name}</option>
                                     ))}
@@ -415,12 +415,17 @@ const DepartmentsCoursesView = ({ departments }) => {
                                             fontStyle: 'italic'
                                         }}>{editingErrNewCourseDepartmentMessage}</p>
                                     )}
-                                    <button onClick={handleSaveUpdate}>{language === 'En' ? 'Update' : 'تحديث'}</button>
-                                    <button onClick={resetForm}>{language === 'En' ? 'Cancel' : 'إلغاء'}</button>
+                                    <button id={'AdminCourses_edit-button'} onClick={handleSaveUpdate}>
+                                        {language === 'En' ? 'Update' : 'تحديث'}
+                                    </button>
+
+                                    <button id={'AdminCourses_delete-button'} onClick={resetForm}>
+                                        {language === 'En' ? 'Cancel' : 'إلغاء'}
+                                    </button>
                                 </>
                             ) : (
                                 <>
-                                    <button onClick={() => {
+                                    <button id={'AdminCourses_edit-button'} onClick={() => {
                                         handleUpdate(dc)
                                         setAddingErrCourseMessage('');
                                         setAddingErrDepartmentMessage('');
@@ -430,8 +435,11 @@ const DepartmentsCoursesView = ({ departments }) => {
                                     }}>
                                         {language === 'En' ? 'Edit' : 'تعديل'}
                                     </button>
-                                    <button
-                                        onClick={() => confirmDelete(dc.id)}>{language === 'En' ? 'Delete' : 'حذف'}</button>
+
+                                    <button id={'AdminCourses_delete-button'}
+                                        onClick={() => confirmDelete(dc.id)}>
+                                        {language === 'En' ? 'Delete' : 'حذف'}
+                                    </button>
                                 </>
                             )}
                         </td>

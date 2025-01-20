@@ -5,6 +5,10 @@
   flex-direction: column;
 }
 
+.App .dark-mode {
+  background-color: #1a1a1a;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

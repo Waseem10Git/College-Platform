@@ -19,4 +19,5 @@ module.exports = app => {
     app.use('/api', require('./studentAssignmentRoutes'));
     app.use('/api', require('./studentExamStatusRoutes'));
     app.use('/api', require('./userRoutes'));
+    app.use('/api', require('./deleteRoute'));
 }

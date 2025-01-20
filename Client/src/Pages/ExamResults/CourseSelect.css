@@ -1,5 +1,5 @@
 .CourseSelect_container {
-    margin: 0 auto;
+    margin: 10px 20px;
     text-align: center;
 
 }
@@ -21,13 +21,13 @@
     width: 100%;
     padding: 8px;
     margin-top: 10px;
-    border-radius: 4px;
+    border-radius: 5px;
     border: 1px solid #ccc;
 }
 
 /* Dark mode styles */
 .dark-mode {
-    background-color: #333;
+    background-color: #161616;
     color: #f1f1f1;
 }
 
@@ -38,7 +38,7 @@
 .dark-mode .courseSelect_dropdown {
     background-color: #444;
     color: #f1f1f1;
-    border: 1px solid #555;
+    border: 1px solid #ccc;
 }
 
 .courseSelect_dropdown:focus {

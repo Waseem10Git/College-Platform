@@ -1,4 +1,3 @@
-// models/StudentAssignmentModel.js
 const conn = require('../config/db');
 const fs = require('fs');
 const util = require('util');
@@ -14,19 +13,21 @@ class StudentAssignmentModel {
         return await queryAsync(query, [userId, instructorCourseId]);
     }
 
-    static async insertStudentFile(enrollmentId, assignmentId, fileData, fileName) {
+    static async insertStudentFile(enrollmentId, assignmentId, fileName, mimetype, size, filePath) {
         const query = `
             UPDATE
                 enrollments_assignments
             SET
-                student_file = ?,
                 student_file_name = ?,
-                created_at = NOW(), 
+                student_file_path = ?,
+                student_file_size = ?,
+                student_mime_type = ?,
+                student_upload_time = NOW(), 
                 is_submitted = TRUE
             WHERE
                 enrollment_id = ? AND assignment_id = ?
         `;
-        return await queryAsync(query, [fileData, fileName, enrollmentId, assignmentId]);
+        return await queryAsync(query, [fileName, filePath, size, mimetype, enrollmentId, assignmentId]);
     }
 
     static async deleteFile(filePath) {
@@ -37,7 +38,7 @@ class StudentAssignmentModel {
     static getStudentAssignmentById(studentAssignmentId) {
         return new Promise((resolve, reject) => {
             const query = `
-                SELECT student_file_name, student_file FROM enrollments_assignments
+                SELECT student_file_name, student_file_path, student_mime_type, student_file_size FROM enrollments_assignments
                 WHERE id = ?
                 `;
             conn.query(query, [studentAssignmentId], (err, result) => {
@@ -83,6 +84,27 @@ class StudentAssignmentModel {
                 resolve(result[0]);
             });
         });
+    }
+
+    static getStudentAssignmentScore(studentId, assignmentId) {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT 
+                    ea.score
+                FROM 
+                    enrollments_assignments ea
+                INNER JOIN 
+                    enrollments e ON ea.enrollment_id = e.id
+                INNER JOIN 
+                    users u ON e.student_id = u.id
+                WHERE 
+                    u.id = ? AND ea.assignment_id = ?;
+            `;
+            conn.query(query, [studentId, assignmentId], (err, result) => {
+                if (err) return reject(err);
+                resolve(result[0]);
+            })
+        })
     }
 }
 

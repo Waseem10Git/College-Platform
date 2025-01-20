@@ -10,9 +10,11 @@ const downloadChapter = chapterId => axios.get(`/api/chapters/${chapterId}/downl
     responseType: 'blob',
 });
 const deleteChapter = chapterId => axios.delete(`/api/chapters/${chapterId}`);
-const viewChapter = chapterId => axios.get(`/api/chapters/${chapterId}/view`, {
-    responseType: 'blob',
-});
+
+// const viewChapter = chapterId => axios.get(`/api/chapters/${chapterId}/view`, {
+//     responseType: 'blob',
+// });
+const viewChapter = (chapterId) => `http://localhost:4001/api/chapters/${chapterId}/view`;
 
 const chaptersApi = { fetchChapters, addChapter, downloadChapter, deleteChapter, viewChapter };
 export default chaptersApi;

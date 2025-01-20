@@ -9,12 +9,12 @@ const UploadFile = ({ handleFileChange, file, uploadingVisible, setUploadingVisi
         <div className={`modal ${uploadingVisible ? "visible" : "hidden"}`}>
             <form onSubmit={handleSubmit}>
                 <div className="modal-header">
-                    <h2>{language === 'En' ? 'Upload File' : 'رفع الملف'}</h2>
+                    <h2>{language === 'En' ? 'Upload Chapter' : 'رفع المحاضرة'}</h2>
                 </div>
                 <label htmlFor='fileInput' className={"UploadFile_Select-File"}>
                     <img src={uploadLabel} className="UploadFile_upload-icon" alt='upload icon'/>
                     <span>
-                        {!!file ? (language === 'En' ? 'Change' : 'تغير') : (language === 'En' ? 'Select' : 'تحديد')} {language === 'En' ? 'File' : 'ملف'}
+                        {!!file ? (language === 'En' ? 'Change' : 'تغير') : (language === 'En' ? 'Select' : 'تحديد')} {language === 'En' ? 'Chapter' : 'محاضرة'}
                     </span>
                 </label>
                 <input id='fileInput' type="file" accept={"application/pdf"} onChange={handleFileChange}/>
@@ -22,8 +22,8 @@ const UploadFile = ({ handleFileChange, file, uploadingVisible, setUploadingVisi
                     <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{errorMessage}</p>
                 )}
                 <div className={"confirm-cancel"}>
-                    <button className={"UploadFile_button"} type='submit' style={{ marginRight: "5px"}}>Upload</button>
-                    <button className={"UploadFile_button"} type="button" onClick={() => setUploadingVisible(false)}>Cancel</button>
+                    <button id={'UploadFile_upload-button'} className={"UploadFile_button"} type='submit' style={{ marginRight: "5px"}}>Upload</button>
+                    <button id={'UploadFile_cancel-button'} className={"UploadFile_button"} type="button" onClick={() => setUploadingVisible(false)}>Cancel</button>
                 </div>
             </form>
         </div>

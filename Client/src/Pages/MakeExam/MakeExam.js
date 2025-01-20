@@ -247,7 +247,7 @@ const MakeExam = () => {
                     <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{examNameErrMessage}</p>
                 )}
                 <label className="MakeExam_inputLabel">
-                  {language === 'En' ? 'Exam Name:' : 'اسم الامتحان'}
+                  {language === 'En' ? 'Exam Name:' : 'اسم الامتحان:'}
                 </label>
                 <input
                     type="text"
@@ -280,7 +280,7 @@ const MakeExam = () => {
                     <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{startAtnErrMessage}</p>
                 )}
                 <label className="MakeExam_inputLabel">
-                  {language === 'En' ? 'Start At:' : 'تاريخ البدء'}
+                  {language === 'En' ? 'Start At:' : 'تاريخ البدء:'}
                 </label>
                 <DatePicker
                     selected={startAt}
@@ -303,7 +303,7 @@ const MakeExam = () => {
                     <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{selectedCourseErrMessage}</p>
                 )}
                 <label className="MakeExam_inputLabel">
-                  {language === 'En' ? 'Select Course:' : 'اختر الدورة'}
+                  {language === 'En' ? 'Select Course:' : 'اختر المادة:'}
                 </label>
                 <select
                     value={selectedCourse}
@@ -311,7 +311,7 @@ const MakeExam = () => {
                     className="MakeExam_inputField"
                 >
                   <option value="">
-                    {language === 'En' ? 'Select a course' : 'اختر دورة'}
+                    {language === 'En' ? 'Select a course' : 'اختر مادة:'}
                   </option>
                   {courses.map((course) => (
                       <option key={course.course_code} value={course.course_code}>
@@ -329,7 +329,7 @@ const MakeExam = () => {
             {questionErrMessage && (
                 <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{questionErrMessage}</p>
             )}
-            <label className="MakeExam_inputLabel">{language === 'En' ? 'Question:' : 'السؤال'}</label>
+            <label className="MakeExam_inputLabel">{language === 'En' ? 'Question:' : 'السؤال:'}</label>
             <input
                 type="text"
                 value={newQuestion}
@@ -341,7 +341,7 @@ const MakeExam = () => {
             {questionTypeErrMessage && (
                 <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{questionTypeErrMessage}</p>
             )}
-            <label className="MakeExam_selectLabel">{language === 'En' ? 'Question Type:' : 'نوع السؤال'}:</label>
+            <label className="MakeExam_selectLabel">{language === 'En' ? 'Question Type:' : 'نوع السؤال:'}</label>
             <select
                 value={questionType}
                 onChange={(e) => setQuestionType(e.target.value)}
@@ -369,7 +369,7 @@ const MakeExam = () => {
                     </div>
                 ))}
                 <button onClick={handleAddOption} className="MakeExam_addOptionButton">
-                  {language === 'En' ? 'Add option' : 'أضف إخيار'}
+                  {language === 'En' ? 'Add option' : 'أضف إختيار'}
                 </button>
               </div>
           )}
@@ -379,7 +379,7 @@ const MakeExam = () => {
                     <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{correctAnswerErrMessage}</p>
                 )}
                 <label className="MakeExam_correctAnswerLabel">
-                  {language === 'En' ? 'Correct Answer:' : 'الإجابة الصحيحة'}
+                  {language === 'En' ? 'Correct Answer:' : 'الإجابة الصحيحة:'}
                 </label>
                 <select
                     value={correctAnswer}
@@ -414,7 +414,7 @@ const MakeExam = () => {
           {questionNotAddedErrMessage && (
               <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{questionNotAddedErrMessage}</p>
           )}
-          <h2 className="MakeExam_addedQuestionsHeading">{language === 'En' ? 'Questions added:' : ':الاساله المضافه'}</h2>
+          <h2 className="MakeExam_addedQuestionsHeading">{language === 'En' ? 'Questions added:' : 'الأسئلة المضافة:'}</h2>
           <ul className="MakeExam_addedQuestionsList">
             {questions.map((question, index) => (
                 <li key={index} className="MakeExam_questionItem">
@@ -425,7 +425,7 @@ const MakeExam = () => {
                     {question.type === 'MCQ' && (
                         <div>
                           <strong
-                              className="MakeExam_optionsHeading">{language === 'En' ? 'Options:' : ':إختيار'}</strong>
+                              className="MakeExam_optionsHeading">{language === 'En' ? 'Options:' : 'إختيار:'}</strong>
                           <ul className="MakeExam_optionsList">
                             {question.options.map((option, optionIndex) => (
                                 <li key={optionIndex} className="MakeExam_optionItem">
@@ -448,7 +448,7 @@ const MakeExam = () => {
             ))}
           </ul>
           <button onClick={handleExamSubmit} className="MakeExam_submitExamButton">
-            {language === 'En' ? 'Submit Exam' : 'أرسل الامتحان'}
+            {language === 'En' ? 'Submit Exam' : 'تأكيد إنشاء الإمتحان'}
           </button>
         </div>
       </div>

@@ -1,14 +1,13 @@
-/* Light Mode - Default Styles */
 .Chapters_course-view {
-    background-color: #f0f0f0; /* Light mode background */
-    color: #000000; /* Light mode text */
-    padding: 20px;
+    background-color: #f0f0f0;
+    color: #000000;
+    padding: 10px 20px;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .Chapters_course-view.Chapters_dark-mode {
-    background-color: #1a1a1a; /* Dark mode background */
-    color: #f0f0f0; /* Dark mode text */
+    background-color: #161616;
+    color: #f0f0f0;
 }
 
 .Chapters_file-upload-container {
@@ -39,11 +38,11 @@
 .Chapters_upload-icon {
     width: 24px;
     height: 24px;
-    margin: 0px 10px;
+    margin: 0 10px;
 }
 
 .Chapters_courses-container {
-    margin: 15px;
+    margin: 15px 0;
 }
 
 .Chapters_courses-container.Chapters_dark-mode {
@@ -242,3 +241,23 @@
     opacity: 1;
 }
 
+#Chapters_download-button {
+    background-color: #388E3C;
+}
+
+#Chapters_download-button:hover {
+    background-color: green;
+    border: none;
+}
+
+#Chapters_delete-button {
+    background-color: #D32F2F;
+}
+
+#Chapters_delete-button:hover {
+    background-color: darkred;
+}
+
+.dark .Chapters_overlay-content p {
+    color: #ffffff;
+}

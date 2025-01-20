@@ -70,7 +70,7 @@ function App() {
 
 
   return (
-    <div className="App">
+    <div className={`App ${isDarkMode ? 'dark-mode' : ''}`}>
       <Router>
           <UserContext.Provider value={userValues}>
               <ToastContainer/>

@@ -95,12 +95,49 @@ class EnrollmentModel {
     static getStudentsForCourse(courseId, userId) {
         return new Promise((resolve, reject) => {
             const query = `
-                SELECT u.id, u.first_name, u.last_name, u.email
-                FROM enrollments e
-                JOIN instructors_courses ic ON e.instructor_course_id = ic.id
-                JOIN departments_courses dc ON ic.department_course_id = dc.id
-                JOIN users u ON e.student_id = u.id
-                WHERE dc.course_id = ? AND ic.instructor_id = ?
+                SELECT
+                    u.id AS student_id,
+                    u.first_name,
+                    u.last_name,
+                    GROUP_CONCAT(
+                        DISTINCT CONCAT(
+                            'Exam: ', COALESCE(e.exam_name, 'N/A'), 
+                            ' (Score: ', COALESCE(ee.score, 'Not Graded'), ')'
+                        ) ORDER BY e.exam_id SEPARATOR '; '
+                    ) AS exam_scores,
+                    GROUP_CONCAT(
+                        DISTINCT CONCAT(
+                            'Assignment: ', COALESCE(a.assignment_title, 'N/A'), 
+                            ' (Score: ', COALESCE(ea.score, 'Not Graded'), ')'
+                        ) ORDER BY a.assignment_id SEPARATOR '; '
+                    ) AS assignment_scores
+                FROM
+                    users u
+                LEFT JOIN enrollments en ON
+                    u.id = en.student_id
+                LEFT JOIN enrollments_exams ee ON
+                    en.id = ee.enrollment_id
+                LEFT JOIN exams e ON
+                    ee.exam_id = e.exam_id
+                LEFT JOIN enrollments_assignments ea ON
+                    en.id = ea.enrollment_id
+                LEFT JOIN assignments a ON
+                    ea.assignment_id = a.assignment_id
+                LEFT JOIN instructors_courses ic ON
+                    en.instructor_course_id = ic.id
+                LEFT JOIN departments_courses dc ON
+                    ic.department_course_id = dc.id
+                WHERE
+                    u.role = 'student' 
+                    AND dc.course_id = ? 
+                    AND ic.instructor_id = ?
+                GROUP BY
+                    u.id,
+                    u.first_name,
+                    u.last_name
+                ORDER BY
+                    u.id;
+
             `;
             conn.query(query, [courseId, userId], (err, results) => {
                 if (err) {

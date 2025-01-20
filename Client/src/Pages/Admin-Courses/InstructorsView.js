@@ -26,7 +26,7 @@ const InstructorsView = () => {
             setInstructorsCourses(response.data);
         } catch (err) {
             console.error('Error fetching instructors-courses data:', err);
-            toast.error(language === 'En' ? 'Error fetching instructors-courses data' : 'خطأ في جلب بيانات الدورات والمدربين');
+            toast.error(language === 'En' ? 'Error fetching instructors-courses data' : 'خطأ في جلب بيانات المواد والمدرسين');
         }
     };
 
@@ -36,7 +36,7 @@ const InstructorsView = () => {
             setDepartmentsCourses(res.data);
         } catch (err) {
             console.error('Error fetching departments-courses data:', err);
-            toast.error(language === 'En' ? 'Error fetching departments-courses data' : 'خطأ في جلب بيانات الأقسام والدورات');
+            toast.error(language === 'En' ? 'Error fetching departments-courses data' : 'خطأ في جلب بيانات الأقسام والمواد');
         }
     };
 
@@ -46,7 +46,7 @@ const InstructorsView = () => {
             setInstructors(res.data);
         } catch (err) {
             console.error('Error fetching instructors data:', err);
-            toast.error(language === 'En' ? 'Error fetching instructors data' : 'خطأ في جلب بيانات المدربين');
+            toast.error(language === 'En' ? 'Error fetching instructors data' : 'خطأ في جلب بيانات المدرسين');
         }
     };
 
@@ -71,7 +71,7 @@ const InstructorsView = () => {
         );
 
         if (isDuplicate) {
-            setAddingExistErr(language === 'En' ? 'This course(s) enrolled to the this instructor.' : 'تم تسجيل هذه الدورة (الدورات) لهذا المدرس.');
+            setAddingExistErr(language === 'En' ? 'This course(s) enrolled to the this instructor.' : 'تم تسجيل هذه المادة (المواد) لهذا المدرس.');
             return false;
         }
 
@@ -83,7 +83,7 @@ const InstructorsView = () => {
             setAddingExistErr(
                 language === 'En'
                     ? 'The course(s) already assigned.'
-                    : 'تم تعيين الدورة (الدورات) بالفعل.'
+                    : 'تم تعيين المادة (المواد) بالفعل.'
             );
             return false;
         }
@@ -103,7 +103,7 @@ const InstructorsView = () => {
             if (response.data.success) {
                 fetchInstructorsCourses();
                 resetForm();
-                toast.success(language === 'En' ? 'Adding instructor-course relation successfully!' : 'تمت إضافة علاقة المدرب بالمقرر بنجاح!');
+                toast.success(language === 'En' ? 'Adding instructor-course relation successfully!' : 'تمت إضافة علاقة المدرس بالمقرر بنجاح!');
             }
         } catch (error) {
             console.error('Error adding instructor-course relation:', error);
@@ -112,7 +112,7 @@ const InstructorsView = () => {
                     toast.error(errMsg);
                 });
             } else {
-                toast.error(language === 'En' ? 'Error adding instructor-course relation' : 'خطأ في إضافة العلاقة بين المدرب والدورة');
+                toast.error(language === 'En' ? 'Error adding instructor-course relation' : 'خطأ في إضافة العلاقة بين المدرس والمادة');
             }
         }
     };
@@ -124,10 +124,10 @@ const InstructorsView = () => {
         try {
             await instructorsCoursesApi.deleteInstructorCourse(id);
             fetchInstructorsCourses();
-            toast.success(language === 'En' ? 'Deleting instructor-course relation successfully!' : 'تم حذف العلاقة بين المدرب والمقرر بنجاح!');
+            toast.success(language === 'En' ? 'Deleting instructor-course relation successfully!' : 'تم حذف العلاقة بين المدرس والمقرر بنجاح!');
         } catch (error) {
             console.error('Error deleting instructor-course relation:', error);
-            toast.error(language === 'En' ? 'Error deleting instructor-course relation' : 'خطأ في حذف العلاقة بين المدرب والدورة');
+            toast.error(language === 'En' ? 'Error deleting instructor-course relation' : 'خطأ في حذف العلاقة بين المدرس والمادة');
         }
     };
 
@@ -166,7 +166,7 @@ const InstructorsView = () => {
                 <thead>
                 <tr>
                     <th>{language === 'En' ? 'Instructor Name' : 'اسم الدكتور'}</th>
-                    <th>{language === 'En' ? 'Department_Course' : 'القسم_الدورة'}</th>
+                    <th>{language === 'En' ? 'Department_Course' : 'القسم_المادة'}</th>
                     <th>{language === 'En' ? 'Actions' : 'الإجراءات'}</th>
                 </tr>
                 </thead>
@@ -215,7 +215,7 @@ const InstructorsView = () => {
                     <td>{addingExistErr && (
                         <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{addingExistErr}</p>
                     )}
-                        <button onClick={handleAdd}>
+                        <button id={'AdminCourses_add-button'} onClick={handleAdd}>
                             {language === 'En' ? 'Add' : 'اضافة'}
                         </button>
                     </td>
@@ -229,7 +229,7 @@ const InstructorsView = () => {
                             {ic.department_name + "_" + ic.course_name}
                         </td>
                         <td>
-                            <button
+                            <button id={'AdminCourses_delete-button'}
                                 onClick={() => confirmDelete(ic.instructor_course_id)}>{language === 'En' ? 'Delete' : 'حذف'}</button>
                         </td>
                     </tr>

@@ -1,11 +1,11 @@
 import {useContext, useEffect, useState} from 'react';
 import './TakeExam.css';
-import axios from '../../api/axios';
 import CourseSelect from '../ExamResults/CourseSelect';
 import ExamSelect from '../ExamResults/ExamSelect';
 import {NotificationModal} from '../../components';
 import UserContext from "../../context/UserContext";
 import examApi from "../../api/examApi";
+import coursesApi from "../../api/coursesApi";
 
 const TakeExam = () => {
   const { isDarkMode, language, role, userId } = useContext(UserContext);
@@ -21,6 +21,8 @@ const TakeExam = () => {
   const [isExamStarted, setIsExamStarted] = useState(false);
   const [isExamEnded, setIsExamEnded] = useState(false);
   const [isInExam, setIsInExam] = useState(false);
+  const [isExamsListLoading, setIsExamsListLoading] = useState(false);
+  const [studentInExam, setStudentInExam] = useState(false);
   const [timer, setTimer] = useState(null);
   const [intervalId, setIntervalId] = useState(null);
   const [showResults, setShowResults] = useState(false);
@@ -32,7 +34,7 @@ const TakeExam = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`/api/student/${userId}/courses`);
+        const response = await coursesApi.fetchSomeCourses('student', userId);
         if (Array.isArray(response.data)) {
           setCourses(response.data);
         } else {
@@ -61,48 +63,68 @@ const TakeExam = () => {
 
   useEffect(() => {
     if (currentTime && examEndTime) {
-      if (currentTime.toLocaleTimeString() > examEndTime.toLocaleTimeString()) {
+      if (currentTime > examEndTime) {
         setIsExamEnded(true);
-        setStudentAnswers({});
+        setIsExamStarted(false);
       } else {
         setIsExamEnded(false);
       }
     }
   }, [currentTime, examEndTime, selectedQuizId]);
 
-  const handleCourseSelect = (courseId) => {
+  useEffect(() => {
+    if (currentTime && examDetails.start_at) {
+      let startAt = examDetails.start_at;
+
+      if (typeof startAt === "string") {
+        startAt = new Date(startAt);
+      }
+
+      if (startAt instanceof Date && !isNaN(startAt)) {
+        if (currentTime > startAt) {
+          setIsExamStarted(true);
+        }
+      } else {
+        console.error("Invalid start_at value:", examDetails.start_at);
+      }
+    }
+  }, [currentTime, examDetails.start_at]);
+  const handleCourseSelect = async (courseId) => {
+    resetExamState()
+    setStudentAnswers({});
+    setSelectedQuizId('');
     setSelectedCourseId(courseId);
-    console.log('courseId', courseId);
-    axios
-        .get(`/api/exams/${courseId}`)
+    setIsExamsListLoading(true);
+    await examApi.fetchExamsForCourse(courseId)
         .then((response) => {
+          setIsExamsListLoading(false);
           setExams(response.data);
         })
         .catch((error) => {
+          setIsExamsListLoading(false);
           console.error('Error fetching exams:', error);
         });
-    resetExamState();
   };
 
   const handleExamDetailsSelect = (examId) => {
-    resetExamState();
+    console.log('exam started: ', isExamStarted)
+    console.log('exam ended: ', isExamEnded)
+    // console.log('current time: ', currentTime)
+    console.log('timer: ', timer);
     setSelectedQuizId(examId);
     examApi.fetchExamDetails(examId)
         .then((response) => {
           const details = response.data[0];
           setExamDetails(details);
 
-          console.log("exam details: ", examDetails)
-
           const startTime = new Date(formatDate(details.start_at));
-          const newStartTime = new Date(startTime.getTime() + 3 * 60 * 60 * 1000); // Add 3 hours in milliseconds
-
-          console.log("New start time:", newStartTime);
 
           const durationInMilliseconds = details.duration * 60 * 1000;
           const endTime = new Date(startTime.getTime() + durationInMilliseconds);
           setExamEndTime(endTime);
 
+          console.log('end Time:', endTime)
+          console.log(currentTime >= endTime)
           if (currentTime >= endTime) {
             setIsExamEnded(true);
           } else if (currentTime >= startTime && currentTime < endTime) {
@@ -154,6 +176,7 @@ const TakeExam = () => {
 
   const handleSubmit = () => {
     setFinalScore(null);
+    setStudentInExam(false);
     let finalStudentScore = 0;
     const answers = examQuestions.map((question) => {
       const answerText = studentAnswers[question.question_id] || '';
@@ -181,9 +204,8 @@ const TakeExam = () => {
     examApi.setStudentAnswers(userId, answers, selectedQuizId, finalStudentScore)
         .then((response) => {
           setIsSubmitted(true);
-          setIsExamEnded(true);
-          clearInterval(intervalId); // Clear interval on submit
-          setShowResults(true); // Show results after submitting
+          clearInterval(intervalId);
+          setShowResults(true);
         })
         .catch((error) => {
           console.error('Error submitting exam:', error);
@@ -191,6 +213,7 @@ const TakeExam = () => {
   };
 
   const handleStartExam = () => {
+    setStudentInExam(true);
     examApi.fetchStudentExamStatus(userId, selectedQuizId)
         .then((response) => {
           if (response.data.is_submitted) {
@@ -227,7 +250,11 @@ const TakeExam = () => {
       setTimer((prevTimer) => {
         if (prevTimer <= 1) {
           clearInterval(newIntervalId);
-          handleSubmit();
+          setIsExamEnded(true);
+          if (studentInExam) {
+            setStudentInExam(false);
+            handleSubmit();
+          }
           return 0;
         }
         return prevTimer - 1;
@@ -271,38 +298,44 @@ const TakeExam = () => {
         {!isInExam && !showResults && (
             <div className="TakeExam_select-container">
               <CourseSelect language={language} courses={courses} onSelect={handleCourseSelect} selectedCourse={selectedCourseId}/>
-              <ExamSelect language={language} exams={exams} onSelect={handleExamDetailsSelect} />
+              { selectedCourseId && exams.length > 0 ? (
+                  <ExamSelect language={language} exams={exams} onSelect={handleExamDetailsSelect} />
+              ) : selectedCourseId && !isExamsListLoading ? (
+                  <h3>{language === 'En' ? 'No exams for selected course' : 'ليس هناك أي إمتحان لهاذه المادة'}</h3>
+              ) : isExamsListLoading && (
+                  <h3>{language === 'En' ? 'Loading...' : 'جاري التحميل...'}</h3>
+              )}
             </div>
         )}
 
         {selectedQuizId && !isInExam && !showResults && (
             <div className="TakeExam_exam-details">
               <h3>{examDetails.exam_name}</h3>
-              {!isExamEnded ? <h3>Duration: {examDetails.duration} minutes</h3> : null}
+              {!isExamEnded ? <h3>{language === 'En' ? 'Duration:' : 'مدة الإمتحان:'} {examDetails.duration} {language === 'En' ? 'minutes' : 'دقيقة'}</h3> : null}
               <p>
                 {isExamEnded
-                    ? 'Exam End'
+                    ? language === 'En' ? 'Exam End': 'إنتهى الإمتحان'
                     : isExamStarted
-                        ? 'Exam Started'
-                        : `Start Time: ${formatDate(examDetails.start_at)}`}
+                        ? language === 'En' ? 'Exam Started' : 'بدأ الإمتحان'
+                        : `${language === 'En' ? 'Start Time:' : 'وقت البدء:'} ${formatDate(examDetails.start_at)}`}
               </p>
-              {isExamStarted && !isExamEnded && (
+              <p>{language === 'En' ? 'Number of questions:' : 'عدد الأسئلة:'} {examQuestions.length}</p>
+              {isExamStarted && !isExamEnded && timer > 0 && (
                   <div>
-                    <p>Time Remaining: {formatTime(timer)}</p>
+                    <p>{language === 'En' ? 'Time Remaining:' : 'الوقت المتبقي:'} {formatTime(timer)}</p>
                     <button onClick={() => handleStartExam()} disabled={isSubmitted}>
-                      Start Exam
+                      {language === 'En' ? 'Start Exam' : 'بدأ الإمتحان'}
                     </button>
                   </div>
-              )}
-              {isExamEnded && (
-                  <button onClick={() => setShowResults(true)}>Show Exam Result</button>
               )}
             </div>
         )}
 
         {isInExam && !showResults && !isExamEnded && (
             <div className="TakeExam_questions-container">
-              <div className="TakeExam_timer">{formatTime(timer)}</div>
+              <div className="TakeExam_timer-sticky">
+                <div className="TakeExam_timer">{formatTime(timer)}</div>
+              </div>
               {examQuestions.length > 0 && (
                   <div>
                     {examQuestions.map((question, questionIndex) => {
@@ -311,7 +344,7 @@ const TakeExam = () => {
                       );
                       return (
                           <div className="TakeExam_question-item" key={questionIndex}>
-                            <h3>{question.question_text} ?</h3>
+                            <h3>{question.question_text} {language === 'En' ? '?' : '؟'}</h3>
                             <div className={"TakeExam_answers-section"}>
                               {isMCQ ? (
                                   examAnswers
@@ -340,6 +373,7 @@ const TakeExam = () => {
                                       value={studentAnswers[question.question_id] || ''}
                                       onChange={(e) => handleAnswerSelect(question.question_id, e.target.value)}
                                       required
+                                      placeholder={language === 'En' ? 'Type your answer' : 'أكتب إجابتك'}
                                       disabled={isSubmitted}
                                   />
                               )}
@@ -349,7 +383,7 @@ const TakeExam = () => {
                     })}
                     <div className="TakeExam_navigation-buttons">
                       <button onClick={handleSubmit} disabled={isSubmitted}>
-                        Submit
+                        {language === 'En' ? 'Submit' : 'تأكيد'}
                       </button>
                     </div>
                   </div>
@@ -359,14 +393,14 @@ const TakeExam = () => {
 
         {showResults && (
             <div className="TakeExam_results-container">
-              <h2>Exam Result</h2>
+              <h2>{language === 'En' ? 'Exam Result' : 'نتيجة الإمتحان'}</h2>
               <table>
                 <thead>
                 <tr>
-                  <th>Question</th>
-                  <th>Correct Answer</th>
-                  <th>Your Answer</th>
-                  <th>Question Score</th>
+                  <th>{language === 'En' ? 'Question' : 'السؤال'}</th>
+                  <th>{language === 'En' ? 'Correct Answer' : 'الإجابة الصحيحة'}</th>
+                  <th>{language === 'En' ? 'Your Answer' : 'إجابتك'}</th>
+                  <th>{language === 'En' ? 'Question Score' : 'درجة السؤال'}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -384,7 +418,7 @@ const TakeExam = () => {
                                 .map((answer, answerIndex) => (
                                     <p key={answerIndex}>{answer.answer_text}</p>
                                 ))
-                            : '(Essay)'}
+                            : language === 'En' ? '(Essay)' : '(مقالي)'}
                       </td>
 
                       <td>{studentAnswers[question.question_id] ? studentAnswers[question.question_id] : '--'}</td>
@@ -393,7 +427,7 @@ const TakeExam = () => {
                 ))}
                 <tr>
                   <td colSpan={2} style={{ textAlign: 'center' }}>
-                    Your score
+                    {language === 'En' ? 'Your score' : 'نتيجتك'}
                   </td>
                   <td colSpan={2} style={{ textAlign: 'center' }}>
                     {finalScore}
@@ -402,12 +436,13 @@ const TakeExam = () => {
                 </tbody>
               </table>
               <button
+                  className={'TakeExam_back-button'}
                   onClick={() => {
                     resetExamState();
                     setExams([]);
                   }}
               >
-                Back
+                {language === 'En' ? 'Back' : 'رجوع'}
               </button>
             </div>
         )}

@@ -5,21 +5,24 @@ import UserContext from "../../context/UserContext";
 import coursesApi from "../../api/coursesApi";
 
 export default function Course() {
-    const { isDarkMode, role } = useContext(UserContext);
+    const { isDarkMode, role, language } = useContext(UserContext);
     const [allCourses, setAllCourses] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const {userId} = useParams();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                console.log(role, userId);
+                // console.log(role, userId);
+                setIsLoading(true);
                 const response = await coursesApi.fetchSomeCourses(role, userId);
-
                 if (Array.isArray(response.data)) {
                     setAllCourses(response.data);
+                    setIsLoading(false);
                 } else {
                     console.error('Expected array but got:', response.data);
+                    setIsLoading(false);
                 }
             } catch (error) {
                 console.log('Error fetching data:', error);
@@ -56,7 +59,13 @@ export default function Course() {
                         </div>
                     ))
                 ) : (
-                    <p>No courses available</p>
+                    <>
+                        {isLoading ? (
+                            <p>{language === 'En' ? 'Loading...' : 'جاري التحميل...' }</p>
+                        ) : (
+                            <p>{language === 'En' ? 'No courses available' : 'ليس هناك مواد'}</p>
+                        )}
+                    </>
                 )}
             </div>
         </div>

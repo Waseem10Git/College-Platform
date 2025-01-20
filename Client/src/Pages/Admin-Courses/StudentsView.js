@@ -36,7 +36,7 @@ const InstructorsView = () => {
             setInstructorsCourses(response.data);
         } catch (err) {
             console.error('Error fetching instructors-courses data:', err);
-            toast.error(language === 'En' ? 'Error fetching departments-courses data' : 'خطأ في جلب بيانات الأقسام والمدربين');
+            toast.error(language === 'En' ? 'Error fetching departments-courses data' : 'خطأ في جلب بيانات الأقسام والمدرسين');
         }
     };
 
@@ -71,7 +71,7 @@ const InstructorsView = () => {
         );
 
         if (isDuplicate) {
-            setAddingExistErr(language === 'En' ? 'This course(s) enrolled to the this student.' : 'تم تسجيل هذه الدورة (الدورات) لهذا الطالب.');
+            setAddingExistErr(language === 'En' ? 'This course(s) enrolled to the this student.' : 'تم تسجيل هذه المادة (المواد) لهذا الطالب.');
             return false;
         }
 
@@ -90,7 +90,7 @@ const InstructorsView = () => {
             if (response.data.success) {
                 fetchStudentsEnrollments();
                 resetForm();
-                toast.success(language === 'En' ? 'Adding student-course relation successfully!' : 'تم إضافة العلاقة بين الطالب والدورة بنجاح!');
+                toast.success(language === 'En' ? 'Adding student-course relation successfully!' : 'تم إضافة العلاقة بين الطالب والمادة بنجاح!');
             }
         } catch (error) {
             console.error('Error adding instructor-course relation:', error);
@@ -99,7 +99,7 @@ const InstructorsView = () => {
                     toast.error(errMsg);
                 });
             } else {
-                toast.error(language === 'En' ? 'Error adding student-course relation' : 'خطأ في إضافة العلاقة بين الطالب والدورة');
+                toast.error(language === 'En' ? 'Error adding student-course relation' : 'خطأ في إضافة العلاقة بين الطالب والمادة');
             }
         }
     };
@@ -111,10 +111,10 @@ const InstructorsView = () => {
         try {
             await studentsEnrollmentsApi.deleteStudentEnrollment(id);
             fetchStudentsEnrollments();
-            toast.success(language === 'En' ? 'Deleting student-course relation successfully!' : 'تم حذف العلاقة بين الطالب والدورة بنجاح!');
+            toast.success(language === 'En' ? 'Deleting student-course relation successfully!' : 'تم حذف العلاقة بين الطالب والمادة بنجاح!');
         } catch (error) {
             console.error('Error deleting instructor-course relation:', error);
-            toast.error(language === 'En' ? 'Error deleting student-course relation' : 'خطأ في حذف العلاقة بين الطالب والدورة');
+            toast.error(language === 'En' ? 'Error deleting student-course relation' : 'خطأ في حذف العلاقة بين الطالب والمادة');
         }
     };
 
@@ -151,7 +151,7 @@ const InstructorsView = () => {
                 <thead>
                 <tr>
                     <th>{language === 'En' ? 'Student Name' : 'اسم الدكتور'}</th>
-                    <th>{language === 'En' ? 'Course_Instructor' : 'الدورة_المدرب'}</th>
+                    <th>{language === 'En' ? 'Course_Instructor' : 'المادة_المدرس'}</th>
                     <th>{language === 'En' ? 'Actions' : 'الإجراءات'}</th>
                 </tr>
                 </thead>
@@ -194,7 +194,7 @@ const InstructorsView = () => {
                         {addingExistErr && (
                             <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{addingExistErr}</p>
                         )}
-                        <button onClick={handleAdd}>
+                        <button id={'AdminCourses_add-button'} onClick={handleAdd}>
                             {language === 'En' ? 'Add' : 'اضافة'}
                         </button>
                     </td>
@@ -208,7 +208,7 @@ const InstructorsView = () => {
                             {se.instructor_fname} {se.instructor_lname}_{se.course_name}
                         </td>
                         <td>
-                            <button onClick={() => confirmDelete(se.id)}>{language === 'En' ? 'Delete' : 'حذف'}</button>
+                            <button id={'AdminCourses_delete-button'} onClick={() => confirmDelete(se.id)}>{language === 'En' ? 'Delete' : 'حذف'}</button>
                         </td>
                     </tr>
                 ))}

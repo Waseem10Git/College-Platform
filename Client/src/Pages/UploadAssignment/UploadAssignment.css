@@ -76,6 +76,7 @@ body, html {
 
 .UploadAssignment_component button:hover {
   background-color: #0056b3; /* Darker shade on hover */
+  color: #ffffff;
 }
 
 .UploadAssignment_component.dark {
@@ -94,6 +95,7 @@ body, html {
   background-color: #2c2c2c; /* Darker input fields */
   color: #ffffff; /* White text for inputs */
   border: 1px solid #444; /* Darker border for inputs */
+  font-size: 14px;
 }
 
 .UploadAssignment_component.light input,
@@ -155,6 +157,10 @@ body, html {
   padding: 20px;
   border-radius: 8px;     /* Optional: Rounded corners */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Shadow */
+}
+
+.dark .UploadAssignment_form-group, .dark .UploadAssignment_form-group select {
+  color: #ffffff;
 }
 
 #UploadAssignment_input-field {

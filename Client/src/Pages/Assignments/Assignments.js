@@ -8,6 +8,7 @@ const Assignments = () => {
   const { isDarkMode, language, role, userId } = useContext(UserContext);
   const [selectedCourse, setSelectedCourse] = useState('');
   const [selectedAssignment, setSelectedAssignment] = useState(null);
+  const [assignmentScore, setAssignmentScore] = useState(null);
   const [studentFile, setStudentFile] = useState(null);
   const [courses, setCourses] = useState([]);
   const [assignments, setAssignments] = useState([]);
@@ -46,6 +47,11 @@ const Assignments = () => {
           .catch(error => {
             toast.error('Error checking submission status:', error);
           });
+
+      // Fetch assignment score for the selected course from backend
+      axios.get(`/api/studentAssignment/${userId}/${selectedAssignment.assignment_id}`)
+          .then(response => setAssignmentScore(response.data.score))
+          .catch(error => toast.error('Error fetching assignment score:', error));
 
       // Set up a timer to check the due date every minute
       const interval = setInterval(() => {
@@ -115,7 +121,7 @@ const Assignments = () => {
         <h2>{language === 'En' ? 'Upload Assignment' : 'رفع التكليف'}</h2>
         <form onSubmit={handleSubmit} className="UploadAssignment_form">
           <h3>
-            {language === 'En' ? 'Select Course:' : 'اختر الدورة الدراسية:'}
+            {language === 'En' ? 'Select Course:' : 'اختر المادة الدراسية:'}
           </h3>
           <div className="UploadAssignment_form-group">
             <select
@@ -125,7 +131,7 @@ const Assignments = () => {
                 required
             >
               <option value="" disabled>
-                {language === 'En' ? 'Select course' : 'اختر الدورة الدراسية'}
+                {language === 'En' ? 'Select course' : 'اختر المادة الدراسية'}
               </option>
               {courses.map((course, index) => (
                   <option key={index} value={course.course_code}>
@@ -192,11 +198,21 @@ const Assignments = () => {
                             )}
                           </>
                       ) : (
-                          <div className="UploadAssignment_form-group">
-                            {language === 'En' ?
-                                'The deadline for submitting the assignment has passed.' :
-                                'لقد انتهى الموعد النهائي لتسليم المهمة'}
-                          </div>
+                          <>
+                            <div className="UploadAssignment_form-group">
+                              {language === 'En' ?
+                                  'The deadline for submitting the assignment has passed.' :
+                                  'لقد انتهى الموعد النهائي لتسليم التكليف'}
+                            </div>
+                            <div className="UploadAssignment_form-group">
+                              <strong>
+                                {language === 'En' ?
+                                  'Your degree: ' :
+                                  'درجتك: '}
+                              </strong>
+                              {assignmentScore ? assignmentScore : language === 'En' ? 'The degree has not been detected yet.' : 'لم يتم رصد الدرجة بعد'}
+                            </div>
+                          </>
                       )}
                     </>
                 )}

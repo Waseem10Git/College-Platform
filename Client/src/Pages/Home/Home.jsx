@@ -15,7 +15,7 @@ const Home = () => {
         <section className={styles.welcomeSection}>
           <div className={styles.container}>
             <div className={styles.content}>
-              <h2>{language === 'En' ? `Welcome ${name} to Our Educational Platform` : `مرحبًا ${name} بك في منصتنا التعليمية`}</h2>
+              <h2>{language === 'En' ? `Welcome ${name} to Our Educational Platform` : `مرحبًا بك ${name} في منصتنا التعليمية`}</h2>
               <p>
                 {language === 'En'
                     ? 'Empowering learners worldwide with quality education.'
@@ -44,7 +44,7 @@ const Home = () => {
               <p>
                 {language === 'En'
                     ? 'Our platform offers a wide range of courses provided by esteemed faculty members. Students can access course materials, complete assignments, and take quizzes. In addition, instructors can conduct live lectures using our video conferencing system.'
-                    : 'تقدم منصتنا مجموعة واسعة من الدورات التي يقدمها أعضاء هيئة التدريس المحترمين. يمكن للطلاب الوصول إلى مواد الدورة وإكمال الواجبات وأداء الاختبارات. بالإضافة إلى ذلك، يمكن للمحاضرين إجراء محاضرات مباشرة باستخدام نظام المؤتمرات المرئية لدينا.'}
+                    : 'تقدم منصتنا مجموعة واسعة من المواد التي يقدمها أعضاء هيئة التدريس المحترمين. يمكن للطلاب الوصول إلى مواد المادة وإكمال الواجبات وأداء الاختبارات. بالإضافة إلى ذلك، يمكن للمحاضرين إجراء محاضرات مباشرة باستخدام نظام المؤتمرات المرئية لدينا.'}
               </p>
             </div>
             <div className={styles.image}>
@@ -86,7 +86,7 @@ const Home = () => {
               <p>
                 {language === 'En'
                     ? 'We offer a variety of courses delivered by expert instructors covering various fields in computer science and information systems.'
-                    : 'نحن نقدم مجموعة متنوعة من الدورات التي يقدمها مدرسون متخصصون تغطي مجالات مختلفة في علوم الحاسب ونظم المعلومات.'}
+                    : 'نحن نقدم مجموعة متنوعة من المواد التي يقدمها مدرسون متخصصون تغطي مجالات مختلفة في علوم الحاسب ونظم المعلومات.'}
               </p>
             </div>
             <div className={styles.image}>

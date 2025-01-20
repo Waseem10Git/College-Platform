@@ -27,10 +27,11 @@ const SignIn = () => {
                 }
             })
             .catch(err => {
-                console.error(err);
-                toast.error("Failed");
+                if(err.response && err.response.data.Error)
+                    toast.error(err.response.data.Error);
+                else
+                    toast.error("Failed");
             });
-        console.log('Submitted data:', formData);
     };
 
   return (

@@ -4,7 +4,7 @@ import "./AllNotificaions.css";
 import UserContext from "../../context/UserContext";
 
 function AllNotifications() {
-    const { userId } = useContext(UserContext);
+    const { userId, language, isDarkMode } = useContext(UserContext);
     const [notifications, setNotifications] = useState([]);
 
     useEffect(() => {
@@ -39,8 +39,8 @@ function AllNotifications() {
     };
 
     return (
-        <div className={"notifications"}>
-            <h1>All Notifications</h1>
+        <div className={`notifications ${isDarkMode ? 'dark' : ''}`}>
+            <h1>{language === 'En' ? 'All Notifications' : 'كل الإشعارات'}</h1>
             <ul className={"list-notifications"}>
                 {notifications.map((notif, index) => (
                     <li key={index} className={"item"}>

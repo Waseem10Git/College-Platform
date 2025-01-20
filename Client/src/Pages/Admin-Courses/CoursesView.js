@@ -75,7 +75,7 @@ const CoursesView = () => {
             existingCourse.course_code === course.course_code && existingCourse.course_code !== editingCourse
         );
         if (courseCodeExists) {
-            setIDEditingExistErrorMessage(language === 'En' ? 'The course ID already exists' : 'رقم الدورة موجود بالفعل');
+            setIDEditingExistErrorMessage(language === 'En' ? 'The course ID already exists' : 'الرقم التعريفي للمادة موجود بالفعل');
             return;
         }
 
@@ -88,7 +88,7 @@ const CoursesView = () => {
             existingCourse.course_name === course.course_name && existingCourse.course_code !== editingCourse
         );
         if (courseNameExists) {
-            setNameEditingExistErrorMessage(language === 'En' ? 'The course name already exists' : 'اسم الدورة موجود بالفعل');
+            setNameEditingExistErrorMessage(language === 'En' ? 'The course name already exists' : 'اسم المادة موجود بالفعل');
             return;
         }
         return true;
@@ -182,8 +182,8 @@ const CoursesView = () => {
             <table className="CoursesView_course-table">
                 <thead>
                 <tr>
-                    <th>{language === 'En' ? 'Course ID' : 'رقم الدورة'}</th>
-                    <th>{language === 'En' ? 'Course Name' : 'اسم الدورة'}</th>
+                    <th>{language === 'En' ? 'Course ID' : 'رقم المادة'}</th>
+                    <th>{language === 'En' ? 'Course Name' : 'اسم المادة'}</th>
                     <th>{language === 'En' ? 'Actions' : 'الإجراءات'}</th>
                 </tr>
                 </thead>
@@ -231,7 +231,7 @@ const CoursesView = () => {
                         />
                     </td>
                     <td>
-                        <button onClick={() => addCourse(newCourse)}>{language === 'En' ? 'Add' : 'إضافة'}</button>
+                        <button id={'AdminCourses_add-button'} onClick={() => addCourse(newCourse)}>{language === 'En' ? 'Add' : 'إضافة'}</button>
                     </td>
                 </tr>
 
@@ -256,6 +256,7 @@ const CoursesView = () => {
                                     )}
                                     <input
                                         type="text"
+                                        className={"AdminCourses_input-field"}
                                         value={updatedCourse.course_code}
                                         onChange={(e) => setUpdatedCourse({
                                             ...updatedCourse,
@@ -286,6 +287,7 @@ const CoursesView = () => {
                                     )}
                                     <input
                                         type="text"
+                                        className={"AdminCourses_input-field"}
                                         value={updatedCourse.course_name}
                                         onChange={(e) => setUpdatedCourse({
                                             ...updatedCourse,
@@ -300,14 +302,16 @@ const CoursesView = () => {
                         <td>
                             {editingCourse === course.course_code ? (
                                 <>
-                                    <button
+                                    <button id={'AdminCourses_edit-button'}
                                         onClick={() => updateCourse(updatedCourse)}>{language === 'En' ? 'Update' : 'تحديث'}</button>
-                                    <button
+                                    <button id={'AdminCourses_delete-button'}
                                         onClick={() => setEditingCourse(null)}>{language === 'En' ? 'Cancel' : 'إلغاء'}</button>
                                 </>
                             ) : (
                                 <>
-                                    <button onClick={() => {
+                                    <button
+                                        id={'AdminCourses_edit-button'}
+                                        onClick={() => {
                                         setEditingCourse(course.course_code);
                                         setUpdatedCourse(course);
                                         setNameAddingErrorMessage('');
@@ -316,8 +320,9 @@ const CoursesView = () => {
                                         setNameExistErrorMessage('');
                                     }}>{language === 'En' ? 'Edit' : 'تعديل'}
                                     </button>
-                                    <button
-                                        onClick={() => confirmDelete(course.course_code)}>{language === 'En' ? 'Delete' : 'حذف'}</button>
+                                    <button id={'AdminCourses_delete-button'} onClick={() => confirmDelete(course.course_code)}>
+                                        {language === 'En' ? 'Delete' : 'حذف'}
+                                    </button>
                                 </>
                             )}
                         </td>

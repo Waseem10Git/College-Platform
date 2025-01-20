@@ -112,8 +112,9 @@ const ChapterUpload = () => {
             link.setAttribute('download', fileName);
             document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
+            link.remove();
+            // document.body.removeChild(link);
+            // window.URL.revokeObjectURL(url);
         } catch (error) {
             toast.error('Error downloading');
         }
@@ -143,26 +144,33 @@ const ChapterUpload = () => {
 
     const handleView = async (id) => {
         try {
-            const response = await chaptersApi.viewChapter(id);
-            const contentType = response.headers["content-type"];
-            const url = window.URL.createObjectURL(new Blob([response.data], {type: contentType}));
-            setFileView({url, contentType});
+            if (!id) {
+                toast.error(language === 'En' ? "No file to view" : "ليس هناك ملف لعرضه");
+                return;
+            }
+            // Generate the view URL for the file
+            const url = chaptersApi.viewChapter(id);
+            setFileView({fileUrl: url});
         } catch (error) {
-            toast.error(language === 'En' ? "Something went wrong while viewing chapter" : "حدثت مشكلة أثناء عرض المحاضرة");
+            toast.error(language === 'En' ? "Something went wrong while viewing chapter" : "حدثت مشكلة أثناء عرض الملف");
         }
     };
 
-    const handleAssignmentView = async (id, assignmentDescription, assignmentDueDate, assignmentFile) => {
+    const handleAssignmentView = async (id, assignmentDescription, assignmentDueDate, assignmentMimeType, assignmentFilePath) => {
         try {
-            const response = await assignmentsApi.viewInstructorAssignment(id);
-            const contentType = response.headers["content-type"];
-            const url = assignmentFile ?
-                window.URL.createObjectURL(new Blob([response.data], {type: contentType}))
-                : null;
+            if (!id) {
+                toast.error(language === 'En' ? "No file to view" : "ليس هناك ملف لعرضه");
+                return;
+            }
+            // Generate the view URL for the file
+            let url;
+            if (assignmentFilePath)
+                url = assignmentsApi.viewInstructorAssignment(id);
             setAssignmentView({
                 fileUrl: url,
                 description: assignmentDescription || null,
                 due_date: assignmentDueDate,
+                fileMimeType: assignmentMimeType,
             });
         } catch (error) {
             toast.error(language === 'En' ? "Something went wrong while viewing assignment" : "حدثت مشكلة أثناء عرض التكليف");
@@ -182,10 +190,11 @@ const ChapterUpload = () => {
         });
     };
     console.log('assignments: ', assignments)
+    console.log(assignmentView)
 
     return (
         <>
-            <div className={`course-view ${isDarkMode ? 'dark-mode' : 'light-mode'} ${language.toLowerCase()}`}>
+            <div className={`Chapters_course-view ${isDarkMode ? 'Chapters_dark-mode' : 'light-mode'} ${language.toLowerCase()}`}>
                 {role === 'instructor' ? (
                     <>
                         <div className={"Chapters_file-upload-container"}>
@@ -193,7 +202,7 @@ const ChapterUpload = () => {
                                 <label className={"Chapters_Select-Chapter"} onClick={() => setUploadingVisible(true)}>
                                     <img src={uploadLabel} className="Chapters_upload-icon" alt='upload icon'/>
                                     <span>
-                                    {!!file ? (language === 'En' ? 'Change' : 'تغير') : (language === 'En' ? 'Select' : 'تحديد')} {language === 'En' ? 'File' : 'ملف'}
+                                    {!!file ? (language === 'En' ? 'Change' : 'تغير') : (language === 'En' ? 'Select' : 'تحديد')} {language === 'En' ? 'Chapter' : 'محاضرة'}
                                 </span>
                                 </label>
                             </div>
@@ -215,7 +224,7 @@ const ChapterUpload = () => {
                                             className="Assignments_tooltip">{language === 'En' ? 'Chapter' : 'محاضرة'}</span>
                                     </div>
                                 </div>
-                                <button onClick={() => handleDownload(chapter.id, chapter.chapter_name, 'chapter')}>
+                                <button id={'Chapters_download-button'} onClick={() => handleDownload(chapter.id, chapter.chapter_name, 'chapter')}>
                                     {language === 'En' ? 'Download:' : 'تنزيل:'}
                                     <SlCloudDownload/>
                                 </button>
@@ -225,7 +234,7 @@ const ChapterUpload = () => {
                                 </button>
                                 {role === 'instructor' && (
                                     <>
-                                        <button onClick={() => {
+                                        <button id={'Chapters_delete-button'} onClick={() => {
                                             setChapterDeletionVisible(true)
                                             setCurrentDeleteId(chapter.id);
                                         }}>
@@ -258,19 +267,20 @@ const ChapterUpload = () => {
                                     </div>
                                 </div>
                                 <button
+                                    id={'Chapters_download-button'}
                                     onClick={() => handleDownload(assignment.assignment_id, assignment.assignment_file_name, 'assignment')}
-                                    disabled={!assignment.assignment_file}>
+                                    disabled={!assignment.assignment_file_name}>
                                     {language === 'En' ? 'Download:' : 'تنزيل:'}
                                     <SlCloudDownload/>
                                 </button>
                                 <button
-                                    onClick={() => handleAssignmentView(assignment.assignment_id, assignment.description, assignment.due_date, assignment.assignment_file)}>
+                                    onClick={() => handleAssignmentView(assignment.assignment_id, assignment.description, assignment.due_date, assignment.assignment_mime_type, assignment.assignment_file_path)}>
                                     {language === 'En' ? 'View:' : 'عرض:'}
                                     <SlBookOpen/>
                                 </button>
                                 {role === 'instructor' && (
                                     <>
-                                        <button onClick={() => {
+                                        <button id={'Chapters_delete-button'} onClick={() => {
                                             setAssignmentDeletionVisible(true)
                                             setCurrentDeleteId(assignment.assignment_id)
                                         }}>
@@ -290,7 +300,7 @@ const ChapterUpload = () => {
                             <div className={`Chapters_overlay ${isDarkMode ? 'dark' : ''}`}>
                                 <div className="Chapters_overlay-content">
                                     <h3>{language === 'En' ? 'File preview' : 'عرض الملف'}</h3>
-                                    <embed src={fileView.url} type="application/pdf" width="100%" height="600px"/>
+                                    <embed src={fileView.fileUrl} type="application/pdf" width="100%" height="600px"/>
                                     <button onClick={() => setFileView(null)}>
                                         {language === 'En' ? 'Close Preview' : 'إغلاق الملف'}
                                     </button>
@@ -302,21 +312,21 @@ const ChapterUpload = () => {
                         {assignmentView && (
                             <div className={`Chapters_overlay ${isDarkMode ? 'dark' : ''}`}>
                                 <div className="Chapters_overlay-content">
-                                    <h3>{language === 'En' ? 'Assignment Preview' : 'عرض الواجب'}</h3>
+                                    <h3>{language === 'En' ? 'Assignment Preview' : 'عرض التكليف'}</h3>
 
                                     {assignmentView.due_date && (
-                                        <p><strong>Due Date:</strong> {formatDate(assignmentView.due_date)}</p>
+                                        <p><strong>{language === 'En' ? 'Deadline: ' : 'الموعد النهائي: '}</strong> {formatDate(assignmentView.due_date)}</p>
                                     )}
 
                                     {/* Display the file if it exists */}
                                     {assignmentView.fileUrl && (
-                                        <embed src={assignmentView.fileUrl} type="application/pdf" width="100%"
+                                        <embed src={assignmentView.fileUrl} type={assignmentView.fileMimeType} width="100%"
                                                height="600px"/>
                                     )}
 
                                     {/* Display the description if it exists */}
                                     {assignmentView.description && (
-                                        <p><strong>Description:</strong> {assignmentView.description}</p>
+                                        <p><strong>{language === 'En' ? 'Description: ' : 'الوصف: '}</strong> {assignmentView.description}</p>
                                     )}
 
                                     {/* If neither exists, show a fallback message */}

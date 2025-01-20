@@ -11,7 +11,7 @@ const ErrorDetails = ({ summary, errors }) => {
             {/* Brief summary */}
             <div className="error-summary" onClick={toggleExpanded}>
                 <p>{summary}</p>
-                <button className="error-details-toggle-button" id={"error-details-toggle-button"}>
+                <button type={'button'} className="error-details-toggle-button" id={"error-details-toggle-button"}>
                     {isExpanded ? "Hide Details" : "View Details"}
                 </button>
             </div>

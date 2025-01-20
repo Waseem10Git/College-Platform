@@ -19,23 +19,23 @@ html, body {
     flex-direction: column;
     width: 100%;
     margin: 0 auto;
-    align-items: center; /* Centers the buttons horizontally */
+    align-items: center;
 
 }
 
 .AdminCourses_view-buttons {
     display: flex;
     flex-direction: row;
-    justify-content: space-between; /* Distributes equal space between buttons */
-    align-items: center; /* Centers buttons horizontally */
-    height: 100%; /* Ensure full height to apply space-between */
-    gap: 10px; /* Optional: Adds extra space between the buttons */
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    gap: 10px;
 }
 
 .AdminCourses_view-button {
-    width: 250px; /* Set a consistent button width */
-    padding: 10px; /* Adjust button padding */
-    margin: 0; /* Remove default margins */
+    width: 250px;
+    padding: 10px;
+    margin: 0;
 }
 
 .AdminCourses_input-field {
@@ -45,7 +45,6 @@ html, body {
     margin: 5px 0;
     border: 1px solid #ccc;
     border-radius: 5px;
-    text-align: left;
 }
 
 .AdminCourses_input-field:focus {
@@ -61,7 +60,6 @@ html, body {
     margin: 5px 0;
     border: 1px solid #ccc;
     border-radius: 5px;
-    text-align: left;
 }
 
 .AdminCourses_courses-container.dark-mode,
@@ -75,12 +73,12 @@ html, body {
 
 .AdminCourses_view-buttons {
     display: flex;
-    gap: 20px; /* Increased space between buttons */
+    gap: 20px;
 
 }
 
 .AdminCourses_view-button {
-    padding: 12px 20px; /* Increased padding for buttons */
+    padding: 12px 20px;
     font-size: 16px;
     border: none;
     border-radius: 5px;
@@ -89,21 +87,51 @@ html, body {
 }
 
 .AdminCourses_view-button:hover {
-    background-color: #007bff; /* Blue on hover */
-    color: white; /* White text on hover */
+    background-color: #007bff;
+    color: white;
 }
 
 .AdminCourses_view-button:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5); /* Focus outline */
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+}
+
+#AdminCourses_delete-button {
+    background-color: #D32F2F;
+    border: 2px solid #D32F2F;
+}
+
+#AdminCourses_delete-button:hover {
+    background-color: darkred;
+    border: 2px solid darkred;
+}
+
+#AdminCourses_edit-button {
+    background-color: darkorange;
+    border: 2px solid darkorange;
+}
+
+#AdminCourses_edit-button:hover {
+    background-color: #CC5500;
+    border: 2px solid #CC5500;
+}
+
+#AdminCourses_add-button {
+    background-color: #388E3C;
+    border: 2px solid #388E3C;
+}
+
+#AdminCourses_add-button:hover {
+    background-color: green;
+    border: 2px solid green;
 }
 
 /* Footer styles */
 .footer {
-    background-color: #111; /* Footer background */
-    color: #fff; /* Footer text color */
+    background-color: #111;
+    color: #fff;
     text-align: center;
-    padding: 15px; /* Increased padding for footer */
+    padding: 15px;
 }
 
 /* Responsive Design */
@@ -122,8 +150,8 @@ html, body {
     .CoursesView_course-table th, .CoursesView_course-table td {
         display: block;
         width: 100%;
-        text-align: right; /* Align text to the right for RTL support */
-        padding: 8px 5px; /* Reduce padding for smaller screens */
+        text-align: right;
+        padding: 8px 5px;
     }
 
     .CoursesView_course-table th::before, .CoursesView_course-table td::before {

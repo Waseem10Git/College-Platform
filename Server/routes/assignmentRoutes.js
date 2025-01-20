@@ -5,7 +5,7 @@ const path = require('path');
 const AssignmentController = require('../controllers/AssignmentController');
 const { verifyUser, isAdmin } = require('../middlewares/auth'); // Assuming you have an auth middleware
 const multer = require('multer');
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({ dest: 'uploads/' });
 
 router.post('/upload-assignment', verifyUser, upload.single('assignmentFile'), asyncHandler(AssignmentController.uploadAssignment));
 router.get('/assignments/:courseId', verifyUser, asyncHandler(AssignmentController.getAssignmentsByCourseId));

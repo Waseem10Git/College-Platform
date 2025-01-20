@@ -7,6 +7,7 @@ import departmentsApi from "../../api/departmentsApi";
 import usersApi from "../../api/usersApi";
 import { IoMdDownload } from "react-icons/io";
 import {ErrorDetails} from "../../components";
+import deleteDataApi from "../../api/deleteDataApi";
 
 const Accounts = () => {
   const { language, isDarkMode } = useContext(UserContext);
@@ -18,7 +19,7 @@ const Accounts = () => {
   const [idErrMessage, setIdErrMessage] = useState('');
   const [uploadErrors, setUploadErrors] = useState(null);
   const [uploadSummaryError, setUploadSummaryError] = useState('');
-  const [lastUserId, setLastUserId] = useState(null);
+  const [confirmDeletion, setConfirmDeletion] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName:'',
@@ -106,6 +107,7 @@ const Accounts = () => {
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
+    setConfirmDeletion(false);
     resetFormData();
   };
 
@@ -217,7 +219,7 @@ const Accounts = () => {
             }
           });
       console.log('Submitted data:', formData);
-    }else {
+    }else if (selectedOption === 'delete') {
           await accountsApi.deleteAccount(formData.userID)
           .then(res => {
             if (res.data.Status === "Success") {
@@ -236,10 +238,24 @@ const Accounts = () => {
               toast.error(language === 'En' ? 'Failed' : 'فشل');
             }
           });
-      console.log('Submitted data:', formData);
     }
   };
 
+  const handleDeleteTablesData = async () => {
+    await deleteDataApi.deleteDataTables()
+        .then(res => {
+          if (res.data.success === true) {
+            toast.success(language === 'En' ? 'Tables data deleted successfully' : 'تم حذف بيانات الجداول بنجاح');
+            resetFormData();
+          } else {
+            toast.error(language === 'En' ? 'Tables data deletion failed' : 'فشل في حذف بيانات الجداول');
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          toast.error(language === 'En' ? 'Failed' : 'فشل');
+        });
+  }
 
   return (
       <div className={`accounts-container ${isDarkMode ? 'accounts-container_dark' : 'accounts-container_light'}`}>
@@ -272,6 +288,11 @@ const Accounts = () => {
               }}>
                 {language === 'En' ? 'Delete Account' : 'حذف حساب'}
               </li>
+              <li className={selectedOption === "deleteTablesData" ? "accounts_component_active" : undefined} onClick={() => {
+                handleOptionClick('deleteTablesData');
+              }}>
+                {language === 'En' ? 'Delete Tables Data' : 'حذف بيانات الجداول'}
+              </li>
             </ul>
           </div>
           <main>
@@ -280,7 +301,7 @@ const Accounts = () => {
                   {selectedOption === 'users' && (
                       <>
                         <div className="accounts_component_form-group">
-                          {/* Filter input */}
+                        {/* Filter input */}
                           <input
                               type="text"
                               placeholder={language === 'En' ? 'Search...BY ID/Name/Email/Role/Department' : 'البحث... حسب المعرف/الاسم/البريد الإلكتروني/الدور/القسم'}
@@ -481,7 +502,26 @@ const Accounts = () => {
                                  onChange={handleInputChange}/>
                         </div>
                         <button type="submit">{language === 'En' ? 'Delete' : 'حذف'}</button>
-                      </>)}
+                      </>
+                  )}
+                    {selectedOption === 'deleteTablesData' && (
+                        <div className="accounts_component_form-group">
+                          {confirmDeletion ? (
+                              <>
+                                <h3 id={'accounts_confirmDeleteHeader'}>{language === 'En' ? 'Confirm Delete Tables Data' : 'تأكيد حذف بيانات الجداول'}</h3>
+                                <div id={'accounts_confirmDeleteContainer'}>
+                                  <button id={'accounts_confirmDeleteButton'} type={'button'}
+                                          onClick={handleDeleteTablesData}>{language === 'En' ? 'Delete' : 'حذف'}</button>
+                                  <button id={'accounts_cancelButton'} type={'button'}
+                                          onClick={() => setConfirmDeletion(false)}>{language === 'En' ? 'Cancel' : 'إلغاء'}</button>
+                                </div>
+                              </>
+                          ) : (
+                              <button id={'accounts_deleteButton'} type={"button"}
+                                      onClick={() => setConfirmDeletion(true)}>{language === 'En' ? 'Delete Tables Data' : 'حذف بيانات الجداول'}</button>
+                          )}
+                        </div>
+                    )}
                   </form>
                 </>)}
           </main>

@@ -111,7 +111,7 @@ form select:focus {
 
 .accounts-container button {
   width: 90%;
-  margin-top: 20px;
+  margin: 20px 0 0 0;
   padding: 10px 20px;
   background-color: #007bff;
   border: 2px solid #007bff; /* Blue button color */
@@ -257,6 +257,32 @@ color: #dddddd;
 .accounts_component_form-group th,
 .accounts_component_form-group td {
   text-align: center; /* Center the text in the cells */
+}
+
+#accounts_confirmDeleteHeader {
+  text-align: center;
+}
+
+#accounts_deleteButton, #accounts_confirmDeleteButton {
+  background-color: #D32F2F;
+  border-color: #D32F2F;
+}
+
+#accounts_deleteButton:hover, #accounts_confirmDeleteButton:hover {
+  background-color: transparent;
+  color: #D32F2F;
+}
+
+#accounts_confirmDeleteContainer {
+  display: flex;
+  flex-direction: row;
+  text-align: center;
+  justify-content: center;
+}
+
+#accounts_confirmDeleteButton, #accounts_cancelButton {
+  width: 150px;
+  margin: 20px 5px;
 }
 
 /* Responsive table for smaller screens */

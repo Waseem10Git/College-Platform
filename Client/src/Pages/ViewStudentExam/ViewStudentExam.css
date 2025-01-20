@@ -2,13 +2,12 @@
 .examResultDetails_table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    margin: 20px 0;
 }
 
 .examResultDetails_th,
 .examResultDetails_td {
     padding: 12px;
-    text-align: left;
     border: 1px solid #ddd;
 }
 
@@ -22,17 +21,17 @@
 
 /* Light Mode Styles */
 .ViewStudentExam_container.light {
-    background-color: #ffffff;
+    background-color: #f7f7f7;
     color: #333;
 }
 
 .examResultDetails_th.light {
-    background-color: #f5f5f5;
+    background-color: #eeeeee;
     color: #333;
 }
 
 .examResultDetails_td.light {
-    background-color: #ffffff;
+    background-color: #f7f7f7;
     color: #333;
 }
 
@@ -42,7 +41,7 @@
 
 /* Dark Mode Styles */
 .ViewStudentExam_container.dark {
-    background-color: #333;
+    background-color: #1a1a1a;
     color: #f5f5f5;
 }
 
@@ -61,7 +60,7 @@
 }
 
 /* Button Styling */
-.submit-edit-button {
+.examResultDetails_submit-edit-button {
     padding: 8px 12px;
     border: none;
     cursor: pointer;
@@ -72,17 +71,8 @@
     border-radius: 5px;
 }
 
-.submit-edit-button:hover {
-    background-color: #45a049;
-}
-
-/* Button for dark mode */
-.submit-edit-button.dark {
-    background-color: #6c757d;
-}
-
-.submit-edit-button.dark:hover {
-    background-color: #5a6268;
+.examResultDetails_submit-edit-button:hover {
+    background-color: darkgreen;
 }
 
 /* No data message */
@@ -100,5 +90,44 @@
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    text-align: left;
+}
+
+.examResultDetails_td.dark input[type='number'] {
+    background-color: #444;
+    color: #f7f7f7;
+}
+
+#examResultDetails_gray-button {
+    background-color: #007bff;
+}
+
+#examResultDetails_gray-button:hover {
+    background-color: #0056b3;
+}
+
+/* back button color */
+#examResultDetails_gray-button .dark {
+    background-color: #6c757d;
+}
+
+#examResultDetails_gray-button:hover .dark {
+    background-color: #5a6268;
+}
+
+/* edit button color */
+#examResultDetails_orange-button {
+    background-color: darkorange;
+}
+
+#examResultDetails_orange-button:hover {
+    background-color: #CC5500;
+}
+
+/* cancel button color */
+#examResultDetails_red-button {
+    background-color: #D32F2F;
+}
+
+#examResultDetails_red-button:hover {
+    background-color: darkred;
 }

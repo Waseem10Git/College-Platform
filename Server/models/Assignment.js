@@ -6,13 +6,21 @@ const {promise} = require("bcrypt/promises");
 const queryAsync = util.promisify(conn.query).bind(conn);
 
 class AssignmentModel {
-    static insertAssignment(assignmentName, assignmentDescription, fileName, fileData, dueDate) {
+    static insertAssignment(assignmentName, assignmentDescription, fileName, filePath, fileSize, fileMimeType, dueDate) {
         return new Promise((resolve, reject) => {
             const query = `
-                INSERT INTO assignments (assignment_title, description, assignment_file_name, assignment_file, due_date)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO assignments (
+                assignment_title,
+                description, 
+                assignment_file_name, 
+                assignment_file_path, 
+                assignment_file_size, 
+                assignment_mime_type, 
+                due_date
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             `;
-            conn.query(query, [assignmentName, assignmentDescription, fileName, fileData, dueDate], (error, result) => {
+            conn.query(query, [assignmentName, assignmentDescription, fileName, filePath, fileSize, fileMimeType, dueDate], (error, result) => {
                 if (error) {
                     return reject(error);
                 }
@@ -72,7 +80,16 @@ class AssignmentModel {
     static getAssignmentsByCourseId(courseId) {
         return new Promise((resolve, reject) => {
             const query = `
-            SELECT a.assignment_id, a.assignment_title, a.description, a.due_date, a.assignment_file_name, a.assignment_file, ica.instructors_courses_id
+            SELECT 
+                a.assignment_id,
+                a.assignment_title,
+                a.description,
+                a.due_date, 
+                a.assignment_file_name, 
+                a.assignment_file_path, 
+                a.assignment_file_size, 
+                a.assignment_mime_type, 
+                ica.instructors_courses_id
             FROM assignments a
             JOIN instructors_courses_assignments ica ON a.assignment_id = ica.assignment_id
             JOIN instructors_courses ic ON ica.instructors_courses_id = ic.id
@@ -96,9 +113,11 @@ class AssignmentModel {
                     CONCAT(u.first_name, ' ', u.last_name) AS student_name,
                     ea.id AS student_assignment_id,
                     ea.is_submitted,
-                    ea.created_at AS submission_date,
+                    ea.student_upload_time AS submission_date,
                     ea.student_file_name AS submitted_file_name,
-                    ea.student_file,
+                    ea.student_file_path,
+                    ea.student_file_size,
+                    ea.student_mime_type,
                     ea.score
                 FROM 
                     enrollments_assignments ea
@@ -123,7 +142,9 @@ class AssignmentModel {
             const query = `
             SELECT
                 assignment_file_name,
-                assignment_file
+                assignment_file_path,
+                assignment_file_size,
+                assignment_mime_type
             FROM
                 assignments
             WHERE

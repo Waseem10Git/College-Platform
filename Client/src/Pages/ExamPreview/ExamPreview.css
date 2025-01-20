@@ -1,5 +1,4 @@
 .ExamPreviewPage_exam-container {
-  /* Add your component-specific styles here */
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
@@ -31,16 +30,31 @@
 }
 
 .ExamPreviewPage_edit-button {
-  background-color: #007bff;
+  background-color: darkorange;
   color: white;
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
+  margin: 20px 5px 0 5px;
 }
 
 .ExamPreviewPage_edit-button:hover {
-  background-color: #0056b3;
+  background-color: #CC5500;
+}
+
+.ExamPreviewPage_delete-button {
+  background-color: #b22222;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 20px 5px 0 5px;
+}
+
+.ExamPreviewPage_delete-button:hover {
+  background-color: #8b0000; /* Even darker red on hover */
 }
 
 .ExamPreviewPage_input-field, .ExamPreviewPage_input-field input[type='number'] {
@@ -50,7 +64,6 @@
   margin: 5px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
-  text-align: left;
 }
 
 .ExamPreviewPage_inputRow {
@@ -68,4 +81,76 @@
   display: block;
   width: 100%;
   margin-top: 10px;
+}
+
+.ExamPreviewPage_select {
+  width: 100%;
+  font-size: 16px;
+  padding: 8px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* General Dark Mode Container */
+.dark-mode .ExamPreviewPage_exam-container {
+  background-color: #1e1e1e; /* Dark background */
+  color: #f5f5f5; /* Light text */
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); /* Subtle white shadow */
+}
+
+/* Title Styling */
+.dark-mode .ExamPreviewPage_exam-title {
+  color: #ffffff;
+}
+
+/* Question Styling */
+.dark-mode .ExamPreviewPage_question {
+  color: #cccccc;
+}
+
+/* Options List Styling */
+.dark-mode .ExamPreviewPage_options-list {
+  color: #dddddd;
+}
+
+/* Correct Answer Styling */
+.dark-mode .ExamPreviewPage_correct-answer {
+  color: #32cd32; /* Light green for correct answer */
+}
+
+/* Input Field */
+.dark-mode .ExamPreviewPage_input-field,
+.dark-mode .ExamPreviewPage_input-field input[type='number'],
+.dark-mode .ExamPreviewPage_select {
+  background-color: #333333; /* Darker input background */
+  color: #ffffff; /* Light input text */
+  border: 1px solid #555555; /* Subtle border */
+}
+
+/* Custom Width Input Field */
+.dark-mode .ExamPreviewPage_customWidth {
+  background-color: #333333;
+  color: #ffffff;
+}
+
+/* Input Label */
+.dark-mode .ExamPreviewPage_input-label {
+  color: #f5f5f5; /* Light label text */
+}
+
+/* Input Question Label */
+.dark-mode .ExamPreviewPage_input-question-label {
+  color: #dddddd;
+  border-top: 2px solid #444444; /* Subtle top border */
+}
+
+/* Input Wrapper */
+.dark-mode .ExamPreviewPage_input-wrapper {
+  color: #cccccc;
+}
+
+/* Input Row */
+.dark-mode .ExamPreviewPage_inputRow {
+  color: #eeeeee;
 }

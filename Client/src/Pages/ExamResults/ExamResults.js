@@ -85,60 +85,60 @@ function ExamResults() {
             });
     };
 
-    const handleEnrollmentsSelect = () => {
-        enrollmentsApi.fetchStudentsEnrolledInCourse(selectedCourse, userId)
-            .then(response => {
-                setStudents(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching enrollments:', error);
-            });
-    };
-
     return (
         <div className={`examResults ${isDarkMode ? 'examResults_dark-mode' : 'examResults_light-mode'}`}>
             <div className="examResults_selectContainer">
-                <h3 className='examResults_h2'>{language === 'En' ? 'Students/Result' : 'نتائج/الطلاب'}</h3>
                 {!viewExamDetails ? (
                     <>
                         <CourseSelect courses={courses} onSelect={handleCourseSelect} selectedCourse={selectedCourse}/>
                         {selectedCourse && (
-                            <select onChange={(e) => handleOptionSelect(e.target.value)} value={selectedOption}>
-                                <option value="" disabled>{language === 'En' ? 'Select Option' : 'اختر الخيار'}</option>
-                                <option value="enrollments">{language === 'En' ? 'Student Information' : 'بيانات الطلاب'}</option>
-                                <option value="assignments">{language === 'En' ? 'Student Assignments' : 'واجبات الطلاب'}</option>
-                                <option value="exams">{language === 'En' ? 'Student Exams' : 'امتحانات الطلاب'}</option>
-                            </select>
+                            <div style={{margin: '10px 20px'}}>
+                                <select onChange={(e) => handleOptionSelect(e.target.value)} value={selectedOption}>
+                                    <option value=""
+                                            disabled>{language === 'En' ? 'Select Option' : 'اختر الخيار'}</option>
+                                    <option
+                                        value="enrollments">{language === 'En' ? 'Student Information' : 'بيانات الطلاب'}</option>
+                                    <option
+                                        value="assignments">{language === 'En' ? 'Student Assignments' : 'واجبات الطلاب'}</option>
+                                    <option
+                                        value="exams">{language === 'En' ? 'Student Exams' : 'امتحانات الطلاب'}</option>
+                                </select>
+                            </div>
                         )}
                         {selectedOption === 'assignments' && (
-                            <select onChange={(e) => handleAssignmentSelect(e.target.value)} value={selectedAssignment}>
-                                <option value="" disabled>{language === 'En' ? 'Select Assignment' : 'اختر الواجب'}</option>
-                                {assignments.map((assignment) => (
-                                    <option key={assignment.assignment_id} value={assignment.assignment_id}>
-                                        {assignment.assignment_title}
-                                    </option>
-                                ))}
-                            </select>
+                            <div style={{margin: '10px 20px'}}>
+                                <select onChange={(e) => handleAssignmentSelect(e.target.value)}
+                                        value={selectedAssignment}>
+                                    <option value=""
+                                            disabled>{language === 'En' ? 'Select Assignment' : 'اختر الواجب'}</option>
+                                    {assignments.map((assignment) => (
+                                        <option key={assignment.assignment_id} value={assignment.assignment_id}>
+                                            {assignment.assignment_title}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         )}
                         {selectedOption === 'exams' && (
-                            <select onChange={(e) => handleExamSelect(e.target.value)} value={selectedExam}>
-                                <option value="" disabled>{language === 'En' ? 'Select Exam' : 'اختر الامتحان'}</option>
-                                {exams.map((exam) => (
-                                    <option key={exam.examId} value={exam.examId}>
-                                        {exam.examName}
-                                    </option>
-                                ))}
-                            </select>
+                            <div style={{margin: '10px 20px'}}>
+                                <select onChange={(e) => handleExamSelect(e.target.value)} value={selectedExam}>
+                                    <option value=""
+                                            disabled>{language === 'En' ? 'Select Exam' : 'اختر الامتحان'}</option>
+                                    {exams.map((exam) => (
+                                        <option key={exam.examId} value={exam.examId}>
+                                            {exam.examName}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         )}
                         {selectedOption === 'enrollments' && (
-                            <button onClick={handleEnrollmentsSelect}>{language === 'En' ? 'Show Enrollments' : 'عرض التسجيلات'}</button>
+                            <StudentsInfo selectedCourse={selectedCourse} userId={userId} language={language}/>
                         )}
                     </>
                 ) : null}
                 {
-                    selectedOption === 'enrollments' ? (
-                        <StudentsInfo students={students} language={language}/>
-                    ) : selectedOption === 'assignments' ? (
+                    selectedOption === 'assignments' ? (
                         <StudentsAssignments students={students} assignmentId={selectedAssignment} language={language} refreshData={() => handleAssignmentSelect(selectedAssignment)}/>
                     ) : (selectedOption === 'exams' ? (
                         <StudentsExams students={students} examId={selectedExam} language={language} refreshData={() => handleExamSelect(selectedExam)} viewExamDetails={viewExamDetails} setViewExamDetails={setViewExamDetails}/>

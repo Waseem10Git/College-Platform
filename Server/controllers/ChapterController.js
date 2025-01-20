@@ -1,5 +1,6 @@
 const conn = require('../config/db');
 const ChapterModel = require('../models/Chapter');
+const fs = require("fs");
 
 const MAX_LONG_BLOB_SIZE = 4 * 1024 * 1024 * 1024; // 4GB
 
@@ -18,8 +19,8 @@ class ChapterController {
 
     static async uploadChapter(req, res) {
         const courseCode = req.params.courseCode;
-        const fileName = req.file.originalname;
-        const fileContent = req.file.buffer;
+        const file = req.file;
+        const { originalname, mimetype, size, path: filePath} = file;
 
         if (req.file.size > MAX_LONG_BLOB_SIZE) {
             return res.status(400).json({
@@ -40,7 +41,7 @@ class ChapterController {
                     return res.status(400).json({ message: `Course with code ${courseCode} does not exist` });
                 }
 
-                await ChapterModel.insertChapter(courseCode, fileName, fileContent);
+                await ChapterModel.insertChapter(courseCode, originalname, mimetype, size, filePath);
 
                 conn.commit((err) => {
                     if (err) {
@@ -69,9 +70,7 @@ class ChapterController {
                 return res.status(404).send('File not found');
             }
 
-            res.setHeader('Content-Disposition', 'attachment; filename=' + chapter.chapter_name);
-            res.send(chapter.chapter_content);
-
+            res.download(chapter.chapter_path, chapter.chapter_name);
         } catch (error) {
             console.error('Error downloading chapter:', error);
             res.status(500).json({ error: 'An error occurred while downloading the chapter' });
@@ -88,8 +87,15 @@ class ChapterController {
                 return res.status(404).send('File not found');
             }
 
-            await ChapterModel.deleteChapterById(chapterId);
-            res.json({ message: 'Chapter deleted successfully' });
+            fs.unlink(chapter.chapter_path, async (err) => {
+                if (err) {
+                    console.error("Error deleting file from filesystem:", err);
+                    return res.status(500).json({ error: "Failed to delete file from filesystem" });
+                }
+
+                await ChapterModel.deleteChapterById(chapterId);
+                res.status(200).json({ message: 'Chapter deleted successfully' });
+            })
 
         } catch (error) {
             console.error('Error deleting chapter:', error);
@@ -99,11 +105,11 @@ class ChapterController {
 
     static async updateChapter(req, res) {
         const chapterId = req.params.chapterId;
-        const fileName = req.file.originalname;
-        const fileContent = req.file.buffer;
+        const file = req.file;
+        const { originalname: fileName, mimetype, size, path: filePath} = file;
 
         try {
-            await ChapterModel.updateChapter(chapterId, fileName, fileContent);
+            await ChapterModel.updateChapter(chapterId, fileName, mimetype, size, filePath);
             res.json({ message: 'Chapter updated successfully', fileName });
         } catch (error) {
             console.error('Error updating chapter:', error);
@@ -121,12 +127,12 @@ class ChapterController {
                 return res.status(404).send('File not found');
             }
 
-            // Set the response headers to indicate a PDF file for inline viewing
-            res.setHeader('content-type', 'application/pdf');
-            res.setHeader('Content-Disposition', `inline; filename="${chapter.chapter_name}"`);
+            res.setHeader("Content-Type", chapter.chapter_mime_type);
+            res.setHeader("Content-Disposition", "inline"); // Render in browser
 
-            // Send the buffer content directly
-            res.send(chapter.chapter_content);
+            // Stream the file to the client
+            const fileStream = fs.createReadStream(chapter.chapter_path);
+            fileStream.pipe(res);
 
         } catch (error) {
             console.error('Error viewing chapter:', error);

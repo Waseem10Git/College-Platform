@@ -5,7 +5,7 @@ const router = express.Router();
 const ChapterController = require('../controllers/ChapterController');
 const { verifyUser } = require('../middlewares/auth'); // Assuming you have an auth middleware
 const multer = require('multer');
-const upload = multer({ storage: multer.memoryStorage() }); // Use memory storage for multer
+const upload = multer({ dest: 'uploads/' }); // Use memory storage for multer
 
 router.get('/courses/:courseCode/chapters', verifyUser, asyncHandler(ChapterController.getChaptersByCourseCode));
 router.post('/courses/:courseCode/chapters', verifyUser, upload.single('file'), asyncHandler(ChapterController.uploadChapter));

@@ -46,3 +46,18 @@
     border-top: 1px solid #eee;
     text-align: center;
 }
+
+/* Dark Mode */
+.popover.dark-mode {
+    background-color: #323131;
+    color: #f1f1f1;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 1);
+}
+
+.dark-mode .no-notifications {
+    color: #bdb9b9;
+}
+
+.dark-mode .see-all-link a {
+    color: #f1f1f1;
+}

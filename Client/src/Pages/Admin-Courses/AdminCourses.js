@@ -54,7 +54,7 @@ const AdminCourses = () => {
                     onClick={() => setSelectedView("courses")}
                     className="AdminCourses_view-button"
                 >
-                    {language === "En" ? "Add Courses" : "إضافة الدورات"}
+                    {language === "En" ? "Add Courses" : "إضافة المواد"}
                 </button>
                 <button
                     onClick={() => setSelectedView("departments-courses")}
@@ -62,7 +62,7 @@ const AdminCourses = () => {
                 >
                     {language === "En"
                         ? "Add Courses to Departments"
-                        : "إضافة الدورات الى الأقسام"}
+                        : "إضافة المواد الى الأقسام"}
                 </button>
                 <button
                     onClick={() => setSelectedView("instructors")}
@@ -70,7 +70,7 @@ const AdminCourses = () => {
                 >
                     {language === "En"
                         ? "Add Instructors to Courses"
-                        : "إضافة المدرسين الى الدورات"}
+                        : "إضافة المدرسين الى المواد"}
                 </button>
                 <button
                     onClick={() => setSelectedView("students")}
@@ -78,7 +78,7 @@ const AdminCourses = () => {
                 >
                     {language === "En"
                         ? "Add Students to Courses"
-                        : "إضافة الطلاب الى الدورات"}
+                        : "إضافة الطلاب الى المواد"}
                 </button>
             </div>
             {selectedView ? renderView() : null}
