@@ -1,12 +1,14 @@
 const ExamModel = require('../models/Exam');
+const InstructorCourseExamModel = require('../models/InstructorCourseExam');
+const EnrollmentExamModel = require('../models/EnrollmentExam');
 const conn = require('../config/db');
 
 class ExamController {
     static async createExam(req, res) {
-        const { exam_name, duration, start_at } = req.body;
+        const { exam_name, duration, start_at, due_date, score } = req.body;
 
         try {
-            const exam_id = await ExamModel.createExam(exam_name, duration, start_at);
+            const exam_id = await ExamModel.createExam(exam_name, duration, start_at, due_date, score);
             res.json({ message: 'Exam added successfully', exam_id });
         } catch (error) {
             console.error('Error inserting exam:', error);
@@ -60,7 +62,7 @@ class ExamController {
 
     static async editExam(req, res) {
         const { examId } = req.params;
-        const { exam_name, duration, start_at, questions } = req.body;
+        const { instructor_id, exam_name, pre_course, new_course, duration, start_at, due_date, total_score, questions } = req.body;
 
         conn.beginTransaction(async (err) => {
             if (err) {
@@ -69,8 +71,15 @@ class ExamController {
             }
 
             try {
-                await ExamModel.updateExam(examId, exam_name, duration, start_at);
-                console.log(questions);
+                await ExamModel.updateExam(examId, exam_name, duration, start_at, due_date, total_score);
+
+                if (new_course) {
+                    await InstructorCourseExamModel.deleteAssociationExamWithCourse(pre_course, instructor_id, examId);
+                    await InstructorCourseExamModel.associateExamWithCourse(new_course, instructor_id, examId);
+                    await EnrollmentExamModel.deleteAssociationExamWithEnrollment(pre_course, instructor_id, examId);
+                    await EnrollmentExamModel.associateExamWithEnrollment(new_course, instructor_id, examId);
+                }
+
                 if (questions && questions.length > 0) {
                     for (const question of questions) {
                         await ExamModel.updateQuestion(question);

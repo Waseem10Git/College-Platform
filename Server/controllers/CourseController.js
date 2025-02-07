@@ -7,7 +7,8 @@ class CourseController {
             const coursesAndInstructors = await CourseModel.getAllCoursesAndInstructors();
             return res.json(coursesAndInstructors);
         } catch (err) {
-            return res.status(500).json({ message: "Server Error in GET data: /instructors-courses" });
+            console.log('Error getting courses and instructors', err);
+            return res.status(500).json({ success: false, EnMessage: 'Server Error', ArMessage: 'خطأ في الخادم' });
         }
     }
 
@@ -16,7 +17,8 @@ class CourseController {
             const coursesInstructorsDepartments = await CourseModel.getAllInstructorCoursesDepartments();
             return res.json(coursesInstructorsDepartments);
         } catch (err) {
-            return res.status(500).json({ message: "Server Error in GET data: /api/instructor-courses-departments" });
+            console.log('Error getting instructors courses departments')
+            return res.status(500).json({ success: false, EnMessage: 'Server Error', ArMessage: 'خطأ في الخادم' });
         }
     }
 
@@ -30,7 +32,8 @@ class CourseController {
             }));
             return res.json(courses);
         } catch (err) {
-            return res.status(500).json({ message: "Server Error in GET data: /api/student/:id/courses" });
+            console.log('Error getting all courses for student', err);
+            return res.status(500).json({ success: false, EnMessage: 'Server Error', ArMessage: 'خطأ في الخادم' });
         }
     }
 
@@ -44,7 +47,8 @@ class CourseController {
             }));
             return res.json(courses);
         } catch (err) {
-            return res.status(500).json({ message: "Server Error in GET data: /api/instructor/:id/courses" });
+            console.log('Error getting courses for instructor', err);
+            return res.status(500).json({ success: false, EnMessage: 'Server Error', ArMessage: 'خطأ في الخادم' });
         }
     }
 
@@ -55,7 +59,7 @@ class CourseController {
             res.json(courses);
         } catch (error) {
             console.error('Error getting courses by instructor ID:', error);
-            res.status(500).json({ message: 'Server Error', error });
+            res.status(500).json({ success: false, EnMessage: 'Server Error', ArMessage: 'خطأ في الخادم' });
         }
     }
 
@@ -64,17 +68,17 @@ class CourseController {
         try {
 
             if (!course_code || !course_name)
-                return res.status(400).json({ success: false, message: 'All fields are required.' });
+                return res.status(400).json({ success: false, EnMessage: 'All fields are required', ArMessage: 'كل الحقول مطلوبة' });
 
             const existingCourse = await CourseModel.getCourseById(course_code);
             if (existingCourse)
-                return res.status(409).json({ success: false, message: 'Course already exists.' });
+                return res.status(409).json({ success: false, EnMessage: 'Course already exists', ArMessage: 'المادة موجودة بالفعل' });
 
             await CourseModel.addCourse({ course_code, course_name });
             return res.send({ success: true });
         } catch (err) {
             console.error('Error inserting into courses:', err);
-            return res.status(500).json({ message: 'Server Error in POST Course with endpoint: /api/courses' });
+            return res.status(500).json({ success: false, EnMessage: 'Server Error', ArMessage: 'خطأ في الخادم' });
         }
     }
 
@@ -84,22 +88,22 @@ class CourseController {
 
         try {
             if (!id || !course_code || !course_name)
-                return res.status(400).json({ success: false, message: 'All fields are required.' });
+                return res.status(400).json({ success: false, EnMessage: 'All fields are required', ArMessage: 'كل الحقول مطلوبة' });
 
             const existingCourse = await CourseModel.getCourseById(course_code);
             if (id !== course_code && existingCourse)
-                return res.status(409).json({ success: false, message: 'Course ID already exists.' });
+                return res.status(409).json({ success: false, EnMessage: 'Course ID already exists', ArMessage: 'الرقم التعريفي للمادة موجود بالفعل' });
 
             const isExist = await CourseModel.getCourseByName(course_name);
             const courseNameExist = isExist ? isExist.course_name : null;
             if (isExist && existingCourse && !(existingCourse.course_name === courseNameExist))
-                return res.status(409).json({ success: false, message: 'Course Name already exists.' });
+                return res.status(409).json({ success: false, EnMessage: 'Course Name already exists', ArMessage: 'المادة موجودة بالفعل' });
 
             await CourseModel.updateCourse({ id, course_code, course_name });
             return res.send({ success: true });
         } catch (err) {
             console.error('Error updating course:', err);
-            return res.status(500).json({ message: 'Server Error in PUT Course with endpoint: /api/courses/:id' });
+            return res.status(500).json({ success: false, EnMessage: 'Server Error', ArMessage: 'خطأ في الخادم' });
         }
     }
 
@@ -108,54 +112,49 @@ class CourseController {
 
         try {
             if (!id)
-                return res.status(400).json({ success: false, message: 'ID field is required.' });
+                return res.status(400).json({ success: false, EnMessage: 'ID field is required', ArMessage: 'الرقم التعريفي مطلوب' });
 
             const existingCourse = await CourseModel.getCourseById(id);
             if (!existingCourse)
-                return res.status(409).json({ success: false, message: 'Course is not exists.' });
+                return res.status(409).json({ success: false, EnMessage: 'Course is not exists', ArMessage: 'المادة ليست موجودة' });
 
             await CourseModel.deleteCourse(id);
             return res.json({ success: true });
         } catch (err) {
             console.error('Error deleting course:', err);
-            return res.status(500).json({ message: 'Server Error in DELETE Course with endpoint: /api/courses/:id' });
+            return res.status(500).json({ success: false, EnMessage: 'Server Error', ArMessage: 'خطأ في الخادم' });
         }
     }
 
     static async getAllCourses(req, res) {
         try {
             const results = await CourseModel.getAllCourses();
-            const courses = results.map(course => ({
-                course_code: course.course_code,
-                course_name: course.course_name,
-                description: course.description,
-                image: course.image ? course.image.toString('base64') : null
-            }));
-            return res.status(200).json(courses);
+
+            return res.status(200).json(results);
         } catch (error) {
             console.error("Error fetching courses:", error);
-            return res.status(500).json({ Status: "Error", Error: error });
+            return res.status(500).json({ success: false, EnMessage: 'Server Error', ArMessage: 'خطأ في الخادم' });
         }
     }
 
-    static async createCourse(req, res) {
-        const { departmentId, courseCode, courseName, description } = req.body;
-        console.log('Received course data:', { departmentId, courseCode, courseName, description });
-
-        if (!departmentId || !courseCode || !courseName || !description) {
-            console.error('Missing required fields:', { departmentId, courseCode, courseName, description });
-            return res.status(400).json({ error: 'Missing required fields' });
-        }
-
-        try {
-            await CourseModel.createCourse(courseCode, courseName, description);
-            await CourseModel.linkCourseToDepartment(departmentId, courseCode);
-            res.status(201).json({ message: 'Course added successfully' });
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error });
-        }
-    }
+    // static async createCourse(req, res) {
+    //     const { departmentId, courseCode, courseName, description } = req.body;
+    //     console.log('Received course data:', { departmentId, courseCode, courseName, description });
+    //
+    //     if (!departmentId || !courseCode || !courseName || !description) {
+    //         console.error('Missing required fields:', { departmentId, courseCode, courseName, description });
+    //         return res.status(400).json({ error: 'Missing required fields' });
+    //     }
+    //
+    //     try {
+    //         await CourseModel.createCourse(courseCode, courseName, description);
+    //         await CourseModel.linkCourseToDepartment(departmentId, courseCode);
+    //         res.status(201).json({ message: 'Course added successfully' });
+    //     } catch (error) {
+    //         console.error(error);
+    //         res.status(500).json({ error });
+    //     }
+    // }
 
     // static async deleteCourse(req, res) {
     //     const { course_code } = req.params;

@@ -275,3 +275,18 @@ input[type="number"]:focus {
   background-color: #333; /* Dark mode background color */
   color: #eee; /* Dark mode text color */
 }
+
+.MakeExam_input-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.MakeExam_unit-label {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: gray;
+  font-size: 16px;
+  pointer-events: none; /* Prevent interaction */
+}

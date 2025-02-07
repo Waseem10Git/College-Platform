@@ -80,6 +80,7 @@ function App() {
               <Routes>
                   <Route path="/" element={<Home/>}/>
                   <Route path="/SignIn" element={ <SignIn/> }/>
+                  <Route path="/Profile/:userId" element={ <Profile/> }/>
                   {role === "admin" ? (
                       <>
                           <Route path="/Accounts" element={ <Accounts/> }/>
@@ -106,7 +107,6 @@ function App() {
                           <Route path="/Course/:userId" element={ <Course/> }/>
                           <Route path="/notifications" element={ <AllNotifications/>}/>
                           <Route path="/ExamResultDetails" element={ <ExamResultDetails/> }/>
-                          <Route path="/Profile" element={ <Profile/> }/>
                           <Route path="/ChapterUpload/:courseCode/:userId" element={ <ChapterUpload/> }/>
                           <Route path="*" element={ <Navigate to={"/"}/> }/>
                       </>

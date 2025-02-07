@@ -10,7 +10,7 @@ function ViewStudentExam({examId, studentId, setViewExamDetails, language, isDar
     const [newQuestionPoints, setNewQuestionPoints] = useState(0);
     const [editingPoints, setEditingPoints] = useState(null);
     const [enrollmentExamId, setEnrollmentExamId] = useState(null);
-    const [inputError, setInputError] = useState("");
+    const [inputError, setInputError] = useState({EnMessage: '', ArMessage: ''});
 
     // Fetch questions and answers
     const fetchExamData = async () => {
@@ -33,9 +33,9 @@ function ViewStudentExam({examId, studentId, setViewExamDetails, language, isDar
 
     const editQuestionPoints = async (questionId) => {
         if (newQuestionPoints < 0 || newQuestionPoints > questions.find(q => q.question_id === questionId).question_points) {
-            setInputError(language === "En"
-                ? "Points must be between 0 and the maximum question points."
-                : "يجب أن تكون النقاط بين 0 والحد الأقصى لنقاط السؤال.");
+            setInputError({
+                EnMessage: "Points must be between 0 and the maximum question points",
+                ArMessage: "يجب أن تكون النقاط بين 0 والحد الأقصى لنقاط السؤال"});
             return;
         }
 
@@ -58,11 +58,11 @@ function ViewStudentExam({examId, studentId, setViewExamDetails, language, isDar
     const handlePointsChange = (e, maxPoints) => {
         const value = parseInt(e.target.value, 10);
         if (isNaN(value) || value < 0 || value > maxPoints) {
-            setInputError(language === "En"
-                ? "Points must be between 0 and the maximum question points."
-                : "يجب أن تكون النقاط بين 0 والحد الأقصى لنقاط السؤال.");
+            setInputError({
+                EnMessage: "Points must be between 0 and the maximum question points",
+                ArMessage: "يجب أن تكون النقاط بين 0 والحد الأقصى لنقاط السؤال"});
         } else {
-            setInputError("");
+            setInputError({EnMessage: '', ArMessage: ''});
             setNewQuestionPoints(value);
         }
     };
@@ -207,7 +207,9 @@ function ViewStudentExam({examId, studentId, setViewExamDetails, language, isDar
                             {editingPoints === question.question_id ? (
                                 <>
                                     {inputError && (
-                                        <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{inputError}</p>
+                                        <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>
+                                            {language === 'En' ? inputError.EnMessage : inputError.ArMessage}
+                                        </p>
                                     )}
                                     <input
                                         type="number"

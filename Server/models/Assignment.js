@@ -6,11 +6,12 @@ const {promise} = require("bcrypt/promises");
 const queryAsync = util.promisify(conn.query).bind(conn);
 
 class AssignmentModel {
-    static insertAssignment(assignmentName, assignmentDescription, fileName, filePath, fileSize, fileMimeType, dueDate) {
+    static insertAssignment(assignmentName, assignmentScore, assignmentDescription, fileName, filePath, fileSize, fileMimeType, dueDate) {
         return new Promise((resolve, reject) => {
             const query = `
                 INSERT INTO assignments (
                 assignment_title,
+                assignment_score,
                 description, 
                 assignment_file_name, 
                 assignment_file_path, 
@@ -18,9 +19,9 @@ class AssignmentModel {
                 assignment_mime_type, 
                 due_date
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             `;
-            conn.query(query, [assignmentName, assignmentDescription, fileName, filePath, fileSize, fileMimeType, dueDate], (error, result) => {
+            conn.query(query, [assignmentName, assignmentScore, assignmentDescription, fileName, filePath, fileSize, fileMimeType, dueDate], (error, result) => {
                 if (error) {
                     return reject(error);
                 }
@@ -83,6 +84,7 @@ class AssignmentModel {
             SELECT 
                 a.assignment_id,
                 a.assignment_title,
+                a.assignment_score,
                 a.description,
                 a.due_date, 
                 a.assignment_file_name, 

@@ -1,7 +1,9 @@
-import React, { useState } from "react";
-import "./ErrorDetails.css"; // Optional for custom styling
+import React, {useContext, useState} from "react";
+import "./ErrorDetails.css";
+import UserContext from "../../context/UserContext";
 
 const ErrorDetails = ({ summary, errors }) => {
+    const { language } = useContext(UserContext);
     const [isExpanded, setIsExpanded] = useState(false);
 
     const toggleExpanded = () => setIsExpanded(!isExpanded);
@@ -10,9 +12,9 @@ const ErrorDetails = ({ summary, errors }) => {
         <div className="error-details-container">
             {/* Brief summary */}
             <div className="error-summary" onClick={toggleExpanded}>
-                <p>{summary}</p>
+                <p>{language === 'En' ? summary.EnMessage : summary.ArMessage}</p>
                 <button type={'button'} className="error-details-toggle-button" id={"error-details-toggle-button"}>
-                    {isExpanded ? "Hide Details" : "View Details"}
+                    {isExpanded ? language === 'En' ? "Hide Details" : "إخفاء التفاصيل" : language === 'En' ? "View Details" : "إظهار التفاصيل"}
                 </button>
             </div>
 
@@ -22,9 +24,9 @@ const ErrorDetails = ({ summary, errors }) => {
                     <ul>
                         {errors.map((error, index) => (
                             <li key={index}>
-                                <strong>Row {error.row}:</strong>
+                                <strong>{language === 'En' ? 'Row' : 'الصف'} {error.row}:</strong>
                                 <ul>
-                                    {error.errors.map((errMsg, i) => (
+                                    {(language === 'En' ? error.EnErrors : error.ArErrors).map((errMsg, i) => (
                                         <li key={i}>{errMsg}</li>
                                     ))}
                                 </ul>

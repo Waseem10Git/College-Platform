@@ -21,14 +21,16 @@ const MakeExam = () => {
   const [options, setOptions] = useState([]);
   const [correctAnswer, setCorrectAnswer] = useState('');
   const [examName, setExamName] = useState('');
-  const [duration, setDuration] = useState(0);
+  const [duration, setDuration] = useState(15);
   const [points, setPoints] = useState(1);
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState('');
   const [startAt, setStartAt] = useState(new Date());
+  const [dueDate, setDueDate] = useState(null);
   const [examNameErrMessage, setExamNameErrMessage] = useState('');
   const [durationErrMessage, setDurationErrMessage] = useState('');
-  const [startAtnErrMessage, setStartAtErrMessage] = useState('');
+  const [startAtErrMessage, setStartAtErrMessage] = useState('');
+  const [dueDateErrMessage, setDueDateErrMessage] = useState({EnMessage: '', ArMessage: ''});
   const [selectedCourseErrMessage, setSelectedCourseErrMessage] = useState('');
   const [questionTypeErrMessage, setQuestionTypeErrMessage] = useState('');
   const [questionErrMessage, setQuestionErrMessage] = useState('');
@@ -36,6 +38,42 @@ const MakeExam = () => {
   const [correctAnswerErrMessage, setCorrectAnswerErrMessage] = useState('');
   const [questionNotAddedErrMessage, setQuestionNotAddedErrMessage] = useState('');
   const [pointErrMessage, setPointErrMessage] = useState('');
+  const [totalPoints, setTotalPoints] = useState(0);
+
+  useEffect(() => {
+    // Load saved data from localStorage
+    const savedData = localStorage.getItem("makeExamData");
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      setQuestions(parsedData.questions || []);
+      setNewQuestion(parsedData.newQuestion || '');
+      setQuestionType(parsedData.questionType || 'MCQ');
+      setOptions(parsedData.options || []);
+      setCorrectAnswer(parsedData.correctAnswer || '');
+      setExamName(parsedData.examName || '');
+      setDuration(parsedData.duration || 15);
+      setPoints(parsedData.points || 1);
+      setSelectedCourse(parsedData.selectedCourse || '');
+      // setStartAt(parsedData.startAt ? new Date(parsedData.startAt) : new Date());
+    }
+  }, []);
+
+  useEffect(() => {
+    // Save current state to localStorage whenever it changes
+    const makeExamData = {
+      questions,
+      newQuestion,
+      questionType,
+      options,
+      correctAnswer,
+      examName,
+      duration,
+      points,
+      selectedCourse,
+      startAt,
+    };
+    localStorage.setItem("makeExamData", JSON.stringify(makeExamData));
+  }, [questions, newQuestion, questionType, options, correctAnswer, examName, duration, points, selectedCourse, startAt]);
 
   const fetchCourses = async () => {
     try {
@@ -95,6 +133,7 @@ const MakeExam = () => {
       points: points,
     };
     setQuestions([...questions, newQuestionObject]);
+    setTotalPoints(prevTotal => prevTotal + points);
     setNewQuestion('');
     setOptions([]);
     setCorrectAnswer('');
@@ -111,17 +150,23 @@ const MakeExam = () => {
     setQuestionType('MCQ');
     setCorrectAnswer('');
     setExamName('');
-    setDuration(0);
+    setDuration(15);
     setSelectedCourse('');
     setStartAt(new Date());
+    setDueDate(null);
     setQuestions([]);
     setPoints(1);
+    setTotalPoints(0);
+
+    // Clear localStorage when resetting
+    localStorage.removeItem("makeExamData");
   };
 
   const resetAllErrMessages = () => {
     setExamNameErrMessage('');
     setDurationErrMessage('');
     setStartAtErrMessage('');
+    setDueDateErrMessage({EnMessage: '', ArMessage: ''});
     setSelectedCourseErrMessage('');
     setQuestionErrMessage('');
     setQuestionTypeErrMessage('');
@@ -131,7 +176,7 @@ const MakeExam = () => {
     setOptionsErrMessage('')
   }
 
-  const makeExamValidationData= (name, duration, startAt, selectedCourse, questions) => {
+  const makeExamValidationData= (name, duration, startAt, dueDate, selectedCourse, questions) => {
     if (!name) {
       setExamNameErrMessage(language === 'En' ? 'Please fill out this field' : 'يرجى ملء هذا الحقل');
       return false;
@@ -147,6 +192,29 @@ const MakeExam = () => {
     if (startAt < new Date()) {
       setStartAtErrMessage(language === 'En' ? "You can't select date in pass" : 'لا يمكنك إختيار موعد في الماضي');
       return false;
+    }
+    if (dueDate && !startAt) {
+      setDueDateErrMessage({EnMessage: "Please select start date first", ArMessage: "الرجاء تحديد تاريخ البدء أولاً"});
+      return false;
+    }
+    if (dueDate && startAt && dueDate < startAt) {
+      setDueDateErrMessage({EnMessage: "Due date must be more recent than start date", ArMessage: "يجب ان يكون تاريخ الإنتهاء أحدث من تاريخ البدء"});
+      return false;
+    }
+    if (dueDate && startAt) {
+      const startAtUTC = moment(startAt);
+      const dueDateUTC = moment(dueDate);
+
+      let differenceInMinutes = 0;
+      if (dueDateUTC.isValid() && startAtUTC.isValid()) {
+        differenceInMinutes = dueDateUTC.diff(startAtUTC, 'minutes');
+      }
+      if (duration > differenceInMinutes) {
+        setDurationErrMessage(language === 'En'
+            ? 'Duration must be less than the difference between the two dates'
+            : 'يجب أن تكون المدة أصغر من الفرق بين التاريخين');
+        return false;
+      }
     }
     if (!selectedCourse) {
       setSelectedCourseErrMessage(language === 'En' ? 'Please select an item in each list.' : 'يرجى اختيار عنصر في كل قائمة.');
@@ -195,13 +263,13 @@ const MakeExam = () => {
     resetAllErrMessages();
 
     try {
-      if (!makeExamValidationData(examName, duration, startAt, selectedCourse, questions)) return;
+      if (!makeExamValidationData(examName, duration, startAt, dueDate, selectedCourse, questions)) return;
 
       const startAtUTC = moment(startAt).format();
+      const dueDateUTC = dueDate ? moment(dueDate).format() : null;
 
-      const response = await examApi.createExam(examName, duration, startAtUTC, selectedCourse, userId);
+      const response = await examApi.createExam(examName, duration, startAtUTC, dueDateUTC, totalPoints, selectedCourse, userId);
       const exam_id = response.data.exam_id;
-      console.log('exam id: ', exam_id);
 
       // Associate exam with instructor's course
       await instructorsCoursesExamsApi.assignExamToCourse(selectedCourse, userId, exam_id);
@@ -209,7 +277,6 @@ const MakeExam = () => {
       await enrollmentsExamsApi.assignExamToStudent(selectedCourse, userId, exam_id);
 
       // Save each question and its options to the database
-      console.log(questions)
       for (let question of questions) {
         const questionResponse = await questionsApi.addQuestionsToExam(exam_id, question.question, question.type, question.points);
         const question_id = questionResponse.data.question_id;
@@ -221,8 +288,9 @@ const MakeExam = () => {
         }
       }
 
-      const notificationMessage = `New Exam Added for course `;
-      await notificationApi.sendNotification(userId, selectedCourse, notificationMessage);
+      const EnNotificationMessage = `New Exam Added for course `;
+      const ArNotificationMessage = `تم رفع إمتحان جديد للمادة `;
+      await notificationApi.sendNotification(userId, selectedCourse, EnNotificationMessage, ArNotificationMessage);
 
       toast.success(language === 'En' ? 'Exam Added Success' : 'تم إضافة الاختبار بنجاح');
       resetAllData();
@@ -257,48 +325,6 @@ const MakeExam = () => {
                 />
               </div>
               <div className="MakeExam_inputWrapper">
-                {durationErrMessage && (
-                    <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{durationErrMessage}</p>
-                )}
-                <label className="MakeExam_inputLabel">
-                  {language === 'En' ? 'Duration:' : 'مدة الامتحان:'}
-                </label>
-                <input
-                    type="number"
-                    value={duration}
-                    onChange={(e) => setDuration(parseInt(e.target.value))}
-                    className="MakeExam_inputField"
-                    min={15}
-                />
-              </div>
-            </div>
-
-            {/* Second row: Start At and Select Course */}
-            <div className="MakeExam_inputRow">
-              <div className="MakeExam_inputWrapper">
-                {startAtnErrMessage && (
-                    <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{startAtnErrMessage}</p>
-                )}
-                <label className="MakeExam_inputLabel">
-                  {language === 'En' ? 'Start At:' : 'تاريخ البدء:'}
-                </label>
-                <DatePicker
-                    selected={startAt}
-                    onChange={(date) => setStartAt(date)}
-                    showTimeSelect
-                    dateFormat="Pp"
-                    className="MakeExam_inputField MakeExam_customDatePickerWidth"
-                    minDate={new Date()}
-                    minTime={
-                      startAt && startAt.toDateString() === new Date().toDateString()
-                          ? new Date()
-                          : new Date(new Date().setHours(0, 0, 0, 0))
-                    }
-                    maxTime={new Date(new Date().setHours(23, 59, 59, 999))}
-                    required
-                />
-              </div>
-              <div className="MakeExam_inputWrapper">
                 {selectedCourseErrMessage && (
                     <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{selectedCourseErrMessage}</p>
                 )}
@@ -320,6 +346,76 @@ const MakeExam = () => {
                   ))}
                 </select>
               </div>
+              <div className="MakeExam_inputWrapper">
+                {durationErrMessage && (
+                    <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{durationErrMessage}</p>
+                )}
+                <label className="MakeExam_inputLabel">
+                  {language === 'En' ? 'Duration:' : 'مدة الامتحان:'}
+                </label>
+                <div className={'MakeExam_input-container'}>
+                  <input
+                      type="number"
+                      value={duration}
+                      onChange={(e) => setDuration(parseInt(e.target.value))}
+                      className="MakeExam_inputField"
+                      min={15}
+                      placeholder={'15-180'}
+                  />
+                  <span className="MakeExam_unit-label" style={language === 'En' ? {right: '10px'} : {left: '10px'}}>min</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Second row: Start At and Select Course */}
+            <div className="MakeExam_inputRow">
+              <div className="MakeExam_inputWrapper">
+                {startAtErrMessage && (
+                    <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{startAtErrMessage}</p>
+                )}
+                <label className="MakeExam_inputLabel">
+                  {language === 'En' ? 'Start At:' : 'تاريخ البدء:'}
+                </label>
+                <DatePicker
+                    selected={startAt}
+                    onChange={(date) => setStartAt(date)}
+                    showTimeSelect
+                    dateFormat="Pp"
+                    className="MakeExam_inputField MakeExam_customDatePickerWidth"
+                    minDate={new Date()}
+                    minTime={
+                      startAt && startAt.toDateString() === new Date().toDateString()
+                          ? new Date()
+                          : new Date(new Date().setHours(0, 0, 0, 0))
+                    }
+                    maxTime={new Date(new Date().setHours(23, 59, 59, 999))}
+                    required
+                />
+              </div>
+              <div className="MakeExam_inputWrapper">
+                {dueDateErrMessage.EnMessage && (
+                    <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{language === 'En' ? dueDateErrMessage.EnMessage : dueDateErrMessage.ArMessage}</p>
+                )}
+                <label className="MakeExam_inputLabel">
+                  {language === 'En' ? 'Due Date (Optional):' : 'تاريخ الإنتهاء (إختياري):'}
+                </label>
+                <DatePicker
+                    selected={dueDate}
+                    onChange={(date) => setDueDate(date)}
+                    showTimeSelect
+                    dateFormat="Pp"
+                    className="MakeExam_inputField MakeExam_customDatePickerWidth"
+                    minDate={startAt}
+                    minTime={
+                      startAt && startAt.toDateString() === new Date().toDateString()
+                          ? new Date()
+                          : new Date(new Date().setHours(0, 0, 0, 0))
+                    }
+                    maxTime={new Date(new Date().setHours(23, 59, 59, 999))}
+                    required
+                />
+              </div>
+
             </div>
           </div>
 
@@ -434,7 +530,7 @@ const MakeExam = () => {
                             ))}
                           </ul>
                           <strong
-                              className="MakeExam_correctAnswerHeading">{language === 'En' ? 'Correct Answer:' : 'الإجابة الصحيحة'}</strong>
+                              className="MakeExam_correctAnswerHeading">{language === 'En' ? 'Correct Answer: ' : 'الإجابة الصحيحة: '}</strong>
                           {question.correctAnswer !== '' ? alphabet[question.correctAnswer] : 'Not Set'}
                         </div>
                     )}

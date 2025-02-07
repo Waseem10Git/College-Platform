@@ -45,7 +45,7 @@ function AllNotifications() {
                 {notifications.map((notif, index) => (
                     <li key={index} className={"item"}>
                         <div className={"notification-content"}>
-                            <p className={"message"}>{notif.message}</p>
+                            <p className={"message"}>{language === 'En' ? notif.EnMessage : notif.ArMessage}</p>
                             <p className={"date"}>{formatDate(notif.created_at)}</p>
                         </div>
                     </li>

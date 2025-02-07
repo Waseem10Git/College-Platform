@@ -2,11 +2,12 @@ import { useState, useContext } from "react";
 import { ViewStudentExam } from "../../Pages";
 import UserContext from "../../context/UserContext";
 import "./StudentsExams.css";
+import {AiFillCheckSquare, AiFillCloseSquare} from "react-icons/ai";
 
-function StudentsExams({students, examId, language, refreshData, viewExamDetails, setViewExamDetails,}) {
+function StudentsExams({students, examId, examScore, refreshData, viewExamDetails, setViewExamDetails,}) {
     const [studentId, setStudentId] = useState(null);
     const [studentScore, setStudentScore] = useState(null);
-    const { isDarkMode } = useContext(UserContext); // Access dark mode from context
+    const { language, isDarkMode } = useContext(UserContext); // Access dark mode from context
 
     return (
         <div className={`StudentsExams_container ${isDarkMode ? "dark" : "light"}`}>
@@ -41,12 +42,29 @@ function StudentsExams({students, examId, language, refreshData, viewExamDetails
                                         <td>{student.student_name}</td>
                                         <td>
                                             {student.score != null && student.score >= 0 ? (
-                                                student.score
+                                                student.score + ' / ' + examScore
                                             ) : (
-                                                "--"
+                                                `-- / ${examScore}`
                                             )}
                                         </td>
-                                        <td>{student.is_submitted ? "Yes" : "No"}</td>
+                                        <td>{student.is_submitted ? (
+                                            <p className={'StudentsExams_trueFalse'} style={{color: 'green'}}>
+                                            <span className={'StudentsExams_trueFalse-icon'}>
+                                                <AiFillCheckSquare/>
+                                            </span>
+                                                <span className={'StudentsExams_trueFalse-behind'}
+                                                      style={language === 'En' ? {left: '5px'} : {right: '5px'}}/>
+                                            </p>
+                                        ) : (
+                                            <p className={'StudentsExams_trueFalse'} style={{color: 'red'}}>
+                                            <span className={'StudentsExams_trueFalse-icon'}>
+                                                <AiFillCloseSquare/>
+                                            </span>
+                                                <span className={'StudentsExams_trueFalse-behind'}
+                                                      style={language === 'En' ? {left: '5px'} : {right: '5px'}}/>
+                                            </p>
+                                        )}
+                                        </td>
                                         <td>
                                             <button
                                                 className={`StudentsExams_submit-edit-button ${

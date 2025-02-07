@@ -2,10 +2,12 @@ import axios from "./axios";
 
 const fetchExamsForCourse = selectedCourse => axios.get(`/api/exams/${selectedCourse}`);
 const fetchExamsWithStudents = examId => axios.get(`/api/exam-results/${examId}`);
-const createExam = (examName, duration, startAtUTC, selectedCourse, userId) => axios.post('/api/exams', {
+const createExam = (examName, duration, startAtUTC, dueDateUTC, totalPoints, selectedCourse, userId) => axios.post('/api/exams', {
     exam_name: examName,
     duration: duration,
     start_at: startAtUTC,
+    due_date: dueDateUTC,
+    score: totalPoints,
     selectedCourse: selectedCourse,
     userId: userId
 });

@@ -5,21 +5,13 @@ const util = require('util');
 const ChapterModel = require("../models/Chapter");
 const fs = require('fs');
 
-const MAX_LONG_BLOB_SIZE = 4 * 1024 * 1024 * 1024; // 4GB
-
 class AssignmentController {
     static async uploadAssignment(req, res) {
-        const { selectedCourse, userId, assignmentName, assignmentDescription, dueDate } = req.body;
+        const { selectedCourse, userId, assignmentName, assignmentScore, assignmentDescription, dueDate } = req.body;
         const fileName = req.file ? req.file.originalname : null;
         const filePath = req.file ? req.file.path : null;
         const fileSize = req.file ? req.file.size : null;
         const fileMimeType = req.file ? req.file.mimetype: null;
-
-        if (req.file && req.file.size > MAX_LONG_BLOB_SIZE) {
-            return res.status(400).json({
-                message: `File is too large. Maximum size allowed is ${MAX_LONG_BLOB_SIZE / (1024 * 1024)} MB`
-            });
-        }
 
         // Promisify transaction methods
         const beginTransaction = util.promisify(conn.beginTransaction).bind(conn);
@@ -33,7 +25,7 @@ class AssignmentController {
             const result = await InstructorCourseModel.getInstructorCourseId(userId, selectedCourse);
 
             if (result.length === 0) {
-                res.status(404).json({ error: 'No matching instructor_course_id found' });
+                res.status(404).json({ success: false, EnMessage: 'No matching instructor_course_id found', ArMessage: 'لم يتم العثور على رقم تعريفي مطابق' });
             }
 
             const instructor_course_id = result[0].id;
@@ -46,6 +38,7 @@ class AssignmentController {
             // Insert assignment
             const assignmentId = await AssignmentModel.insertAssignment(
                 assignmentName,
+                assignmentScore,
                 assignmentDescription || null,
                 fileName,
                 filePath,
@@ -62,11 +55,11 @@ class AssignmentController {
             console.log(`Associations made: ${associationResult.affectedRows}`);
 
             await commit();
-            res.json({ message: 'Assignment uploaded successfully' });
+            res.json({ success: true, EnMessage: 'Assignment uploaded successfully', ArMessage: 'تم رفع التكليف بنجاح' });
         } catch (error) {
             await rollback();
             console.error('Error uploading assignment:', error);
-            res.status(500).json({ error: error.message });
+            res.status(500).json({ success: false, EnMessage: 'Sever Error', ArMessage: 'خطأ في الخادم' });
         }
     }
 
@@ -78,7 +71,7 @@ class AssignmentController {
             res.json(results);
         } catch (error) {
             console.error('Error fetching assignments:', error);
-            res.status(500).json({ error: 'An error occurred while fetching assignments' });
+            res.status(500).json({ success: true, EnMessage: 'Sever Error', ArMessage: 'خطأ في الخادم' });
         }
     }
 
@@ -90,7 +83,7 @@ class AssignmentController {
             return res.status(200).json(studentsWithAssignments);
         } catch (err) {
             console.error('Error fetching assignments:', err);
-            return res.status(500).json({ message: 'Error fetching assignments' });
+            return res.status(500).json({ success: false, EnMessage: 'Server Error', ArMessage: 'خطأ في الخادم' });
         }
     }
 

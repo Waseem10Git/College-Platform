@@ -35,7 +35,6 @@ const InstructorsView = () => {
             const response = await instructorsCoursesApi.fetchData();
             setInstructorsCourses(response.data);
         } catch (err) {
-            console.error('Error fetching instructors-courses data:', err);
             toast.error(language === 'En' ? 'Error fetching departments-courses data' : 'خطأ في جلب بيانات الأقسام والمدرسين');
         }
     };
@@ -45,7 +44,6 @@ const InstructorsView = () => {
             const response = await usersApi.fetchStudents();
             setStudents(response.data);
         } catch (err) {
-            console.error('Error fetching students data:', err);
             toast.error(language === 'En' ? 'Error fetching students data' : 'خطأ في جلب بيانات الطلاب');
         }
     };
@@ -90,14 +88,11 @@ const InstructorsView = () => {
             if (response.data.success) {
                 fetchStudentsEnrollments();
                 resetForm();
-                toast.success(language === 'En' ? 'Adding student-course relation successfully!' : 'تم إضافة العلاقة بين الطالب والمادة بنجاح!');
+                toast.success(language === 'En' ? 'Adding student-course relation successfully' : 'تم إضافة العلاقة بين الطالب والمادة بنجاح');
             }
         } catch (error) {
-            console.error('Error adding instructor-course relation:', error);
-            if (error.response && error.response.data && error.response.data.errors) {
-                error.response.data.errors.forEach(errMsg => {
-                    toast.error(errMsg);
-                });
+            if (error.response && error.response.data && !error.response.data.success) {
+                toast.error(language === 'En' ? error.response.data.EnMessage : error.response.data.ArMessage);
             } else {
                 toast.error(language === 'En' ? 'Error adding student-course relation' : 'خطأ في إضافة العلاقة بين الطالب والمادة');
             }
@@ -109,11 +104,12 @@ const InstructorsView = () => {
         setAddingErrCoursesMessage('');
         setAddingExistErr('');
         try {
-            await studentsEnrollmentsApi.deleteStudentEnrollment(id);
-            fetchStudentsEnrollments();
-            toast.success(language === 'En' ? 'Deleting student-course relation successfully!' : 'تم حذف العلاقة بين الطالب والمادة بنجاح!');
+            const response = await studentsEnrollmentsApi.deleteStudentEnrollment(id);
+            if (response.data.success) {
+                fetchStudentsEnrollments();
+                toast.success(language === 'En' ? 'Deleting student-course relation successfully' : 'تم حذف العلاقة بين الطالب والمادة بنجا!');
+            }
         } catch (error) {
-            console.error('Error deleting instructor-course relation:', error);
             toast.error(language === 'En' ? 'Error deleting student-course relation' : 'خطأ في حذف العلاقة بين الطالب والمادة');
         }
     };

@@ -12,6 +12,8 @@ function ExamResults() {
     const { language, isDarkMode, role, userId } = useContext(UserContext);
     const [selectedCourse, setSelectedCourse] = useState('');
     const [selectedOption, setSelectedOption] = useState('');
+    const [selectedAssignmentScore, setSelectedAssignmentScore] = useState('');
+    const [selectedExamScore, setSelectedExamScore] = useState('');
     const [assignments, setAssignments] = useState([]);
     const [exams, setExams] = useState([]);
     const [students, setStudents] = useState([]);
@@ -22,7 +24,6 @@ function ExamResults() {
 
     const fetchCourses = async () => {
         try {
-            console.log(role, userId);
             const response = await coursesApi.fetchSomeCourses(role, userId);
 
             if (Array.isArray(response.data)) {
@@ -42,6 +43,8 @@ function ExamResults() {
     const handleCourseSelect = (courseId) => {
         setSelectedCourse(courseId);
         setSelectedOption('');
+        setSelectedAssignmentScore('');
+        setSelectedExamScore('');
         setStudents([]);
         setAssignments([]);
         setExams([]);
@@ -64,6 +67,15 @@ function ExamResults() {
     const handleAssignmentSelect = (assignmentId) => {
         setSelectedAssignment(assignmentId);
         setSelectedExam('');
+
+        const selectedAssignmentData = assignments.find(a => a.assignment_id === Number(assignmentId));
+
+        const assignmentScore = selectedAssignmentData?.assignment_score
+            ? parseInt(selectedAssignmentData.assignment_score)
+            : '';
+
+        setSelectedAssignmentScore(assignmentScore);
+
         assignmentsApi.fetchAssignmentsWithStudents(assignmentId)
             .then(response => {
                 setStudents(response.data);
@@ -76,6 +88,15 @@ function ExamResults() {
     const handleExamSelect = (examId) => {
         setSelectedExam(examId);
         setSelectedAssignment('');
+
+        const selectedExamData = exams.find(e => e.examId === Number(examId));
+
+        const examTotalScore = selectedExamData?.examScore
+            ? parseInt(selectedExamData.examScore)
+            : '';
+
+        setSelectedExamScore(examTotalScore);
+
         examApi.fetchExamsWithStudents(examId)
             .then(response => {
                 setStudents(response.data);
@@ -139,9 +160,9 @@ function ExamResults() {
                 ) : null}
                 {
                     selectedOption === 'assignments' ? (
-                        <StudentsAssignments students={students} assignmentId={selectedAssignment} language={language} refreshData={() => handleAssignmentSelect(selectedAssignment)}/>
+                        <StudentsAssignments students={students} assignmentId={selectedAssignment} assignmentScore={selectedAssignmentScore} refreshData={() => handleAssignmentSelect(selectedAssignment)}/>
                     ) : (selectedOption === 'exams' ? (
-                        <StudentsExams students={students} examId={selectedExam} language={language} refreshData={() => handleExamSelect(selectedExam)} viewExamDetails={viewExamDetails} setViewExamDetails={setViewExamDetails}/>
+                        <StudentsExams students={students} examId={selectedExam} examScore={selectedExamScore} refreshData={() => handleExamSelect(selectedExam)} viewExamDetails={viewExamDetails} setViewExamDetails={setViewExamDetails}/>
                     ) : null)
                 }
             </div>

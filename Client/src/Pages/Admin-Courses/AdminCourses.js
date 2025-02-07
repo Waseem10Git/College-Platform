@@ -5,8 +5,10 @@ import CoursesView from "./CoursesView";
 import InstructorsView from "./InstructorsView";
 import DepartmentsCoursesView from "./DepartmentsCoursesView";
 import StudentsView from "./StudentsView";
+import DeleteData from "./DeleteData";
 import UserContext from "../../context/UserContext";
 import departmentsApi from "../../api/departmentsApi";
+import {toast} from "react-toastify";
 
 const AdminCourses = () => {
     const { isDarkMode, language } = useContext(UserContext);
@@ -17,7 +19,7 @@ const AdminCourses = () => {
             const response = await departmentsApi.fetchDepartment();
             setDepartments(response.data);
         }catch (err) {
-            console.log("Error fetching departments data: ", err);
+            toast.error(language === 'En' ? 'Error fetching departments data' : 'خطأ في جلب الأقسام')
         }
     }
     useEffect(() => {
@@ -36,6 +38,8 @@ const AdminCourses = () => {
                 return <InstructorsView/>;
             case 'students':
                 return <StudentsView/>;
+            case 'delete-data':
+                return <DeleteData/>;
             default:
                 return null;
         }
@@ -79,6 +83,14 @@ const AdminCourses = () => {
                     {language === "En"
                         ? "Add Students to Courses"
                         : "إضافة الطلاب الى المواد"}
+                </button>
+                <button
+                    onClick={() => setSelectedView("delete-data")}
+                    className="AdminCourses_view-button"
+                >
+                    {language === "En"
+                        ? "Delete Tables Data"
+                        : "حذف بيانات الجداول"}
                 </button>
             </div>
             {selectedView ? renderView() : null}

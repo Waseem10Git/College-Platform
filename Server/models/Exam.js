@@ -1,10 +1,10 @@
 const conn = require('../config/db');
 class ExamModel {
-    static async createExam(exam_name, duration, start_at) {
-        const sql = "INSERT INTO exams (exam_name, duration, start_at) VALUES (?, ?, ?)";
+    static async createExam(exam_name, duration, start_at, due_date, score) {
+        const sql = "INSERT INTO exams (exam_name, duration, start_at, due_date, total_score) VALUES (?, ?, ?, ?, ?)";
 
         return new Promise((resolve, reject) => {
-            conn.query(sql, [exam_name, duration, start_at], (err, result) => {
+            conn.query(sql, [exam_name, duration, start_at, due_date, score], (err, result) => {
                 if (err) {
                     return reject("Database error: " + err.message);
                 }
@@ -16,7 +16,7 @@ class ExamModel {
     static getExamsByCourse(courseId) {
         return new Promise((resolve, reject) => {
             const sql = `
-            SELECT e.exam_id AS examId, e.exam_name AS examName
+            SELECT e.exam_id AS examId, e.exam_name AS examName, e.total_score AS examScore
             FROM exams AS e
             INNER JOIN instructors_courses_exams AS ice ON e.exam_id = ice.exam_id
             INNER JOIN instructors_courses AS ic ON ice.instructors_courses_id = ic.id
@@ -35,7 +35,7 @@ class ExamModel {
     static getExamDetails(courseId) {
         return new Promise((resolve, reject) => {
             const sql = `
-            SELECT exam_name, duration, start_at 
+            SELECT exam_name, duration, start_at, due_date
             FROM exams 
             WHERE exam_id = ?
           `;
@@ -83,14 +83,14 @@ class ExamModel {
         });
     }
 
-    static updateExam(examId, examName, duration, startAt) {
+    static updateExam(examId, examName, duration, startAt, dueDate, totalScore) {
         return new Promise((resolve, reject) => {
             const sql = `
             UPDATE exams 
-            SET exam_name = ?, duration = ?, start_at = ? 
+            SET exam_name = ?, duration = ?, start_at = ?, due_date = ?, total_score = ?
             WHERE exam_id = ?
           `;
-            conn.query(sql, [examName, duration, startAt, examId], (err, result) => {
+            conn.query(sql, [examName, duration, startAt, dueDate, totalScore, examId], (err, result) => {
                 if (err) {
                     return reject(err);
                 }

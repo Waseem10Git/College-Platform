@@ -78,9 +78,8 @@ const Profile = () => {
 
   return (
       <div className={`profile profile_${isDarkMode ? 'dark-mode' : 'light-mode'} profile_${language.toLowerCase()}`}>
-        <h1>{language === 'En' ? 'User Profile' : 'الملف الشخصي'}</h1>
+        <h1>{language === 'En' ? 'Profile' : 'الملف الشخصي'}</h1>
         <div className="profile profile_info">
-          <img src={image} alt="Profile" className="profile profile_img"/>
           <div className="profile profile_details">
             <p>
               <strong>{language === 'En' ? 'Name:' : 'الاسم:'}</strong> {userData.first_name + " " + userData.last_name}

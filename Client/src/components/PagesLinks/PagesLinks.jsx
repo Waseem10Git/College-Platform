@@ -30,7 +30,7 @@ function PagesLinks () {
             {(role === "instructor") ? <>
                 <li className={pathName === "/MakeExam" ? styles.active : ""}>
                     <Link to="/MakeExam">
-                        {language === 'En' ? 'Make Exam' : 'إنشاء إمتحان'}
+                        {language === 'En' ? 'Make Exam' : 'عمل إمتحان'}
                     </Link>
                 </li>
                 <li className={pathName === "/ExamResults" ? styles.active : ""}>
@@ -40,7 +40,7 @@ function PagesLinks () {
                 </li>
                 <li className={pathName === "/ExamPreview" ? styles.active : ""}>
                     <Link to="/ExamPreview">
-                        {language === 'En' ? 'Exam Preview' : 'مراجعة الامتحان'}
+                        {language === 'En' ? 'Exam Preview' : 'مراجعة الإمتحانات'}
                     </Link>
                 </li>
                 <li className={pathName === `/UploadAssignment` ? styles.active : ""}>

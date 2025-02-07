@@ -6,17 +6,17 @@ class InstructorCourseController {
         try {
             const { instructor_id, department_course_ids } = req.body;
             if (!instructor_id || department_course_ids.length <= 0)
-                return res.status(400).json({ success: false, message: 'All fields are required.' });
+                return res.status(400).json({ success: false, EnMessage: 'All fields are required', ArMessage: 'كل الحقول مطلوبة' });
 
             const isExist = await InstructorCourseModel.checkInstructorCourseExistence(instructor_id, department_course_ids);
             if (isExist)
-                return res.status(409).json({ success: false, message: 'This instructor assigned to this course(s) already exists.' });
+                return res.status(409).json({ success: false, EnMessage: 'This instructor assigned to this course(s) already exists', ArMessage: 'هذا المدرس المخصص لهذه المادة موجود بالفعل' });
 
-            const result = await InstructorCourseModel.addInstructorToCourses(instructor_id, department_course_ids);
-            return res.json(result);
+            await InstructorCourseModel.addInstructorToCourses(instructor_id, department_course_ids);
+            return res.send({ success: true });
         } catch (err) {
             console.error(err.message, err.error);
-            return res.status(err.status).json({ message: err.message });
+            return res.status(500).json({ success: false, EnMessage: 'Server Error', ArMessage: 'خطأ في الخادم' });
         }
     }
 
@@ -25,17 +25,17 @@ class InstructorCourseController {
             const { id } = req.params;
 
             if (!id)
-                return res.status(400).json({ success: false, message: 'ID is not define' });
+                return res.status(400).json({ success: false, EnMessage: 'ID is not define', ArMessage: 'الرقم التعريفي غير موجود' });
 
             const isExist = await InstructorCourseModel.checkSingleInstructorCourseExistence(id);
             if (!isExist)
-                return res.status(409).json({ success: false, message: 'Instructor-Course relation is not exists.' });
+                return res.status(409).json({ success: false, EnMessage: 'Instructor-Course relation is not exists', ArMessage: 'العلاقة بين المدرس والمادة غير موجود' });
 
             await InstructorCourseModel.deleteInstructorCourse(id);
             return res.json({ success: true });
         } catch (err) {
             console.error('Error deleting instructor-course relation:', err);
-            return res.status(500).json({ message: 'Server Error in DELETE Instructor-Course with endpoint: /api/instructors-enrollments/:id' });
+            return res.status(500).json({ success: false, EnMessage: 'Server Error', ArMessage: 'خطأ في الخادم' });
         }
     }
 
@@ -55,7 +55,7 @@ class InstructorCourseController {
             return res.status(200).json(data);
         } catch (err) {
             console.error('Error fetching instructors-departments-courses data:', err);
-            return res.status(500).json({ message: 'Server Error: get instructors-departments-courses data' });
+            return res.status(500).json({ success: false, EnMessage: 'Server Error', ArMessage: 'خطأ في الخادم' });
         }
     }
 

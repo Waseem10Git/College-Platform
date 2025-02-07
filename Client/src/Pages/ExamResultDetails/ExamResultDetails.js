@@ -14,7 +14,17 @@ const ExamResultDetails = () => {
   const [selectedQuizId, setSelectedQuizId] = useState('');
   const [questions, setQuestions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [examEndTime, setExamEndTime] = useState(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date()); // Update the current time every second
+    }, 1000);
+
+    return () => clearInterval(interval); // Cleanup the interval on component unmount
+  }, []);
 
   // Fetch courses when the component mounts
   useEffect(() => {
@@ -51,6 +61,9 @@ const ExamResultDetails = () => {
       console.log(userId, examId);
       const response = await axios.get(`/api/studentExamDetails/${userId}/${examId}`);
       console.log("Backend response:", response.data);
+      const examStartAt = new Date(response.data[0].start_at).getTime();
+      const examDuration = response.data[0].duration *60 * 1000;
+      setExamEndTime(new Date(examStartAt + examDuration));
       const groupedQuestions = groupByQuestions(response.data);
       console.log(groupedQuestions);
       setQuestions(groupedQuestions);
@@ -113,62 +126,68 @@ const ExamResultDetails = () => {
 
         {!isLoading ? (
             <>
-              <div className="examResultDetails_resultsTable">
-                {questions.length > 0 && (
-                    <table className="examResultDetails_table">
-                      <thead>
-                      <tr>
-                        <th className="examResultDetails_th">
-                          {language === 'Ar' ? 'السؤال' : 'Question'}
-                        </th>
-                        <th className="examResultDetails_th">
-                          {language === 'Ar' ? 'الإجابة الصحيحة' : 'Correct Answer'}
-                        </th>
-                        <th className="examResultDetails_th">
-                          {language === 'Ar' ? 'إجابتك' : 'Your Answer'}
-                        </th>
-                        <th className="examResultDetails_th">
-                          {language === 'Ar' ? 'الدرجة' : 'Score'}
-                        </th>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      {questions.map((question) => (
-                          <tr key={question.question_id} className="examResultDetails_tr">
-                            <td className="examResultDetails_td">{question.question_text}</td>
-                            {question.answers[0].answer_id ?
-                                <td className="examResultDetails_td">
-                                  {question.answers.filter((answer) => answer.is_answer_correct).map((answer) => (answer.answer_text))}
-                                </td>
-                                :
-                                <td className="examResultDetails_td">
-                                  {language === 'En' ? '(Essay)' : '(مقالي)'}
-                                </td>
-                            }
-                            <td className="examResultDetails_td">{question.student_answer ? question.student_answer : '--'}</td>
-                            <td className="examResultDetails_td">
-                              {question.is_student_answer_correct ? question.question_points : 0} / {question.question_points}
-                            </td>
-                          </tr>
-                      ))}
-                      </tbody>
-                    </table>
-                )}
-              </div>
+              {examEndTime < currentTime ? (
+                  <>
+                    <div className="examResultDetails_resultsTable">
+                      {questions.length > 0 && (
+                          <table className="examResultDetails_table">
+                            <thead>
+                            <tr>
+                              <th className="examResultDetails_th">
+                                {language === 'Ar' ? 'السؤال' : 'Question'}
+                              </th>
+                              <th className="examResultDetails_th">
+                                {language === 'Ar' ? 'الإجابة الصحيحة' : 'Correct Answer'}
+                              </th>
+                              <th className="examResultDetails_th">
+                                {language === 'Ar' ? 'إجابتك' : 'Your Answer'}
+                              </th>
+                              <th className="examResultDetails_th">
+                                {language === 'Ar' ? 'الدرجة' : 'Score'}
+                              </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {questions.map((question) => (
+                                <tr key={question.question_id} className="examResultDetails_tr">
+                                  <td className="examResultDetails_td">{question.question_text}</td>
+                                  {question.answers[0].answer_id ?
+                                      <td className="examResultDetails_td">
+                                        {question.answers.filter((answer) => answer.is_answer_correct).map((answer) => (answer.answer_text))}
+                                      </td>
+                                      :
+                                      <td className="examResultDetails_td">
+                                        {language === 'En' ? '(Essay)' : '(مقالي)'}
+                                      </td>
+                                  }
+                                  <td className="examResultDetails_td">{question.student_answer ? question.student_answer : '--'}</td>
+                                  <td className="examResultDetails_td">
+                                    {question.is_student_answer_correct ? question.question_points : 0} / {question.question_points}
+                                  </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                          </table>
+                      )}
+                    </div>
 
-              {questions.length > 0 && (
-                  <div className="examResultDetails_score">
-                    <p className="examResultDetails_p">
-                      {language === 'Ar' ? 'درجتك: ' : 'Your Score: '} {studentScore}
-                    </p>
-                    <p className="examResultDetails_p">
-                      {language === 'Ar' ? 'الدرجة الكاملة: ' : 'Total Score: '} {totalPoints}
-                    </p>
-                  </div>
+                    {questions.length > 0 && (
+                        <div className="examResultDetails_score">
+                          <p className="examResultDetails_p">
+                            {language === 'Ar' ? 'درجتك: ' : 'Your Score: '} {studentScore}
+                          </p>
+                          <p className="examResultDetails_p">
+                            {language === 'Ar' ? 'الدرجة الكاملة: ' : 'Total Score: '} {totalPoints}
+                          </p>
+                        </div>
+                    )}
+                  </>
+              ) : (
+                  <h3>{language === 'En' ? 'The exam not ended yet' : 'لم ينتهي الإمتحان بعد'}</h3>
               )}
             </>
         ) : (
-            <h3>Loading...</h3>
+            <h3>{language === 'En' ? 'Loading...' : 'جاري التحميل...'}</h3>
         )}
       </div>
   );

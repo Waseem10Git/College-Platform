@@ -22,8 +22,8 @@ const UploadFile = ({ handleFileChange, file, uploadingVisible, setUploadingVisi
                     <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{errorMessage}</p>
                 )}
                 <div className={"confirm-cancel"}>
-                    <button id={'UploadFile_upload-button'} className={"UploadFile_button"} type='submit' style={{ marginRight: "5px"}}>Upload</button>
-                    <button id={'UploadFile_cancel-button'} className={"UploadFile_button"} type="button" onClick={() => setUploadingVisible(false)}>Cancel</button>
+                    <button id={'UploadFile_upload-button'} className={"UploadFile_button"} type='submit' style={{ marginRight: "5px"}}>{language === 'En' ? 'Upload' : 'رفع'}</button>
+                    <button id={'UploadFile_cancel-button'} className={"UploadFile_button"} type="button" onClick={() => setUploadingVisible(false)}>{language === 'En' ? 'Cancel' : 'إلغاء'}</button>
                 </div>
             </form>
         </div>

@@ -32,12 +32,6 @@ html, body {
     gap: 10px;
 }
 
-.AdminCourses_view-button {
-    width: 250px;
-    padding: 10px;
-    margin: 0;
-}
-
 .AdminCourses_input-field {
     width: 70%;
     font-size: 16px;
@@ -71,14 +65,12 @@ html, body {
     font-weight: bold;
 }
 
-.AdminCourses_view-buttons {
-    display: flex;
-    gap: 20px;
-
-}
-
 .AdminCourses_view-button {
+    background-color: #007bff;
+    color: white;
+    width: 250px;
     padding: 12px 20px;
+    margin: 0;
     font-size: 16px;
     border: none;
     border-radius: 5px;
@@ -87,13 +79,12 @@ html, body {
 }
 
 .AdminCourses_view-button:hover {
-    background-color: #007bff;
+    background-color: rgba(0, 123, 255, 0.5);
     color: white;
 }
 
 .AdminCourses_view-button:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+    background-color: rgba(0, 123, 255, 0.5);
 }
 
 #AdminCourses_delete-button {
@@ -240,4 +231,41 @@ html, body {
     cursor: pointer;
     transition: 0.3s;
     margin-top: 20px;
+}
+
+.DeleteData_courses_Container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 65vh;
+    width: 100%;
+}
+
+#DeleteData_courses_confirmDeleteHeader {
+    text-align: center;
+}
+
+#DeleteData_courses_confirmDeleteContainer {
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    justify-content: center;
+}
+#DeleteData_courses_confirmDeleteButton {
+    width: 250px;
+    margin: 20px 5px;
+}
+
+#DeleteData_courses_deleteButton, #DeleteData_courses_cancelButton {
+    width: 150px;
+    margin: 20px 5px;
+}
+
+#DeleteData_courses_deleteButton, #DeleteData_courses_confirmDeleteButton {
+    background-color: #D32F2F;
+}
+
+#DeleteData_courses_deleteButton:hover, #DeleteData_courses_confirmDeleteButton:hover {
+    background-color: darkred;
 }

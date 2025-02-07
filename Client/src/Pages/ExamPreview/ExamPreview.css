@@ -1,6 +1,6 @@
 .ExamPreviewPage_exam-container {
   max-width: 800px;
-  margin: 0 auto;
+  margin: 20px auto;
   padding: 20px;
   background-color: #f9f9f9;
   border-radius: 10px;
@@ -73,7 +73,7 @@
 }
 
 .ExamPreviewPage_customWidth {
-  width: 278px !important;
+  width: 370px !important;
 }
 
 .ExamPreviewPage_input-question-label {
@@ -148,6 +148,7 @@
 /* Input Wrapper */
 .dark-mode .ExamPreviewPage_input-wrapper {
   color: #cccccc;
+  width: 100%;
 }
 
 /* Input Row */

@@ -45,8 +45,8 @@ const DepartmentsView = ({ departments, fetchDepartments }) => {
                 toast.success(language === 'En' ? 'Department added successfully' : 'تمت إضافة القسم بنجاح');
             }
         } catch (err) {
-            if (err.response && err.response.data && err.response.data.message) {
-                toast.error(err.response.data.message);
+            if (err.response && err.response.data && !err.response.data.success) {
+                toast.error(language === 'En' ? err.response.data.EnMessage: err.response.data.ArMessage);
             } else {
                 toast.error(language === 'En' ? 'Failed to add department' : 'فشل في إضافة القسم');
             }

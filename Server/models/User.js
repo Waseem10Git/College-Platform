@@ -115,10 +115,14 @@ class UserModel {
         });
     }
 
-    static async updateAccount({ newFirstName, newLastName, newEmail, newPassword, newRole, newDepartmentID, userID }) {
+    static async updateAccount({ newFirstName, newLastName, newEmail, newPassword, newRole, newDepartmentID, userID, newUserID }) {
         const fields = [];
         const values = [];
 
+        if (newUserID) {
+            fields.push("id = ?");
+            values.push(newUserID);
+        }
         if (newFirstName) {
             fields.push("first_name = ?");
             values.push(newFirstName);

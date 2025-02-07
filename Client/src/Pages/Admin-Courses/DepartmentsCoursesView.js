@@ -39,14 +39,21 @@ const DepartmentsCoursesView = ({ departments }) => {
             const response = await departmentsCoursesApi.fetchDepartmentsCourses();
             setDepartmentsCourses(response.data);
         } catch (err) {
-            console.log('Error fetching departments-courses data: ', err);
+            toast.error(language === 'En' ? 'Error fetching departments-courses data' : 'خطأ في جلب بيانات الأقسام والمواد');
         }
     };
 
-    useEffect(() => {
-        coursesApi.fetchAllCourses().then(response => {
+    const fetchAllCourses = async () => {
+        try {
+            const response = await coursesApi.fetchAllCourses();
             setCourses(response.data);
-        });
+        } catch (err) {
+            toast.error(language === 'En' ? 'Error fetching courses' : 'خطأ في جلب بيانات المواد');
+        }
+    }
+
+    useEffect(() => {
+        fetchAllCourses();
         fetchDepartmentsCourses();
     }, []);
 
@@ -132,14 +139,13 @@ const DepartmentsCoursesView = ({ departments }) => {
         try {
             const res = await departmentsCoursesApi.addDepartmentCourse(newDepartment, newCourse, newLevel, newSemester);
             if (res.data.success) {
-                toast.success(language === 'En' ? 'Department-course combination success!' : 'نجاح الجمع بين القسم والمقرر الدراسي!');
+                toast.success(language === 'En' ? 'Department-course combination success' : 'نجاح الربط بين القسم والمقرر الدراسي');
                 fetchDepartmentsCourses();
                 resetForm();
             }
         } catch (err) {
-            console.error(err);
-            if (err.response && err.response.data && err.response.data.message) {
-                toast.error(err.response.data.message);
+            if (err.response && err.response.data && !err.response.data.success) {
+                toast.error(language === 'En' ? err.response.data.EnMessage : err.response.data.ArMessage);
             } else {
                 toast.error(language === 'En' ? 'Department-course combination failed' : 'فشل الجمع بين القسم والمقرر الدراسي');
             }
@@ -166,8 +172,8 @@ const DepartmentsCoursesView = ({ departments }) => {
                 resetForm();
             }
         } catch (err) {
-            if (err.response && err.response.data && err.response.data.message) {
-                toast.error(err.response.data.message);
+            if (err.response && err.response.data && !err.response.data.success) {
+                toast.error(language === 'En' ? err.response.data.EnMessage : err.response.data.ArMessage);
             } else {
                 toast.error(language === 'En' ? 'Error updating department-course relation' : 'خطأ في تحديث العلاقة بين القسم والمقرر الدراسي');
             }
@@ -182,8 +188,8 @@ const DepartmentsCoursesView = ({ departments }) => {
                 fetchDepartmentsCourses();
             }
         } catch (err) {
-            if (err.response && err.response.data && err.response.data.message) {
-                toast.error(err.response.data.message);
+            if (err.response && err.response.data && !err.response.data.success) {
+                toast.error(language === 'En' ? err.response.data.EnMessage : err.response.data.ArMessage);
             } else {
                 toast.error(language === 'En' ? 'Error deleting department-course relation' : 'خطأ في حذف العلاقة بين القسم والمقرر الدراسي');
             }

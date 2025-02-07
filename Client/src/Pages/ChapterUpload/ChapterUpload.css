@@ -125,7 +125,12 @@
 
 .Chapters_overlay button {
     display: block;
-    margin: 20px auto 0;
+    width: 150px;
+}
+
+.Chapters_viewButtons {
+    display: flex;
+    justify-content: center;
 }
 
 .Chapters_overlay-background {

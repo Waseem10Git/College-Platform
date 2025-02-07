@@ -1,19 +1,22 @@
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import UserContext from "../../context/UserContext";
 import "./StudentsAssignments.css";
 import assignmentsApi from "../../api/assignmentsApi";
 import { toast } from "react-toastify";
+import {AiFillCheckSquare, AiFillCloseSquare} from "react-icons/ai";
 
-function StudentsAssignments({ students, refreshData }) {
+function StudentsAssignments({ students, assignmentScore, refreshData }) {
     const { isDarkMode, language } = useContext(UserContext);
     const [fileView, setFileView] = useState(null);
     const [editingScore, setEditingScore] = useState(null);
     const [newScore, setNewScore] = useState(0);
-    console.log(students);
+    const [inputError, setInputError] = useState({EnMessage: '', ArMessage: ''});
+
     const handleView = (studentAssignmentId) => {
         try {
             const url = assignmentsApi.viewAssignment(studentAssignmentId);
-            setFileView({ url });
+            window.open(url, "_blank");
+            // setFileView({ url });
         } catch (error) {
             if (
                 error.response &&
@@ -35,7 +38,17 @@ function StudentsAssignments({ students, refreshData }) {
     };
 
     const handleScoreChange = (e) => {
-        setNewScore(parseInt(e.target.value));
+        const value = parseInt(e.target.value);
+
+        if (isNaN(value) || value < 0 || value > assignmentScore) {
+            setInputError({
+                EnMessage: "Points must be between 0 and the maximum question points",
+                ArMessage: "يجب أن تكون النقاط بين 0 والحد الأقصى لنقاط السؤال"
+            })
+        } else {
+            setInputError({EnMessage: '', ArMessage: ''});
+            setNewScore(value);
+        }
     };
 
     const saveScore = async (studentAssignmentId) => {
@@ -84,12 +97,12 @@ function StudentsAssignments({ students, refreshData }) {
                         <tr>
                             <th>{language === "En" ? "ID" : "الرقم التعريفي"}</th>
                             <th>{language === "En" ? "Student Name" : "اسم الطالب"}</th>
+                            <th>{language === "En" ? "Score" : "النتيجة"}</th>
                             <th>
                                 {language === "En"
-                                    ? "Assignment Uploaded"
-                                    : "التكيلف المرفوع"}
+                                    ? "Uploaded"
+                                    : "تم الرفع"}
                             </th>
-                            <th>{language === "En" ? "Score" : "النتيجة"}</th>
                             <th>{language === "En" ? "Uploaded At" : "وقت الرفع"}</th>
                             <th>
                                 {language === "En"
@@ -104,28 +117,45 @@ function StudentsAssignments({ students, refreshData }) {
                                 <td>{student.student_id}</td>
                                 <td>{student.student_name}</td>
                                 <td>
-                                    {student.submitted_file_name
-                                        ? language === "En"
-                                            ? "Submitted"
-                                            : "تم التسليم"
-                                        : language === "En"
-                                            ? "Not Submitted"
-                                            : "لم ينم التسليم"}
+                                    {editingScore === student.student_assignment_id ? (
+                                        <>
+                                            {inputError && (
+                                                <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>
+                                                    {language === 'En' ? inputError.EnMessage : inputError.ArMessage}
+                                                </p>
+                                            )}
+                                            <input
+                                                type="number"
+                                                value={newScore}
+                                                onChange={(e) => handleScoreChange(e)}
+                                                placeholder={
+                                                    language === "En" ? "Enter score" : "أدخل الدرجة"
+                                                }
+                                            />
+                                        </>
+                                    ) : student.score != null && student.score >= 0 ? (
+                                        `${student.score} / ${assignmentScore}`
+                                    ) : (
+                                        `-- / ${assignmentScore}`
+                                    )}
                                 </td>
                                 <td>
-                                    {editingScore === student.student_assignment_id ? (
-                                        <input
-                                            type="number"
-                                            value={newScore}
-                                            onChange={handleScoreChange}
-                                            placeholder={
-                                                language === "En" ? "Enter score" : "أدخل الدرجة"
-                                            }
-                                        />
-                                    ) : student.score != null && student.score >= 0 ? (
-                                        student.score
+                                    {student.submitted_file_name ? (
+                                        <p className={'StudentsAssignments_trueFalse'} style={{color: 'green'}}>
+                                            <span className={'StudentsAssignments_trueFalse-icon'}>
+                                                <AiFillCheckSquare/>
+                                            </span>
+                                            <span className={'StudentsAssignments_trueFalse-behind'}
+                                                  style={language === 'En' ? {left: '5px'} : {right: '5px'}}/>
+                                        </p>
                                     ) : (
-                                        "--"
+                                        <p className={'StudentsAssignments_trueFalse'} style={{color: 'red'}}>
+                                            <span className={'StudentsAssignments_trueFalse-icon'}>
+                                                <AiFillCloseSquare/>
+                                            </span>
+                                            <span className={'StudentsAssignments_trueFalse-behind'}
+                                                  style={language === 'En' ? {left: '5px'} : {right: '5px'}}/>
+                                        </p>
                                     )}
                                 </td>
                                 <td>

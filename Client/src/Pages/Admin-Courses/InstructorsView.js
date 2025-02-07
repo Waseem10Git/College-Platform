@@ -25,7 +25,6 @@ const InstructorsView = () => {
             const response = await instructorsCoursesApi.fetchData();
             setInstructorsCourses(response.data);
         } catch (err) {
-            console.error('Error fetching instructors-courses data:', err);
             toast.error(language === 'En' ? 'Error fetching instructors-courses data' : 'خطأ في جلب بيانات المواد والمدرسين');
         }
     };
@@ -35,7 +34,6 @@ const InstructorsView = () => {
             const res = await departmentsCoursesApi.fetchDepartmentsCourses();
             setDepartmentsCourses(res.data);
         } catch (err) {
-            console.error('Error fetching departments-courses data:', err);
             toast.error(language === 'En' ? 'Error fetching departments-courses data' : 'خطأ في جلب بيانات الأقسام والمواد');
         }
     };
@@ -45,7 +43,6 @@ const InstructorsView = () => {
             const res = await usersApi.fetchInstructors();
             setInstructors(res.data);
         } catch (err) {
-            console.error('Error fetching instructors data:', err);
             toast.error(language === 'En' ? 'Error fetching instructors data' : 'خطأ في جلب بيانات المدرسين');
         }
     };
@@ -97,20 +94,16 @@ const InstructorsView = () => {
         setAddingExistErr('');
         try {
             if (!validateAdding(selectedInstructor, newDepartmentCourse)) return;
-            console.log(selectedInstructor, newDepartmentCourse, instructorsCourses)
 
             const response = await instructorsCoursesApi.addInstructorCourse(selectedInstructor, newDepartmentCourse);
             if (response.data.success) {
                 fetchInstructorsCourses();
                 resetForm();
-                toast.success(language === 'En' ? 'Adding instructor-course relation successfully!' : 'تمت إضافة علاقة المدرس بالمقرر بنجاح!');
+                toast.success(language === 'En' ? 'Adding instructor-course relation successfully' : 'تمت إضافة علاقة المدرس بالمقرر بنجاح');
             }
         } catch (error) {
-            console.error('Error adding instructor-course relation:', error);
-            if (error.response && error.response.data && error.response.data.errors) {
-                error.response.data.errors.forEach(errMsg => {
-                    toast.error(errMsg);
-                });
+            if (error.response && error.response.data && !error.response.data.success) {
+                toast.error(language === 'En' ? error.response.data.EnMessage : error.response.data.ArMessage);
             } else {
                 toast.error(language === 'En' ? 'Error adding instructor-course relation' : 'خطأ في إضافة العلاقة بين المدرس والمادة');
             }
@@ -122,12 +115,17 @@ const InstructorsView = () => {
         setAddingErrCoursesMessage('');
         setAddingExistErr('');
         try {
-            await instructorsCoursesApi.deleteInstructorCourse(id);
-            fetchInstructorsCourses();
-            toast.success(language === 'En' ? 'Deleting instructor-course relation successfully!' : 'تم حذف العلاقة بين المدرس والمقرر بنجاح!');
+            const response = await instructorsCoursesApi.deleteInstructorCourse(id);
+            if (response.data.success) {
+                fetchInstructorsCourses();
+                toast.success(language === 'En' ? 'Deleting instructor-course relation successfully' : 'تم حذف العلاقة بين المدرس والمادة بنجاح');
+            }
         } catch (error) {
-            console.error('Error deleting instructor-course relation:', error);
-            toast.error(language === 'En' ? 'Error deleting instructor-course relation' : 'خطأ في حذف العلاقة بين المدرس والمادة');
+            if (error.response && error.response.data && !error.response.data.success) {
+                toast.error(language === 'En' ? error.response.data.EnMessage : error.response.data.ArMessage);
+            } else {
+                toast.error(language === 'En' ? 'Error deleting instructor-course relation' : 'خطأ في حذف العلاقة بين المدرس والمادة');
+            }
         }
     };
 

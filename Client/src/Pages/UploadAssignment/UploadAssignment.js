@@ -13,6 +13,7 @@ const UploadAssignment = () => {
     const { isDarkMode, language, userId, role } = useContext(UserContext);
     const [selectedCourse, setSelectedCourse] = useState('');
     const [assignmentName, setAssignmentName] = useState('');
+    const [assignmentScore, setAssignmentScore] = useState('');
     const [assignmentDescription, setAssignmentDescription] = useState('');
     const [assignmentFile, setAssignmentFile] = useState(null);
     const [dueDate, setDueDate] = useState(new Date());
@@ -26,11 +27,9 @@ const UploadAssignment = () => {
 
             if (Array.isArray(response.data)) {
                 setCourses(response.data);
-            } else {
-                console.error('Expected array but got:', response.data);
             }
         } catch (error) {
-            console.log('Error fetching data:', error);
+            toast.error(language === 'En' ? 'Error fetching courses data' : 'فشل في جلب بيانات المواد');
         }
     };
 
@@ -58,6 +57,7 @@ const UploadAssignment = () => {
         const formData = new FormData();
         formData.append('selectedCourse', selectedCourse);
         formData.append('assignmentName', assignmentName);
+        formData.append('assignmentScore', assignmentScore);
         formData.append('assignmentDescription', assignmentDescription);
         formData.append('assignmentFile', assignmentFile);
         formData.append('userId', userId);
@@ -68,10 +68,11 @@ const UploadAssignment = () => {
         await assignmentsApi.uploadAssignmentByInstructor(formData)
             .then(response => {
                 console.log('Assignment uploaded successfully:', response.data);
-                toast.success(language === 'En' ? 'Assignment uploaded successfully!' : 'تم رفع الواجب بنجاح!');
+                toast.success(language === 'En' ? 'Assignment uploaded successfully' : 'تم رفع التكليف بنجاح');
                 // Clear form after submission
                 setSelectedCourse('');
                 setAssignmentName('');
+                setAssignmentScore('');
                 setAssignmentDescription('');
                 setAssignmentFile(null);
                 setDueDate(new Date());
@@ -79,30 +80,25 @@ const UploadAssignment = () => {
                 setError(false);
             })
             .catch(error => {
-                if (error.response && error.response.data && error.response.data.message){
-                    toast.error(error.response.data.message);
+                if (error.response && error.response.data && !error.response.data.success){
+                    toast.error(language === 'En' ?  error.response.data.EnMessage : error.response.data.ArMessage);
                     setError(true)
                 } else {
-                    console.error('Error uploading assignment:', error);
-                    toast.error(language === 'En' ? 'Failed to upload assignment!' : 'فشل في رفع الواجب!');
+                    toast.error(language === 'En' ? 'Failed to upload assignment' : 'فشل في رفع التكليف');
                     setError(true)
                 }
             });
 
         if (!error) {
-            const notificationMessage = `New Assignment Uploaded for course `;
-            await notificationApi.sendNotification(userId, selectedCourse, notificationMessage)
-                .then(response => {
-                    console.log('send notification {New Assignment Uploaded} for students');
-                }).catch(error => {
-                    console.log('Error sending notification to students', error);
-                });
+            const EnNotificationMessage = `New Assignment Uploaded for course `;
+            const ArNotificationMessage = `تم رفع تكليف جديد للمادة `;
+            await notificationApi.sendNotification(userId, selectedCourse, EnNotificationMessage, ArNotificationMessage);
         }
     };
 
     return (
         <div className={`UploadAssignment_component ${isDarkMode ? 'dark' : 'light'} ${language === 'Ar' ? 'rtl' : ''}`}>
-            <h2>{language === 'En' ? 'Upload New Assignment' : 'رفع واجب جديد'}</h2>
+            <h2>{language === 'En' ? 'Upload New Assignment' : 'رفع تكليف جديد'}</h2>
             <form onSubmit={handleSubmit} className="UploadAssignment_form">
                 <h3>
                     {language === 'En' ? 'Select Course:' : 'اختر المادة الدراسية:'}
@@ -129,7 +125,7 @@ const UploadAssignment = () => {
                     <>
                         <div className="UploadAssignment_form-group">
                             <label htmlFor="assignmentName">
-                                {language === 'En' ? 'Assignment Name:' : 'اسم الواجب:'}
+                                {language === 'En' ? 'Assignment Name:' : 'اسم التكليف:'}
                             </label>
                             <input
                                 type="text"
@@ -140,8 +136,21 @@ const UploadAssignment = () => {
                             />
                         </div>
                         <div className="UploadAssignment_form-group">
+                            <label htmlFor="assignmentName">
+                                {language === 'En' ? 'Assignment Score:' : 'درجة التكليف:'}
+                            </label>
+                            <input
+                                type="number"
+                                id="assignmentScore"
+                                value={assignmentScore}
+                                onChange={(e) => setAssignmentScore(e.target.value ? parseInt(e.target.value) : '')}
+                                required
+                                min={1}
+                            />
+                        </div>
+                        <div className="UploadAssignment_form-group">
                             <label htmlFor="assignmentDescription">
-                                {language === 'En' ? 'Assignment Description:' : 'وصف الواجب:'}
+                                {language === 'En' ? 'Assignment Description:' : 'وصف التكليف:'}
                             </label>
                             <textarea
                                 id="assignmentDescription"
@@ -163,7 +172,7 @@ const UploadAssignment = () => {
                         </div>
                         <div className="UploadAssignment_form-group">
                             <label htmlFor="dueDate">
-                                {language === 'En' ? 'Due Date:' : 'تاريخ الاستحقاق:'}
+                                {language === 'En' ? 'Due Date:' : 'التاريخ النهائي لتسليم التكليف:'}
                             </label>
                             <DatePicker
                                 selected={dueDate}
@@ -183,7 +192,11 @@ const UploadAssignment = () => {
 
                         </div>
                         {assignmentContentErrMessage && (
-                            <p style={{color: 'red', marginBottom: '8px', fontStyle: 'italic'}}>{assignmentContentErrMessage}</p>
+                            <p style={{
+                                color: 'red',
+                                marginBottom: '8px',
+                                fontStyle: 'italic'
+                            }}>{assignmentContentErrMessage}</p>
                         )}
                         <button type="submit">
                             {language === 'En' ? 'Upload' : 'رفع'}

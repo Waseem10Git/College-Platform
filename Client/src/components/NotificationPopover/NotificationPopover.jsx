@@ -20,7 +20,7 @@ const NotificationPopover = ({ notifications }) => {
                 {notifications.length > 0 ? (
                     notifications.map((notif, index) => (
                         <li key={index} className="item">
-                            {notif.message}
+                            {language === 'En' ? notif.EnMessage : notif.ArMessage}
                             <p>{formatDate(notif.created_at)}</p>
                         </li>
                     ))

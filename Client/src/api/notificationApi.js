@@ -1,9 +1,10 @@
 import axios from "./axios";
 
-const sendNotification = (userId, courseCode, notificationMessage) => axios.post(`/api/send-notification`, {
+const sendNotification = (userId, courseCode, EnNotificationMessage, ArNotificationMessage) => axios.post(`/api/send-notification`, {
     userId: userId,
     courseCode: courseCode,
-    message: notificationMessage
+    EnMessage: EnNotificationMessage,
+    ArMessage: ArNotificationMessage
 });
 
 const notificationApi = { sendNotification };

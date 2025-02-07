@@ -39,6 +39,8 @@ class EnrollmentExamModel {
             SELECT
                 exams.exam_id,
                 exams.exam_name,
+                exams.duration,
+                exams.start_at,
                 questions.question_id,
                 questions.question_text,
                 questions.question_type,

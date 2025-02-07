@@ -49,6 +49,7 @@ body, html {
 }
 
 .UploadAssignment_component input[type="text"],
+.UploadAssignment_component input[type="number"],
 .UploadAssignment_component textarea {
   width: 100%;
   padding: 10px;

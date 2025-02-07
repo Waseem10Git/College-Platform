@@ -127,6 +127,17 @@ form button:hover {
   color: #007bff;
 }
 
+#accounts_deleteButton {
+  background-color: #D32F2F;
+  border-color: #D32F2F;
+}
+
+#accounts_deleteButton:hover {
+  background-color: transparent;
+  border-color: #D32F2F;
+  color: #D32F2F;
+}
+
 .accounts-container_dark .accounts-container {
   background-color: #161616; /* Dark gray */
   color: #ffffff; /* White */
@@ -257,32 +268,6 @@ color: #dddddd;
 .accounts_component_form-group th,
 .accounts_component_form-group td {
   text-align: center; /* Center the text in the cells */
-}
-
-#accounts_confirmDeleteHeader {
-  text-align: center;
-}
-
-#accounts_deleteButton, #accounts_confirmDeleteButton {
-  background-color: #D32F2F;
-  border-color: #D32F2F;
-}
-
-#accounts_deleteButton:hover, #accounts_confirmDeleteButton:hover {
-  background-color: transparent;
-  color: #D32F2F;
-}
-
-#accounts_confirmDeleteContainer {
-  display: flex;
-  flex-direction: row;
-  text-align: center;
-  justify-content: center;
-}
-
-#accounts_confirmDeleteButton, #accounts_cancelButton {
-  width: 150px;
-  margin: 20px 5px;
 }
 
 /* Responsive table for smaller screens */

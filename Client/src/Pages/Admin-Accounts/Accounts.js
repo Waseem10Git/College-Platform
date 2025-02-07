@@ -7,7 +7,6 @@ import departmentsApi from "../../api/departmentsApi";
 import usersApi from "../../api/usersApi";
 import { IoMdDownload } from "react-icons/io";
 import {ErrorDetails} from "../../components";
-import deleteDataApi from "../../api/deleteDataApi";
 
 const Accounts = () => {
   const { language, isDarkMode } = useContext(UserContext);
@@ -16,41 +15,43 @@ const Accounts = () => {
   const [departments, setDepartments] = useState([]);
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState('');
-  const [idErrMessage, setIdErrMessage] = useState('');
+  const [idErrMessage, setIdErrMessage] = useState({EnMessage: '', ArMessage: ''});
+  const [newIdErrMessage, setNewIdErrMessage] = useState({EnMessage: '', ArMessage: ''});
   const [uploadErrors, setUploadErrors] = useState(null);
-  const [uploadSummaryError, setUploadSummaryError] = useState('');
-  const [confirmDeletion, setConfirmDeletion] = useState(false);
+  const [uploadSummaryError, setUploadSummaryError] = useState({EnMessage: '', ArMessage: ''});
   const [formData, setFormData] = useState({
+    userID: '',
     firstName: '',
     lastName:'',
     email: '',
     password: '',
     role: '',
     departmentID: 0,
+    newUserID: '',
     newFirstName: '',
     newLastName: '',
     newEmail: '',
     newPassword: '',
     newRole: '',
     newDepartmentID: 0,
-    userID: 0,
   });
 
   const resetFormData = () => {
     setFormData({
+      userID: '',
       firstName: '',
       lastName:'',
       email: '',
       password: '',
       role: '',
       departmentID: 0,
+      newUserID: '',
       newFirstName: '',
       newLastName: '',
       newEmail: '',
       newPassword: '',
       newRole: '',
       newDepartmentID: 0,
-      userID: 0,
     });
   };
 
@@ -59,7 +60,7 @@ const Accounts = () => {
       const response = await departmentsApi.fetchDepartment()
       setDepartments(response.data);
     } catch (error) {
-      console.error(language === 'En' ? 'fetch departments failed' : 'فشل جلب الأقسام');
+      toast.error(language === 'En' ? 'fetch departments failed' : 'فشل جلب الأقسام');
     }
   };
 
@@ -68,7 +69,7 @@ const Accounts = () => {
       const response = await usersApi.fetchUsers();
       setUsers(response.data);
     } catch (error) {
-      console.error(language === 'En' ? 'fetch users failed' : 'فشل جلب المستخدمين');
+      toast.error(language === 'En' ? 'fetch users failed' : 'فشل جلب المستخدمين');
     }
   };
 
@@ -77,18 +78,27 @@ const Accounts = () => {
       const response = await usersApi.fetchLastUserId();
       setFormData((prevFormData) => ({
         ...prevFormData,
-        userID: parseInt(response.data.id) + 1
+        userID: parseInt(response.data.id, 10) + 1
       }));
     } catch (error) {
-      console.error(language === 'En' ? 'fetch last user id failed' : 'فشل جلب معرف المستخدم الأخير')
+      toast.error(language === 'En' ? 'fetch last user id failed' : 'فشل جلب الرقم التعريفي للمستخدم الأخير')
     }
   }
 
   useEffect(() => {
     fetchDepartments();
     fetchUsers();
-    fetchLastUserId()
-  }, [users]);
+  }, []);
+
+  useEffect(() => {
+    if (selectedOption === 'add') {
+      fetchLastUserId();
+    }
+    if (selectedOption === 'users'){
+      fetchUsers();
+      fetchDepartments();
+    }
+  }, [selectedOption]);
 
   // Function to handle filtering
   const handleFilterChange = (e) => {
@@ -107,8 +117,9 @@ const Accounts = () => {
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
-    setConfirmDeletion(false);
     resetFormData();
+    setIdErrMessage({EnMessage: '', ArMessage: ''});
+    setNewIdErrMessage({EnMessage: '', ArMessage: ''});
   };
 
   const handleFileChange = (e) => {
@@ -117,7 +128,7 @@ const Accounts = () => {
 
   const handleFileUpload = async () => {
     setUploadErrors(null);
-    setUploadSummaryError('');
+    setUploadSummaryError({EnMessage: '', ArMessage: ''});
     if (!file) {
       toast.error(language === 'En' ? 'Please select a file first' : 'رجاءاً أختر ملف');
       return;
@@ -130,14 +141,17 @@ const Accounts = () => {
     try {
       // Send the file directly to the backend
       const response = await accountsApi.uploadAccounts(formData);
-      console.log('upload file response:', response.data);
       if (response.data.Status === "Success") {
         toast.success(language === 'En' ? 'Accounts added successfully' : 'تمت إضافة الحسابات بنجاح');
         resetFormData();
-      } else {
+      } else if (response.data.Status === "Partial Success") {
         toast.success(language === 'En' ? 'Part of the accounts have been added successfully' : 'تم إضافة جزء من الحسابات بنجاح');
         setUploadErrors(response.data.Errors);
-        setUploadSummaryError(response.data.Message);
+        setUploadSummaryError({EnMessage : response.data.EnMessage, ArMessage: response.data.ArMessage});
+      } else {
+        toast.error(language === 'En' ? response.data.EnMessage : response.data.ArMessage);
+        setUploadErrors(response.data.Errors);
+        setUploadSummaryError({EnMessage : response.data.EnMessage, ArMessage: response.data.ArMessage});
       }
     } catch (error) {
       console.error(error);
@@ -152,7 +166,7 @@ const Accounts = () => {
       ...prevData,
       [name]:
           name === "firstName" || name === "lastName" || name === "newFirstName" || name === "newLastName"
-              ? /^[a-zA-Z]*$/.test(value)
+              ? /^[a-zA-Z\u0600-\u06FF\s]*$/.test(value)
                   ? value
                   : prevData[name]
               : name === "userID" || name === "departmentID" || name === "newDepartmentID"
@@ -172,57 +186,56 @@ const Accounts = () => {
     if (formData.newRole) dataToUpdate.newRole = formData.newRole;
     if (formData.newDepartmentID) dataToUpdate.newDepartmentID = formData.newDepartmentID;
     if (formData.userID.toString().length < 7 || !formData.userID) {
-      setIdErrMessage("User Id can't be empty or less than 7 digit");
+      setIdErrMessage({EnMessage : "User Id can't be empty or less than 7 digit", ArMessage: "لا يمكن أن يكون الرقم التعريفي فارغ أو أقل من 7 أرقام"});
       return;
     } else {
       dataToUpdate.userID = formData.userID;
-      setIdErrMessage('');
+      setIdErrMessage({EnMessage: '', ArMessage: ''});
+    }
+    if (formData.newUserID.toString().length < 7 && formData.newUserID) {
+      setNewIdErrMessage({EnMessage : "User Id can't be less than 7 digit", ArMessage: "لا يمكن أن يكون الرقم التعريفي أقل من 7 أرقام"});
+      return;
+    } else {
+      dataToUpdate.newUserID = formData.newUserID;
+      setNewIdErrMessage({EnMessage: '', ArMessage: ''});
     }
 
     if (selectedOption === "update"){
       await accountsApi.updateAccount(dataToUpdate)
           .then(res => {
-            if (res.data.Status === "Success") {
+            if (res.data.success) {
               toast.success(language === 'En' ? 'Account updated successfully' : 'تم تحديث الحساب بنجاح');
               resetFormData();
-            } else {
-              toast.error(language === 'En' ? 'Account updated failed' : 'فشل تحديث الحساب');
             }
           })
           .catch(err => {
-            console.error(err);
             if (err.response && err.response.status === 404) {
-              toast.error(language === 'En' ? 'User not exist' : 'المستخدم غير موجود');
+              if (!err.response.data.success) {
+                toast.error(language === 'En' ? err.response.data.EnMessage : err.response.data.ArMessage);
+              }
             } else {
-              console.error(err);
               toast.error(language === 'En' ? 'Failed' : 'فشل');
             }
           });
-      console.log('Submitted data to update:', dataToUpdate);
     }else if (selectedOption === "add") {
-      console.log("form data", formData);
           await accountsApi.addAccount(formData)
           .then(res => {
-            console.log(res.data)
-            if (res.data.status === "Success") {
+            if (res.data.success) {
               toast.success(language === 'En' ? 'Account added successfully' : 'تم إضافة الحساب بنجاح');
               resetFormData();
             }
           })
           .catch(err => {
-            console.error(err);
             if (err.response && err.response.status === 404) {
-              toast.error(err.response.message);
+              toast.error(language === 'En' ? err.response.EnMessage : err.response.ArMessage);
             } else {
-              console.error(err);
               toast.error(language === 'En' ? 'Failed' : 'فشل');
             }
           });
-      console.log('Submitted data:', formData);
     }else if (selectedOption === 'delete') {
           await accountsApi.deleteAccount(formData.userID)
           .then(res => {
-            if (res.data.Status === "Success") {
+            if (res.data.success) {
               toast.success(language === 'En' ? 'Account deleted successfully' : 'تم حذف الحساب بنجاح');
               resetFormData();
             } else {
@@ -230,9 +243,8 @@ const Accounts = () => {
             }
           })
           .catch(err => {
-            console.error(err);
             if (err.response && err.response.status === 404) {
-              toast.error(language === 'En' ? 'User not exist' : 'المستخدم غير موجود');
+              toast.error(language === 'En' ? err.response.EnMessage : err.response.ArMessage);
             } else {
               console.error(err);
               toast.error(language === 'En' ? 'Failed' : 'فشل');
@@ -240,22 +252,6 @@ const Accounts = () => {
           });
     }
   };
-
-  const handleDeleteTablesData = async () => {
-    await deleteDataApi.deleteDataTables()
-        .then(res => {
-          if (res.data.success === true) {
-            toast.success(language === 'En' ? 'Tables data deleted successfully' : 'تم حذف بيانات الجداول بنجاح');
-            resetFormData();
-          } else {
-            toast.error(language === 'En' ? 'Tables data deletion failed' : 'فشل في حذف بيانات الجداول');
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          toast.error(language === 'En' ? 'Failed' : 'فشل');
-        });
-  }
 
   return (
       <div className={`accounts-container ${isDarkMode ? 'accounts-container_dark' : 'accounts-container_light'}`}>
@@ -288,11 +284,6 @@ const Accounts = () => {
               }}>
                 {language === 'En' ? 'Delete Account' : 'حذف حساب'}
               </li>
-              <li className={selectedOption === "deleteTablesData" ? "accounts_component_active" : undefined} onClick={() => {
-                handleOptionClick('deleteTablesData');
-              }}>
-                {language === 'En' ? 'Delete Tables Data' : 'حذف بيانات الجداول'}
-              </li>
             </ul>
           </div>
           <main>
@@ -304,7 +295,7 @@ const Accounts = () => {
                         {/* Filter input */}
                           <input
                               type="text"
-                              placeholder={language === 'En' ? 'Search...BY ID/Name/Email/Role/Department' : 'البحث... حسب المعرف/الاسم/البريد الإلكتروني/الدور/القسم'}
+                              placeholder={language === 'En' ? 'Search...BY ID/Name/Email/Role/Department' : 'البحث... حسب الرقم التعريفي/الاسم/البريد الإلكتروني/الدور/القسم'}
                               value={filter}
                               onChange={handleFilterChange}
                               className="filter-input"
@@ -314,7 +305,7 @@ const Accounts = () => {
                           <table>
                             <thead>
                             <tr>
-                              <th>{language === 'En' ? 'ID' : 'الرقم'}</th>
+                              <th>{language === 'En' ? 'ID' : 'الرقم التعريفي'}</th>
                               <th>{language === 'En' ? 'First Name' : 'الاسم الأول'}</th>
                               <th>{language === 'En' ? 'Last Name' : 'الاسم الأخير'}</th>
                               <th>{language === 'En' ? 'Email' : 'البريد الإلكتروني'}</th>
@@ -379,13 +370,6 @@ const Accounts = () => {
                           </div>
                         </div>
                     )}
-                    {idErrMessage && !uploadErrors && (
-                        <p style={{
-                          color: 'red',
-                          marginBottom: '8px',
-                          fontStyle: 'italic'
-                        }}>{idErrMessage}</p>
-                    )}
                     {selectedOption === 'add' && (
                         <>
                           <div className="accounts_component_form-group">
@@ -393,6 +377,13 @@ const Accounts = () => {
                             <input type={"text"} id={"userID"} name={"userID"} required value={formData.userID}
                                    onChange={handleInputChange}/>
                           </div>
+                          {idErrMessage && !uploadErrors && (
+                              <p style={{
+                                color: 'red',
+                                marginBottom: '8px',
+                                fontStyle: 'italic'
+                              }}>{language === 'En' ? idErrMessage.EnMessage : idErrMessage.ArMessage}</p>
+                          )}
                           <div className="accounts_component_form-group">
                             <label htmlFor={"firstName"}>{language === 'En' ? 'First Name:' : 'الاسم الأول:'}</label>
                             <input type={"text"} id={"firstName"} name={"firstName"} required value={formData.firstName}
@@ -442,10 +433,30 @@ const Accounts = () => {
                       <>
                         <div className="accounts_component_form-group">
                           <label
-                              htmlFor="userID">{language === 'En' ? 'According user ID:' : 'تبقا لمعرف المستخدم:'}</label>
+                              htmlFor="userID">{language === 'En' ? 'According To User ID:' : 'تبقاً للرقم التعريفي:'}</label>
                           <input type="number" id="userID" name={"userID"} value={formData.userID}
                                  onChange={handleInputChange}/>
                         </div>
+                        {idErrMessage && !uploadErrors && (
+                            <p style={{
+                              color: 'red',
+                              marginBottom: '8px',
+                              fontStyle: 'italic'
+                            }}>{language === 'En' ? idErrMessage.EnMessage : idErrMessage.ArMessage}</p>
+                        )}
+                        <div className="accounts_component_form-group">
+                          <label
+                              htmlFor="newUserID">{language === 'En' ? 'New User ID:' : 'الرقم التعريفي الجديد:'}</label>
+                          <input type="number" id="newUserID" name={"newUserID"} value={formData.newUserID}
+                                 onChange={handleInputChange}/>
+                        </div>
+                        {newIdErrMessage && !uploadErrors && (
+                            <p style={{
+                              color: 'red',
+                              marginBottom: '8px',
+                              fontStyle: 'italic'
+                            }}>{language === 'En' ? newIdErrMessage.EnMessage : newIdErrMessage.ArMessage}</p>
+                        )}
                         <div className="accounts_component_form-group">
                           <label
                               htmlFor="newFirstName">{language === 'En' ? 'New First Name:' : 'الاسم الجديد:'}</label>
@@ -471,7 +482,8 @@ const Accounts = () => {
                         </div>
                         <div className="accounts_component_form-group">
                           <label htmlFor="newRole">{language === 'En' ? 'Change Role:' : 'تغيرر الدور:'}</label>
-                          <select className={"accounts_component_form-select"} id="newRole" name="newRole" value={formData.newRole}
+                          <select className={"accounts_component_form-select"} id="newRole" name="newRole"
+                                  value={formData.newRole}
                                   onChange={handleInputChange}>
                             <option value="">{language === 'En' ? 'Select Role' : 'حدد الدور'}</option>
                             {/*<option value="admin">{language === 'En' ? 'Admin' : 'مسؤل'}</option>*/}
@@ -481,8 +493,10 @@ const Accounts = () => {
                         </div>
                         {formData.newRole === "student" ? (
                             <div className="accounts_component_form-group">
-                              <label htmlFor={"newDepartmentID"}>{language === 'En' ? 'Change Department:' : 'تغيير القسم:'}</label>
-                              <select className={"accounts_component_form-select"} id={"newDepartmentID"} name={"newDepartmentID"}
+                              <label
+                                  htmlFor={"newDepartmentID"}>{language === 'En' ? 'Change Department:' : 'تغيير القسم:'}</label>
+                              <select className={"accounts_component_form-select"} id={"newDepartmentID"}
+                                      name={"newDepartmentID"}
                                       value={formData.newDepartmentID} onChange={handleInputChange} required>
                                 <option value="">{language === 'En' ? 'Select Department' : 'حدد القسم'}</option>
                                 {departments ? departments.map((dep, index) => (
@@ -493,35 +507,17 @@ const Accounts = () => {
                         <button type="submit">{language === 'En' ? 'Update' : 'تحديث'}</button>
                       </>
                   )}
-                  {selectedOption === 'delete' && (
-                      <>
-                        <div className="accounts_component_form-group">
-                          <label
-                              htmlFor="userID">{language === 'En' ? 'User ID:' : ' الرقم التعريفي الخاص بالمستخدم:'}</label>
-                          <input type="number" id="userID" name="userID" value={formData.userID}
+                    {selectedOption === 'delete' && (
+                        <>
+                          <div className="accounts_component_form-group">
+                            <label
+                                htmlFor="userID">{language === 'En' ? 'User ID:' : ' الرقم التعريفي الخاص بالمستخدم:'}</label>
+                            <input type="number" id="userID" name="userID" value={formData.userID}
                                  onChange={handleInputChange}/>
                         </div>
-                        <button type="submit">{language === 'En' ? 'Delete' : 'حذف'}</button>
+                        <button id={'accounts_deleteButton'} type="submit">{language === 'En' ? 'Delete' : 'حذف'}</button>
                       </>
                   )}
-                    {selectedOption === 'deleteTablesData' && (
-                        <div className="accounts_component_form-group">
-                          {confirmDeletion ? (
-                              <>
-                                <h3 id={'accounts_confirmDeleteHeader'}>{language === 'En' ? 'Confirm Delete Tables Data' : 'تأكيد حذف بيانات الجداول'}</h3>
-                                <div id={'accounts_confirmDeleteContainer'}>
-                                  <button id={'accounts_confirmDeleteButton'} type={'button'}
-                                          onClick={handleDeleteTablesData}>{language === 'En' ? 'Delete' : 'حذف'}</button>
-                                  <button id={'accounts_cancelButton'} type={'button'}
-                                          onClick={() => setConfirmDeletion(false)}>{language === 'En' ? 'Cancel' : 'إلغاء'}</button>
-                                </div>
-                              </>
-                          ) : (
-                              <button id={'accounts_deleteButton'} type={"button"}
-                                      onClick={() => setConfirmDeletion(true)}>{language === 'En' ? 'Delete Tables Data' : 'حذف بيانات الجداول'}</button>
-                          )}
-                        </div>
-                    )}
                   </form>
                 </>)}
           </main>

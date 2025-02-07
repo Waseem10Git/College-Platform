@@ -84,8 +84,9 @@ const ChapterUpload = () => {
                 setUploadingVisible(false);
                 setFileErrorMessage('');
 
-                const notificationMessage = language === 'En' ? 'New Chapter uploaded for course' : 'تم رفع محاضرة جديدة!';
-                await notificationApi.sendNotification(userId, courseCode, notificationMessage);
+                const EnNotificationMessage = `New Chapter uploaded for course `;
+                const ArNotificationMessage = `تم رفع محاضرة جديدة للمادة `;
+                await notificationApi.sendNotification(userId, courseCode, EnNotificationMessage, ArNotificationMessage);
             }
 
             fetchData();
@@ -150,7 +151,8 @@ const ChapterUpload = () => {
             }
             // Generate the view URL for the file
             const url = chaptersApi.viewChapter(id);
-            setFileView({fileUrl: url});
+            window.open(url, "_blank");
+            // setFileView({fileUrl: url});
         } catch (error) {
             toast.error(language === 'En' ? "Something went wrong while viewing chapter" : "حدثت مشكلة أثناء عرض الملف");
         }
@@ -177,6 +179,10 @@ const ChapterUpload = () => {
         }
     }
 
+    const handleAssignmentViewUrl = (url) => {
+        window.open(url, "_blank")
+    }
+
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         date.setHours(date.getHours());
@@ -189,8 +195,6 @@ const ChapterUpload = () => {
             year: 'numeric',
         });
     };
-    console.log('assignments: ', assignments)
-    console.log(assignmentView)
 
     return (
         <>
@@ -247,7 +251,7 @@ const ChapterUpload = () => {
                         ))}
                     </div>
 
-                    {assignments.length > 0 ? (
+                    {assignments.length > 0 && chapters.length > 0 ? (
                         <>
                             <br/>
                             <hr/>
@@ -259,7 +263,7 @@ const ChapterUpload = () => {
                         {assignments.map(assignment => (
                             <div key={assignment.assignment_id} className="Chapters_courses-card">
                                 <div className="Assignments_card-header">
-                                    <span>{assignment.assignment_title}</span>
+                                    <span>{assignment.assignment_title}({assignment.assignment_score})</span>
                                     <div className="Assignments_icon-container">
                                         <SiGoogletasks className="Assignments_icon"/>
                                         <span
@@ -318,12 +322,6 @@ const ChapterUpload = () => {
                                         <p><strong>{language === 'En' ? 'Deadline: ' : 'الموعد النهائي: '}</strong> {formatDate(assignmentView.due_date)}</p>
                                     )}
 
-                                    {/* Display the file if it exists */}
-                                    {assignmentView.fileUrl && (
-                                        <embed src={assignmentView.fileUrl} type={assignmentView.fileMimeType} width="100%"
-                                               height="600px"/>
-                                    )}
-
                                     {/* Display the description if it exists */}
                                     {assignmentView.description && (
                                         <p><strong>{language === 'En' ? 'Description: ' : 'الوصف: '}</strong> {assignmentView.description}</p>
@@ -334,9 +332,20 @@ const ChapterUpload = () => {
                                         <p>{language === 'En' ? 'No content available for this assignment.' : 'لا يوجد محتوى لهذا الواجب.'}</p>
                                     )}
 
-                                    <button onClick={() => setAssignmentView(null)}>
-                                        {language === 'En' ? 'Close Preview' : 'إغلاق العرض'}
-                                    </button>
+                                    <div className={'Chapters_viewButtons'}>
+                                        <button onClick={() => setAssignmentView(null)}>
+                                            {language === 'En' ? 'Close Preview' : 'إغلاق العرض'}
+                                        </button>
+
+                                        {/* Display the file if it exists */}
+                                        {assignmentView.fileUrl && (
+                                            // <embed src={assignmentView.fileUrl} type={assignmentView.fileMimeType} width="100%"
+                                            //        height="600px"/>
+                                            <button id={'Chapters_download-button'} onClick={() => handleAssignmentViewUrl(assignmentView.fileUrl)}>
+                                                {language === 'En' ? 'View File' : 'عرض الملف'}
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         )}

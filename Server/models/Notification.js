@@ -17,7 +17,7 @@ class NotificationModel {
     static getNotifications(studentId) {
         return new Promise((resolve, reject) => {
             const sql = `
-            SELECT n.message, n.created_at 
+            SELECT n.EnMessage, n.ArMessage, n.created_at 
             FROM user_notifications as un
             INNER JOIN notifications as n ON un.notification_id = n.id
             WHERE user_id = ?
@@ -34,7 +34,7 @@ class NotificationModel {
     static getUnreadNotifications(studentId) {
         return new Promise((resolve, reject) => {
             const sql = `
-            SELECT n.message, n.created_at 
+            SELECT n.EnMessage, n.ArMessage, n.created_at 
             FROM user_notifications as un
             INNER JOIN notifications as n ON un.notification_id = n.id
             WHERE un.user_id = ? AND un.is_read = 0
@@ -64,10 +64,10 @@ class NotificationModel {
         });
     }
 
-    static insertNotification(instructor_course_id, message) {
+    static insertNotification(instructor_course_id, EnNotificationMessage, ArNotificationMessage) {
         return new Promise((resolve, reject) => {
-            const sql = 'INSERT INTO notifications (instructor_course_id, message) VALUES (?, ?)';
-            conn.query(sql, [instructor_course_id, message], (err, result) => {
+            const sql = 'INSERT INTO notifications (instructor_course_id, EnMessage, ArMessage) VALUES (?, ?, ?)';
+            conn.query(sql, [instructor_course_id, EnNotificationMessage, ArNotificationMessage], (err, result) => {
                 if (err) {
                     return reject(err);
                 }

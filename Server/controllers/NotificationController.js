@@ -40,12 +40,12 @@ class NotificationController {
 
     static async sendNotification(req, res) {
         try {
-            const { userId, courseCode, message } = req.body;
+            const { userId, courseCode, EnMessage, ArMessage } = req.body;
 
             conn.beginTransaction(async (err) => {
                 if (err) {
                     console.error('Transaction Error:', err);
-                    return res.status(500).json({ error: 'Transaction Error' });
+                    return res.status(500).json({ success: false, EnMessage: 'Transaction Error', ArMessage: 'خطأ في المعاملة' });
                 }
 
                 const result = await InstructorCourseModel.getInstructorCourseId(userId, courseCode);
@@ -53,16 +53,17 @@ class NotificationController {
                 if (result.length === 0) {
                     return conn.rollback(() => {
                         console.error('No matching instructor_course_id found');
-                        res.status(404).json({ error: 'No matching instructor_course_id found' });
+                        res.status(404).json({ success: false, EnMessage: 'No matching instructor_course_id found', ArMessage: 'لا يوجد رقم تعريفي مطابق' });
                     });
                 }
 
                 const instructor_course_id = result[0].id;
                 const course_name = result[0].course_name;
-                const notificationMessage = message + course_name;
+                const EnNotificationMessage = EnMessage + course_name;
+                const ArNotificationMessage = ArMessage + course_name;
 
                 // Insert the notification
-                const notificationResult = await NotificationModel.insertNotification(instructor_course_id, notificationMessage);
+                const notificationResult = await NotificationModel.insertNotification(instructor_course_id, EnNotificationMessage, ArNotificationMessage);
 
                 // Get the last inserted notification ID
                 const notificationId = notificationResult.insertId;
@@ -79,7 +80,7 @@ class NotificationController {
                     if (err) {
                         return conn.rollback(() => {
                             console.error('Transaction commit failed:', err);
-                            res.status(500).json({ error: 'Transaction commit failed' });
+                            res.status(500).json({ success: false, EnMessage: 'Transaction commit failed', ArMessage: 'فشل تأكيد المعاملة' });
                         });
                     }
 
@@ -88,7 +89,7 @@ class NotificationController {
             });
         } catch (err) {
             console.error('Error sending notification:', err);
-            return res.status(500).send('Server error');
+            return res.status(500).json({ success: false, EnMessage:'Server error', ArMessage: 'خطأ في الخادم' });
         }
     }
 }

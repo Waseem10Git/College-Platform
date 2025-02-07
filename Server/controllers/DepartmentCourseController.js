@@ -7,7 +7,7 @@ class DepartmentCourseController {
             return res.status(200).json(data);
         } catch (err) {
             console.error('Server Error ON GET departments-courses:', err);
-            return res.status(500).json({ message: 'Server Error ON GET departments-courses' });
+            return res.status(500).json({ success: false, EnMessage: 'Server Error', ArMessage: 'خطأ في الخادم' });
         }
     }
 
@@ -16,17 +16,17 @@ class DepartmentCourseController {
             const { department_id, course_id, level, semester } = req.body;
 
             if (!department_id || !course_id || !level || !semester)
-                return res.status(400).json({ success: false, message: 'All fields are required.' });
+                return res.status(400).json({ success: false, EnMessage: 'All fields are required', ArMessage: 'كل الحقول مطلوبة' });
 
             const isExist = await DepartmentCourseModel.checkDepartmentCourseExistence(department_id + '_' + course_id)
             if (isExist)
-                return res.status(409).json({ success: false, message: 'This course-department combination already exists.' });
+                return res.status(409).json({ success: false, EnMessage: 'This course-department combination already exists', ArMessage: 'هذا المزيج من المقرر والقسم موجود بالفعل' });
 
             await DepartmentCourseModel.addDepartmentCourse(department_id, course_id, level, semester);
             return res.status(200).json({ success: true });
         } catch (err) {
             console.error('Error inserting into departments-courses:', err);
-            return res.status(500).json({ message: 'Error inserting into departments-courses' });
+            return res.status(500).json({ success: false, EnMessage: 'Server Error', ArMessage: 'خطأ في الخادم' });
         }
     }
 
@@ -43,7 +43,7 @@ class DepartmentCourseController {
             return res.status(200).json({ success: true });
         } catch (err) {
             console.error('Error updating departments-courses:', err);
-            return res.status(500).json({ message: 'Error updating departments-courses' });
+            return res.status(500).json({ success: false, EnMessage: 'Server Error', ArMessage: 'خطأ في الخادم' });
         }
     }
 
@@ -62,7 +62,7 @@ class DepartmentCourseController {
             return res.status(200).json({ success: true });
         } catch (err) {
             console.error('Error deleting from departments-courses:', err);
-            return res.status(500).json({ message: 'Error deleting from departments-courses' });
+            return res.status(500).json({ success: false, EnMessage: 'Server Error', ArMessage: 'خطأ في الخادم' });
         }
     }
 }

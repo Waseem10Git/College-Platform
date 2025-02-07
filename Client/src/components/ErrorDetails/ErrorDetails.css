@@ -40,6 +40,7 @@
     padding: 1rem;
     border-top: 1px solid #f44336;
     background-color: #fff6f5;
+    margin-right: 25px;
 }
 
 .error-details ul {

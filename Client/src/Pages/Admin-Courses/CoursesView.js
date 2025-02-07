@@ -31,7 +31,7 @@ const CoursesView = () => {
             const response = await coursesApi.fetchAllCourses();
             setCourses(response.data);
         } catch (err) {
-            console.log('Error fetching courses data: ', err);
+            toast.error(language === 'En' ? err.response.data.EnMessage : err.response.data.ArMessage);
         }
     };
 
@@ -108,16 +108,17 @@ const CoursesView = () => {
         if (!isAddingCourseDataValid(course, courses)) return;
 
         try {
-            await coursesApi.addCourse(course);
-            toast.success(language === 'En' ? 'Course added successfully!' : 'تمت إضافة المادة بنجاح!');
-
-            fetchCourses(); // Make sure fetchCourses doesn't trigger a toast
-            setNewCourse({ course_code: '', course_name: '' });
+            const response = await coursesApi.addCourse(course);
+            if (response.data.success) {
+                toast.success(language === 'En' ? 'Course added successfully' : 'تمت إضافة المادة بنجاح');
+                fetchCourses();
+                setNewCourse({course_code: '', course_name: ''});
+            }
         } catch (err) {
-            if (err.response && err.response.data && err.response.data.message) {
-                toast.error(err.response.data.message);
+            if (err.response && err.response.data && !err.response.data.success) {
+                toast.error(language === 'En' ? err.response.data.EnMessage : err.response.data.ArMessage);
             } else {
-                toast.error(language === 'En' ? 'Error adding course.' : 'حدث خطأ أثناء إضافة المادة.');
+                toast.error(language === 'En' ? 'Error adding course' : 'حدث خطأ أثناء إضافة المادة');
             }
         }
     };
@@ -132,14 +133,16 @@ const CoursesView = () => {
         if (!isEditingCourseDataValid(course, courses)) return;
 
         try {
-            await coursesApi.editCourse(editingCourse, course);
-            toast.success(language === 'En' ? 'Course updated successfully!' : 'تم تحديث المادة بنجاح!');
-            setEditingCourse(null);
-            setUpdatedCourse({ course_code: '', course_name: '' });
-            fetchCourses();
+            const response = await coursesApi.editCourse(editingCourse, course);
+            if (response.data.success){
+                toast.success(language === 'En' ? 'Course updated successfully!' : 'تم تحديث المادة بنجاح!');
+                setEditingCourse(null);
+                setUpdatedCourse({ course_code: '', course_name: '' });
+                fetchCourses();
+            }
         } catch (err) {
-            if (err.response && err.response.data && err.response.data.message) {
-                toast.error(err.response.data.message);
+            if (err.response && err.response.data && !err.response.data.success) {
+                toast.error(language === 'En' ? err.response.data.EnMessage : err.response.data.ArMessage);
             } else {
                 toast.error(language === 'En' ? 'Error updating course.' : 'حدث خطأ أثناء تحديث المادة.');
             }
@@ -148,12 +151,14 @@ const CoursesView = () => {
 
     const deleteCourse = async (id) => {
         try {
-            await coursesApi.deleteCourse(id);
-            toast.success(language === 'En' ? 'Course deleted successfully!' : 'تم حذف المادة بنجاح!');
-            fetchCourses();
+            const response = await coursesApi.deleteCourse(id);
+            if (response.data.success) {
+                toast.success(language === 'En' ? 'Course deleted successfully!' : 'تم حذف المادة بنجاح!');
+                fetchCourses();
+            }
         } catch (err) {
-            if (err.response && err.response.data && err.response.data.message) {
-                toast.error(err.response.data.message);
+            if (err.response && err.response.data && !err.response.data.success) {
+                toast.error(language === 'En' ? err.response.data.EnMessage : err.response.data.ArMessage);
             } else {
                 toast.error(language === 'En' ? 'Error deleting course.' : 'حدث خطأ أثناء حذف المادة.');
             }
