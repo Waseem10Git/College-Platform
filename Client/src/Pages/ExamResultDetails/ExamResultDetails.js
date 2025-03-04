@@ -58,14 +58,14 @@ const ExamResultDetails = () => {
     setSelectedQuizId(examId);
     try {
       setIsLoading(true);
-      console.log(userId, examId);
+      // console.log(userId, examId);
       const response = await axios.get(`/api/studentExamDetails/${userId}/${examId}`);
-      console.log("Backend response:", response.data);
+      // console.log("Backend response:", response.data);
       const examStartAt = new Date(response.data[0].start_at).getTime();
       const examDuration = response.data[0].duration *60 * 1000;
       setExamEndTime(new Date(examStartAt + examDuration));
       const groupedQuestions = groupByQuestions(response.data);
-      console.log(groupedQuestions);
+      // console.log(groupedQuestions);
       setQuestions(groupedQuestions);
       setIsLoading(false);
     } catch (err) {

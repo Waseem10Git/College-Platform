@@ -2,7 +2,7 @@ import {useContext} from "react";
 import UserContext from "../../context/UserContext";
 import './ExamSelect.css';
 
-function ExamSelect({ exams, onSelect }) {
+function ExamSelect({ exams, onSelect, selectedExam }) {
     const { language, isDarkMode } = useContext(UserContext);
   return (
       <div className={`ExamSelect_container ${isDarkMode ? 'dark-mode' : 'light-mode'}`}>
@@ -10,6 +10,7 @@ function ExamSelect({ exams, onSelect }) {
               {language === 'En' ? 'Select Exam' : 'اختر الامتحان'}
           </h3>
           <select
+              value={selectedExam}
               onChange={(e) => onSelect(parseInt(e.target.value))}
               disabled={!exams.length}
               className={`ExamSelect_dropdown ${isDarkMode ? 'dark' : 'light'}`}

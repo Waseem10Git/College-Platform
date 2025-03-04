@@ -407,7 +407,7 @@ const MakeExam = () => {
                     className="MakeExam_inputField MakeExam_customDatePickerWidth"
                     minDate={startAt}
                     minTime={
-                      startAt && startAt.toDateString() === new Date().toDateString()
+                      dueDate && dueDate.toDateString() === new Date().toDateString()
                           ? new Date()
                           : new Date(new Date().setHours(0, 0, 0, 0))
                     }

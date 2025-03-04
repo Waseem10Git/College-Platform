@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import UserContext from "../../context/UserContext";
 import coursesApi from "../../api/coursesApi";
+import { toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
 
 export default function Course() {
     const { isDarkMode, role, language } = useContext(UserContext);
@@ -25,7 +27,8 @@ export default function Course() {
                     setIsLoading(false);
                 }
             } catch (error) {
-                console.log('Error fetching data:', error);
+                toast.error(language === 'En' ? `${error.response?.data?.EnMessage || 'Failed to load courses'}` : `${error.response?.data?.ArMessage || 'فشل تحميل المواد'}`);
+                setIsLoading(false);
             }
         };
         fetchData();

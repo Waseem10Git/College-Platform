@@ -22,37 +22,59 @@ const TakeExam = () => {
   const [isInExam, setIsInExam] = useState(false);
   const [isExamsListLoading, setIsExamsListLoading] = useState(false);
   const [isExamDetailsLoading, setIsExamDetailsLoading] = useState(false);
-  const [timer, setTimer] = useState(null);
+  const [timer, setTimer] = useState(0);
   const [intervalId, setIntervalId] = useState(null);
   const [showResults, setShowResults] = useState(false);
   const [finalScore, setFinalScore] = useState(null);
   const [notification, setNotification] = useState({ isOpen: false, EnMessage: '', ArMessage: '' }); // State for managing notifications
   const [currentTime, setCurrentTime] = useState(new Date());
   const [examEndTime, setExamEndTime] = useState(null);
+  const [showTimer, setShowTimer] = useState(true);
+  const [studentStartExam, setStudentStartExam] = useState(true);
+  const [studentStartExamAt, setStudentStartExamAt] = useState(new Date());
 
   useEffect(() => {
     // Load saved data from localStorage
-    const savedData = localStorage.getItem("takeExamData");
+    const savedData = localStorage.getItem(`takeExamData_${userId}`);
     if (savedData) {
       const parsedData = JSON.parse(savedData);
-      // setSelectedQuizId(parsedData.selectedQuizId || '');
-      // setSelectedCourseId(parsedData.selectedCourseId || '');
+      setSelectedQuizId(parsedData.selectedQuizId || '');
+      setSelectedCourseId(parsedData.selectedCourseId || '');
+      setExamDetails(parsedData.examDetails || []);
+      setExamQuestions(parsedData.examQuestions || []);
+      setExamAnswers(parsedData.examAnswers || []);
       setStudentAnswers(parsedData.studentAnswers || []);
-      // setCourses(parsedData.courses || []);
-      // setExams(parsedData.exams || []);
-      // setIsExamStarted(parsedData.isExamStarted || false);
-      // setIsExamEnded(parsedData.isExamEnded || false);
-      // setIsInExam(parsedData.isInExam || false);
+      setIsExamStarted(parsedData.isExamStarted || false);
+      setIsExamEnded(parsedData.isExamEnded || false);
+      setIsInExam(parsedData.isInExam || false);
+      setIsSubmitted(parsedData.isSubmitted || false);
+      setShowResults(parsedData.showResults || false);
+      setExamEndTime(parsedData.examEndTime || null);
+      setStudentStartExam(parsedData.studentStartExam || false);
+      setStudentStartExamAt(parsedData.studentStartExamAt || new Date());
     }
   }, []);
 
   useEffect(() => {
     // Save current state to localStorage whenever it changes
     const takeExamData = {
+      selectedQuizId,
+      selectedCourseId,
+      examDetails,
+      examQuestions,
+      examAnswers,
       studentAnswers,
+      isExamStarted,
+      isExamEnded,
+      isInExam,
+      isSubmitted,
+      showResults,
+      examEndTime,
+      studentStartExam,
+      studentStartExamAt
     };
-    localStorage.setItem("takeExamData", JSON.stringify(takeExamData));
-  }, [studentAnswers]);
+    localStorage.setItem(`takeExamData_${userId}`, JSON.stringify(takeExamData));
+  }, [studentAnswers, isInExam === true]);
 
 
   // Fetch courses based on userId and role
@@ -90,9 +112,25 @@ const TakeExam = () => {
       if (currentTime >= examEndTime) {
         setIsExamEnded(true);
         setIsExamStarted(false);
-      } else if (currentTime >= new Date(examDetails?.start_at)) {
+      } else if (currentTime >= new Date(examDetails?.start_at) && !examDetails?.due_date) {
         setIsExamStarted(true);
         startExamCountdown(new Date(examDetails.start_at), examDetails.duration * 60 * 1000, currentTime);
+      } else if (currentTime >= new Date(examDetails?.start_at) && examDetails?.due_date) {
+        setIsExamStarted(true);
+        const dueTime = new Date(examDetails.due_date);
+        const startTime = new Date(examDetails.start_at);
+        const remainingDueMs = dueTime.getTime() - currentTime.getTime();
+        const examDurationMs = examDetails.duration * 60 * 1000;
+        const studentEndTime = new Date(studentStartExamAt).getTime() + examDurationMs - currentTime.getTime()
+        if (examDurationMs < remainingDueMs && !studentStartExam) {
+          setShowTimer(false);
+        } else if (examDurationMs < remainingDueMs && studentStartExam) {
+
+          startExamCountdown(startTime, studentEndTime, currentTime);
+        } else if (examDurationMs >= remainingDueMs && remainingDueMs >= 0) {
+          setShowTimer(true);
+          startExamCountdown(startTime, remainingDueMs, currentTime);
+        }
       }
     }
   }, [currentTime, examEndTime, examDetails, selectedQuizId]);
@@ -195,22 +233,55 @@ const TakeExam = () => {
 
       const details = detailsResponse.data[0];
       setExamDetails(details);
-
       const startTime = new Date(details.start_at);
-      const durationInMilliseconds = details.duration * 60 * 1000;
-      const endTime = new Date(startTime.getTime() + durationInMilliseconds);
-      setExamEndTime(endTime);
+
+      // Calculate the original duration in milliseconds
+      const originalDurationMs = details.duration * 60 * 1000;
+      let adjustedDurationMs = originalDurationMs;
+
+      // If a due_date exists, adjust the duration if it's shorter than the original duration
+      if (details.due_date) {
+        const dueTime = new Date(details.due_date);
+        const diffMs = dueTime.getTime() - startTime.getTime();
+        if (diffMs < originalDurationMs) {
+          adjustedDurationMs = diffMs;
+        }
+      }
+
+      // Optionally update details.duration to reflect the adjusted duration in minutes
+      details.duration = Math.floor(adjustedDurationMs / (60 * 1000));
+      setExamDetails(details);
+
+      // Set the exam end time based on the adjusted duration
+      const endTime = new Date(startTime.getTime() + adjustedDurationMs);
+      setExamEndTime(details.due_date || endTime);
 
       setExamQuestions(questionsResponse.data || []);
       setExamAnswers(answersResponse.data || []);
 
+      // Check the current time to determine exam status
       if (currentTime >= endTime) {
         setIsExamEnded(true);
       } else if (currentTime >= startTime && currentTime < endTime) {
-        setIsExamStarted(true);
-        startExamCountdown(startTime, durationInMilliseconds, currentTime);
+        if (!details.due_date) {
+          // No due_date exists; proceed as before.
+          setIsExamStarted(true);
+          startExamCountdown(startTime, adjustedDurationMs, currentTime);
+        } else {
+
+          const dueTime = new Date(details.due_date);
+          const remainingDueMs = dueTime.getTime() - currentTime.getTime();
+          const examDurationMs = details.duration * 60 * 1000;
+
+          if (examDurationMs < remainingDueMs) {
+            setShowTimer(false);
+          } else {
+            setShowTimer(true);
+            startExamCountdown(startTime, remainingDueMs, currentTime);
+          }
+        }
       }
-      console.log('details response', detailsResponse.data);
+
     } catch (error) {
       console.error('Error fetching exam details:', error);
     } finally {
@@ -315,10 +386,8 @@ const TakeExam = () => {
   // };
 
   const handleStartExam = async () => {
-    console.log('prev not: ', notification);
     if (!isExamStarted) {
       setNotification({ isOpen: true, EnMessage: 'Exam has not started yet', ArMessage: 'الإمتحان لم يبدأ بعد' });
-      console.log('not: ', notification);
       return;
     }
 
@@ -336,8 +405,10 @@ const TakeExam = () => {
         const startTime = new Date(examDetails.start_at);
         if (currentTime >= startTime) {
           setIsExamStarted(true);
-          const durationInMilliseconds = examDetails.duration * 60 * 1000;
-          startExamCountdown(startTime, durationInMilliseconds, currentTime);
+          setStudentStartExam(true);
+          setStudentStartExamAt(currentTime);
+          // const durationInMilliseconds = examDetails.duration * 60 * 1000;
+          // startExamCountdown(startTime, durationInMilliseconds, currentTime);
         } else {
           setNotification({ isOpen: true, EnMessage: 'Exam has not started yet. Please wait', ArMessage: 'لم يبدأ الإمتحان بعد. الرجاء الانتظار' });
         }
@@ -374,10 +445,18 @@ const TakeExam = () => {
 
   const startExamCountdown = (startTime, durationInMilliseconds, currentTime) => {
     clearInterval(intervalId);
-    const remainingTime = Math.max(
-        (startTime.getTime() + durationInMilliseconds - currentTime.getTime()) / 1000,
-        0
-    );
+    let remainingTime ;
+    if (examDetails.due_date) {
+      remainingTime = Math.min(
+          durationInMilliseconds,
+          (new Date(examDetails.due_date)?.getTime() || Infinity) - currentTime.getTime()
+      ) / 1000;
+    } else {
+      remainingTime = Math.max(
+            (startTime.getTime() + durationInMilliseconds - currentTime.getTime()) / 1000,
+            0
+        );
+    }
     setTimer(Math.floor(remainingTime));
 
     const newIntervalId = setInterval(() => {
@@ -425,8 +504,9 @@ const TakeExam = () => {
     setSelectedQuizId('');
     setSelectedCourseId('');
     setNotification({isOpen: false, EnMessage: '', ArMessage: ''});
+    setStudentStartExam(false);
   };
-  // console.log(isExamStarted, isExamEnded, isInExam)
+
   return (
       <div className={`TakeExam_component ${isDarkMode ? 'dark' : 'light'}`}>
         {!isInExam && !showResults && (
@@ -457,12 +537,17 @@ const TakeExam = () => {
                             ? language === 'En' ? 'Exam Started' : 'بدأ الإمتحان'
                             : `${language === 'En' ? 'Start Time:' : 'وقت البدء:'} ${formatDate(examDetails.start_at)}`}
                   </p>
+                  {!isExamEnded && !isInExam && examDetails.due_date && (
+                      <p>{language === 'En' ? 'Due Date:' : 'تاريخ الإنتهاء:'} {formatDate(examDetails.due_date)}</p>
+                  )}
                   <p>{language === 'En' ? 'Number of questions:' : 'عدد الأسئلة:'} {examQuestions.length}</p>
                   {isExamStarted && !isExamEnded && !isInExam ? (
                       <div>
-                        <p>{language === 'En' ? 'Time Remaining:' : 'الوقت المتبقي:'} {formatTime(timer)}</p>
-                        <button onClick={() => handleStartExam()} >
-                          {language === 'En' ? 'Start Exam' : 'بدأ الإمتحان'}
+                        {showTimer && (
+                            <p>{language === 'En' ? 'Time Remaining:' : 'الوقت المتبقي:'} {formatTime(timer)}</p>
+                        )}
+                        <button onClick={() => handleStartExam()}>
+                        {language === 'En' ? 'Start Exam' : 'بدأ الإمتحان'}
                         </button>
                         {notification.isOpen && (
                             <p>{language === 'En' ? notification.EnMessage : notification.ArMessage}</p>

@@ -1,23 +1,23 @@
-/* Profile.css */
+.profile_container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
 
-/* Base styles for the profile component */
 .profile {
-  max-width: 600px;
-  margin: 20px auto;
+  margin: 20px;
   padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
   background-color: #f9f9f9;
   font-family: Arial, sans-serif;
 }
 
 .profile_ar {
-  direction: rtl; /* Right-to-left for Arabic */
+  direction: rtl;
   text-align: right;
 }
 
 .profile_en, .profile_En {
-  direction: ltr; /* Left-to-right for English */
+  direction: ltr;
   text-align: left;
 }
 
@@ -29,33 +29,29 @@
 .profile_info {
   display: flex;
   align-items: center;
+  justify-content: center;
   margin-bottom: 20px;
 }
 
-.profile_img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 20px;
-}
-
-.profile_ar .profile_img {
+.profile_ar {
   margin-left: 20px;
   margin-right: 0;
 }
 
+.profile_details {
+  display: flex;
+  justify-content: space-between;
+  width: 55%;
+  border-radius: 20px;
+}
+
 .profile_details p {
-  margin: 5px 0;
+  margin: 10px 0;
 }
 
 .profile_edit {
   border-top: 1px solid #ccc;
   padding-top: 20px;
-}
-
-.profile_edit h2 {
-  margin-bottom: 20px;
 }
 
 .profile_form_group {
@@ -67,12 +63,10 @@
   margin-bottom: 5px;
 }
 
-.profile_form_group input[type="password"],
-.profile_form_group input[type="tel"],
-.profile_form_group input[type="file"] {
+.profile_form_group input[type="password"] {
   width: 90%;
   padding: 10px;
-  border: 2px solid #ccc;
+  border: none;
   border-radius: 3px;
   background-color: #fff;
   transition: border-color 0.3s;
@@ -80,27 +74,24 @@
   box-sizing: border-box;
 }
 
-.profile_img_preview {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;
-  margin: 10px 0;
-}
-
 .profile_btn {
   display: block;
-  width: 100%;
-  padding: 10px;
+  width: fit-content;
+  padding: 10px 20px;
+  margin: 10px;
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 10px;
   cursor: pointer;
   text-align: center;
   font-size: 16px;
-  margin-top: 20px;
+  transition: 0.3s;
+}
+
+.profile_buttons {
+  display: flex;
+  justify-content: center;
 }
 
 .profile_btn:hover {
@@ -123,49 +114,77 @@
   background-color: #c82333;
 }
 
+.profile_editBtnContainer {
+  display: flex;
+  justify-content: center;
+}
+
 /* Light mode styles */
 .profile_light-mode {
-  background-color: #ffffff;
+  width: 75%;
+  background-color: #f7f7f7;
   color: #000000;
 }
 
 .profile_light-mode .profile {
-  border: 1px solid #ccc;
-  background-color: #f9f9f9;
+  /*border: 1px solid #ccc;*/
+  background-color: #f7f7f7;
   color: black;
 }
 
-.profile_light-mode .profile_edit {
-  border-top: 1px solid #ccc;
+.profile_light-mode .profile_details {
+  background-color: #d7dadc;
 }
 
-.profile_light-mode .profile_btn {
+.profile_light-mode .profile_form_group input[type="password"] {
+  border: 1px solid #ccc;
+}
+
+.profile_light-mode .profile_edit_btn {
   background-color: #007bff;
 }
 
-.profile_light-mode .profile_btn:hover {
+.profile_light-mode .profile_edit_btn:hover {
   background-color: #0056b3;
 }
 
 /* Dark mode styles */
 .profile_dark-mode {
-  background-color: #2c2c2c;
+  width: 75%;
+  background-color: #161616;
   color: #ffffff;
 }
 
-.profile_dark-mode .profile {
-  border: 1px solid #444;
-  background-color: #3c3c3c;
+.profile_dark-mode .profile_info {
+  background-color: #161616;
+}
+
+.profile_dark-mode .profile_details, .profile_dark-mode .edit_btn {
+  background-color: #4444;
+}
+
+.profile_dark-mode .edit_btn {
+  border: none ;
 }
 
 .profile_dark-mode .profile_edit {
   border-top: 1px solid #444;
+  background-color: #161616;
 }
 
-.profile_dark-mode .profile_btn {
-  background-color: #0056b3;
+.profile_dark-mode .profile_edit_btn {
+  background-color: #4444;
 }
 
-.profile_dark-mode .profile_btn:hover {
-  background-color: #007bff;
+.profile_dark-mode .profile_edit_btn:hover {
+  background-color: #444444;
+}
+
+.profile_dark-mode .profile_form_group {
+  background-color: #161616;
+}
+
+.profile_dark-mode .profile_form_group input[type="password"] {
+  background-color: #4444;
+  color: #f7f7f7;
 }

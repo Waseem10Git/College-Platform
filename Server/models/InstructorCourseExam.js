@@ -20,6 +20,21 @@ class InstructorCourseExamModel {
             });
         });
     }
+
+    static async deleteAssociationExamWithCourse(exam_id) {
+        const sql = `
+            DELETE FROM instructors_courses_exams WHERE exam_id = ?
+            `;
+
+        return new Promise((resolve, reject) => {
+            conn.query(sql, [exam_id], (err, result) => {
+                if (err) {
+                    return reject("Database error: " + err.message);
+                }
+                resolve(result);
+            });
+        });
+    }
 }
 
 module.exports = InstructorCourseExamModel;

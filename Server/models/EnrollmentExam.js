@@ -19,6 +19,21 @@ class EnrollmentExamModel {
         });
     }
 
+    static async deleteAssociationExamWithEnrollment(exam_id) {
+        const sql = `
+            DELETE FROM enrollments_exams WHERE exam_id = ?
+            `;
+
+        return new Promise((resolve, reject) => {
+            conn.query(sql, [exam_id], (err, result) => {
+                if (err) {
+                    return reject("Database error: " + err.message);
+                }
+                resolve(result);
+            });
+        });
+    }
+
     static editStudentExamScore(studentExamId, score) {
         return new Promise((resolve, reject) => {
             const query = `

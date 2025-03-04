@@ -223,6 +223,7 @@ const Accounts = () => {
             if (res.data.success) {
               toast.success(language === 'En' ? 'Account added successfully' : 'تم إضافة الحساب بنجاح');
               resetFormData();
+              fetchLastUserId();
             }
           })
           .catch(err => {

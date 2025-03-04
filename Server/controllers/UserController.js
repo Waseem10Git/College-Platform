@@ -65,34 +65,35 @@ class UserController {
         }
     }
 
-    static async updateUser(req, res) {
-        const { password, userId } = req.body;
-        const image = req.file;
-
+    static async editPassword(req, res) {
+        const { oldPassword, newPassword, userId } = req.body;
         try {
-            const updatePromises = [];
-
-            if (password) {
-                const hashedPassword = await bcrypt.hash(password.toString(), saltRounds);
-                updatePromises.push(UserModel.updatePassword(userId, hashedPassword));
+            if (!oldPassword || !newPassword || !userId) {
+                return res.status(400).json({ success: false, EnMessage: "There is missing data", ArMessage: "هناك بيانات مفقودة" });
             }
 
-            // if (image) {
-            //     const imageData = image.buffer;
-            //     updatePromises.push(UserModel.updateImage(userId, imageData));
-            // }
+            const oPassword = await UserModel.getOldPassword(userId);
 
-            // Wait for all update queries to complete
-            await Promise.all(updatePromises);
+            if (!oPassword || oPassword.length === 0) {
+                return res.status(404).json({ success: false, EnMessage: "User not found", ArMessage: "المستخدم غير موجود" });
+            }
 
-            // Send a success response
-            res.json({ Status: "Success", Message: "User updated successfully" });
+            const isMatch = await bcrypt.compare(oldPassword.toString(), oPassword[0].password);
+            if (!isMatch) {
+                return res.status(400).json({ success: false, EnMessage: "Old password is incorrect", ArMessage: "كلمة المرور القديمة غير صحيحة" });
+            }
+
+            const hashedPassword = await bcrypt.hash(newPassword.toString(), 10);
+
+            await UserModel.editPassword(userId, hashedPassword);
+            return res.json({ success: true, EnMessage: "User password updated successfully", ArMessage: "تم تحديث كلمة مرور المستخدم بنجاح" });
 
         } catch (error) {
-            console.error("Error updating user profile:", error);
-            res.status(500).json({ Status: "Error", Error: "Error updating user profile" });
+            console.error("Error updating user password:", error);
+            return res.status(500).json({ success: false, EnMessage: "Error updating user password", ArMessage: "خطأ في تحديث كلمة مرور المستخدم" });
         }
     }
+
 
     static async addAccount(req, res) {
         try {

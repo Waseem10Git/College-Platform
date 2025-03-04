@@ -77,12 +77,29 @@ class UserModel {
         });
     }
 
-    static updatePassword(userId, hashedPassword) {
+    static async getOldPassword(id) {
+        const sql = "SELECT password FROM users WHERE id = ?";
+
         return new Promise((resolve, reject) => {
-            const sql = 'UPDATE users SET password = ? WHERE id = ?';
-            conn.query(sql, [hashedPassword, userId], (err, result) => {
+            conn.query(sql, [id], (err, result) => {
                 if (err) {
-                    return reject(err);
+                    return reject("Updating data Error in server");
+                }
+                resolve(result);
+            });
+        });
+    }
+
+    static async editPassword(id, password) {
+        const sql = "UPDATE users SET password = ? WHERE id= ?";
+
+        return new Promise((resolve, reject) => {
+            if(!password){
+                return reject("Empty Password!");
+            }
+            conn.query(sql, [password, id], (err, result) => {
+                if (err) {
+                    return reject("Updating data Error in server");
                 }
                 resolve(result);
             });
@@ -179,6 +196,45 @@ class UserModel {
             conn.query(sql, [id], (err, result) => {
                 if (err) {
                     return reject("Deleting data Error in server");
+                }
+                resolve(result);
+            });
+        });
+    }
+
+    static async updateSessionToken(sessionToken, email) {
+        const sql = "UPDATE users SET session_token = ? WHERE email = ?";
+
+        return new Promise((resolve, reject) => {
+            conn.query(sql, [sessionToken, email], (err, result) => {
+                if (err) {
+                    return reject("UPDATING user log data Error in server");
+                }
+                resolve(result);
+            });
+        });
+    }
+
+    static async getSessionToken(id) {
+        const sql = "SELECT session_token FROM users WHERE id = ?";
+
+        return new Promise((resolve, reject) => {
+            conn.query(sql, [id], (err, result) => {
+                if (err) {
+                    return reject("UPDATING user log data Error in server");
+                }
+                resolve(result);
+            });
+        });
+    }
+
+    static async deleteSessionToken(token) {
+        const sql = "UPDATE users SET session_token = NULL WHERE session_token = ?";
+
+        return new Promise((resolve, reject) => {
+            conn.query(sql, [token], (err, result) => {
+                if (err) {
+                    return reject("UPDATING user log data Error in server");
                 }
                 resolve(result);
             });

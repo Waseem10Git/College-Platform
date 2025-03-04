@@ -31,6 +31,8 @@ function ExamPreviewPage() {
     const [isLoadingDetails, setIsLoadingDetails] = useState(false);
     const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
     const [isLoadingAnswers, setIsLoadingAnswers] = useState(false);
+    const [isExamEnded, setIsExamEnded] = useState(false);
+
     const fetchData = async () => {
         try {
             const response = await axios.get(`/api/instructor/${userId}/courses`);
@@ -57,14 +59,20 @@ function ExamPreviewPage() {
     }, []);
 
     useEffect(() => {
-        // console.log('times : ', currentTime, startAt);
-        if (currentTime && startAt) {
-            setIsExamStarted(currentTime >= startAt);
+        if (currentTime && startAt && dueDate) {
+            if (startAt <= currentTime && currentTime < dueDate) {
+                setIsExamStarted(true);
+            } else {
+                setIsExamEnded(true);
+                setIsExamStarted(false);
+            }
         }
     }, [currentTime, startAt, selectedExamId]);
 
     const handleCourseSelect = (courseId) => {
         setSelectedCourseId(courseId);
+        setPreCourse(courseId);
+        setSelectedExamId('');
         axios.get(`/api/exams/${courseId}`)
             .then(response => {
                 setExams(response.data);
@@ -81,10 +89,10 @@ function ExamPreviewPage() {
                 const details = response.data[0];
                 setExamDetails(details);
                 setExamName(details.exam_name);
-                setPreCourse(details.course_code);
+                // setPreCourse(details.course_code);
                 setDuration(details.duration);
                 setStartAt(new Date(details.start_at));
-                setDueDate( details.due_date ? new Date(details.due_date) : null);
+                setDueDate( details.due_date ? new Date(details.due_date) : new Date(new Date(details.start_at).getTime() + details.duration * 60 * 1000));
             })
             .catch(error => {
                 console.error('Error fetching exam details:', error);
@@ -200,7 +208,6 @@ function ExamPreviewPage() {
         const updatedExam = {
             instructor_id: userId,
             exam_name: examName,
-            pre_course: preCourse,
             new_course: newCourse,
             duration: duration,
             start_at: startAtUTC,
@@ -226,6 +233,10 @@ function ExamPreviewPage() {
                 fetchExamDetails(selectedExamId);
                 setEditMode(false);
                 setSelectedCourseId('');
+                if (newCourse) {
+                    setSelectedCourseId('');
+                    setSelectedExamId('');
+                }
             })
             .catch((error) => {
                 console.error('Error updating exam:', error);
@@ -267,10 +278,6 @@ function ExamPreviewPage() {
         setExamAnswers(updatedAnswers);
     };
 
-    const handleCourseSelectChange = () => {
-
-    }
-
     const handleDeleteExam = () => {
         axios.delete(`/api/exams/${selectedExamId}`)
             .then(response => {
@@ -307,7 +314,7 @@ function ExamPreviewPage() {
             {!editMode ? (
                 <div className={"ExamPreviewPage_select-container"}>
                     <CourseSelect courses={courses} onSelect={handleCourseSelect} selectedCourse={selectedCourseId}/>
-                    <ExamSelect exams={exams} onSelect={handleExamSelect} language={language} />
+                    <ExamSelect exams={exams} onSelect={handleExamSelect} language={language} selectedExam={selectedExamId}/>
                 </div>
             ) : null}
             {isLoadingDetails || isLoadingQuestions || isLoadingAnswers ? (
@@ -527,7 +534,7 @@ function ExamPreviewPage() {
                                         </div>
                                     );
                                 })}
-                                {!isExamStarted && (
+                                {!isExamStarted && isExamEnded && (
                                     <>
                                         <button className={"ExamPreviewPage_edit-button"} onClick={toggleEditMode}>
                                             {language === 'En' ? 'Edit Exam' : 'تعديل الإمتحان'}

@@ -3,10 +3,10 @@ const express = require('express');
 const asyncHandler = require('express-async-handler');
 const router = express.Router();
 const AuthController = require('../controllers/AuthContoller');
-const { verifyUser } = require('../middlewares/auth');
+const { verifyToken } = require('../middlewares/auth');
 
-router.get('/', verifyUser, asyncHandler(AuthController.getUserInfo));
+router.get('/', verifyToken, asyncHandler(AuthController.getUserInfo));
 router.post('/signIn', asyncHandler(AuthController.signIn));
-router.get('/signOut', asyncHandler(AuthController.signOut));
+router.post('/signOut', asyncHandler(AuthController.signOut));
 
 module.exports = router;

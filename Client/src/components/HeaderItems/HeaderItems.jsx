@@ -12,7 +12,7 @@ function HeaderItems () {
 
     const navigate = useNavigate();
     const handleSignOut = () => {
-        axios.get('/api/auth/signOut')
+        axios.post('/api/auth/signOut', {userId})
             .then(res => {
                 navigate('/');
                 window.location.reload();

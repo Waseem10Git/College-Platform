@@ -1,17 +1,18 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './Profile.css';
 import axios from '../../api/axios';
 import UserContext from "../../context/UserContext";
+import {toast} from "react-toastify";
+import {useNavigate} from "react-router-dom";
 
 const Profile = () => {
   const { isDarkMode, language, userId } = useContext(UserContext);
   const [isEditing, setIsEditing] = useState(false);
-  const [password, setPassword] = useState('');
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [image, setImage] = useState('https://via.placeholder.com/100');
-  const [imageFile, setImageFile] = useState(null);
   const [userData, setUserData] = useState('');
-
+  const navigate = useNavigate();
   const fetchUserData = async () => {
     try {
       const response = await axios.get(`/api/user/${userId}`);
@@ -26,117 +27,113 @@ const Profile = () => {
     fetchUserData();
   }, []);
 
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
-
   const handleConfirmPasswordChange = (e) => {
     setConfirmPassword(e.target.value);
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(URL.createObjectURL(file));
-      setImageFile(file);
-    }
-  };
-
   const handleSave = async () => {
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
+    if (newPassword !== confirmPassword) {
+      toast.error(language === 'En' ? "Passwords do not match" : "كلمات المرور غير متطابقة");
       return;
     }
 
-    const formData = new FormData();
-    formData.append('userId', userId);
-    formData.append('password', password);
-    if (imageFile) {
-      formData.append('image', imageFile);
-    }
-
     try {
-      const response = await axios.put('/api/user/update', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      const updatedData = response.data;
-      setUserData(updatedData);
-      if (updatedData.img) {
-        setImage(URL.createObjectURL(new Blob([updatedData.img], { type: 'image/*' })));
+      const response = await axios.put('/api/user/editPassword', {userId, oldPassword, newPassword});
+      if (response.data.success) {
+        await axios.post('/api/auth/signOut', {userId});
+        navigate('/SignIn');
+        window.location.reload();
+      } else {
+        toast.error(language === 'En' ? response.data.EnMessage : response.data.ArMessage);
       }
-      setIsEditing(false); // Exit edit mode after saving
-      setPassword('');
-      setConfirmPassword('');
-      alert("Editing Success");
-    } catch (error) {
-      console.error('Error saving user data:', error);
+    } catch (err) {
+      if (err.response && err.response.data) {
+        toast.error(language === 'En' ? err.response.data.EnMessage : err.response.data.ArMessage);
+      } else {
+        toast.error(language === 'En' ? 'Failed' : 'فشل');
+      }
     }
   };
 
   return (
-      <div className={`profile profile_${isDarkMode ? 'dark-mode' : 'light-mode'} profile_${language.toLowerCase()}`}>
-        <h1>{language === 'En' ? 'Profile' : 'الملف الشخصي'}</h1>
-        <div className="profile profile_info">
-          <div className="profile profile_details">
-            <p>
-              <strong>{language === 'En' ? 'Name:' : 'الاسم:'}</strong> {userData.first_name + " " + userData.last_name}
-            </p>
-            <p><strong>{language === 'En' ? 'Email:' : 'البريد الإلكتروني:'}</strong> {userData.email}</p>
-            <p><strong>{language === 'En' ? 'Role:' : 'الدور:'}</strong> {userData.role}</p>
-            <p><strong>{language === 'En' ? 'Code:' : 'الرمز:'}</strong> {userData.id}</p>
-          </div>
+      <div className={'profile_container'}>
+        <div className={`profile profile_${isDarkMode ? 'dark-mode' : 'light-mode'} profile_${language.toLowerCase()}`}>
+          <h1>{language === 'En' ? 'Profile' : 'الملف الشخصي'}</h1>
+          {!isEditing ? (
+              <>
+                <div className="profile profile_info">
+                  <div className="profile profile_details">
+                    <div>
+                      <p>
+                        <strong>{language === 'En' ? 'Name:' : 'الاسم:'}</strong> {userData.first_name + " " + userData.last_name}
+                      </p>
+                      <p>
+                        <strong>{language === 'En' ? 'Email:' : 'البريد الإلكتروني:'}</strong> {userData.email}
+                      </p>
+                    </div>
+                    <div>
+                      <p>
+                        <strong>{language === 'En' ? 'Role:' : 'الدور:'}</strong> {userData.role}
+                      </p>
+                      <p>
+                        <strong>{language === 'En' ? 'Code:' : 'الرمز:'}</strong> {userData.id}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className={'profile_editBtnContainer'}>
+                  <button onClick={() => setIsEditing(true)} className="profile_btn profile_edit_btn">
+                    {language === 'En' ? 'Change Password' : 'تغيير كلمة السر'}
+                  </button>
+                </div>
+              </>
+          ) : (
+              <div className="profile profile_edit">
+                <div className="profile_form_group">
+                  <label htmlFor="oldPassword">{language === 'En' ? 'Old Password' : 'كلمة المرور القديمة'}</label>
+                  <input
+                      type="password"
+                      id="oldPassword"
+                      value={oldPassword}
+                      onChange={(e) => setOldPassword(e.target.value)}
+                      placeholder={language === 'En' ? 'Enter old password' : 'أدخل كلمة المرور القديمة'}
+                      className="profile input_field"
+                  />
+                </div>
+                <div className="profile_form_group">
+                  <label htmlFor="newPassword">{language === 'En' ? 'New Password' : 'كلمة المرور الجديدة'}</label>
+                  <input
+                      type="password"
+                      id="newPassword"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder={language === 'En' ? 'Enter new password' : 'أدخل كلمة المرور الجديدة'}
+                      className="profile input_field"
+                  />
+                </div>
+                <div className="profile_form_group">
+                  <label
+                      htmlFor="confirmPassword">{language === 'En' ? 'Confirm Password' : 'تأكيد كلمة المرور'}</label>
+                  <input
+                      type="password"
+                      id="confirmPassword"
+                      value={confirmPassword}
+                      onChange={handleConfirmPasswordChange}
+                      placeholder={language === 'En' ? 'Enter new password again to confirm' : 'أدخل كلمة المرور الجديدة'}
+                      className="profile input_field"
+                  />
+                </div>
+                <div className={'profile_buttons'}>
+                  <button onClick={handleSave} className="profile_btn profile_save_btn">
+                    {language === 'En' ? 'Save' : 'حفظ'}
+                  </button>
+                  <button onClick={() => setIsEditing(false)} className="profile_btn profile_cancel_btn">
+                    {language === 'En' ? 'Cancel' : 'إلغاء'}
+                  </button>
+                </div>
+              </div>
+          )}
         </div>
-        {!isEditing ? (
-            <button onClick={() => setIsEditing(true)} className="profile edit_btn">
-              {language === 'En' ? 'Edit Profile' : 'تعديل الملف الشخصي'}
-            </button>
-        ) : (
-            <div className="profile profile_edit">
-              <h2>{language === 'En' ? 'Edit Profile' : 'تعديل الملف الشخصي'}</h2>
-              <div className="profile form_group">
-                <label htmlFor="password">{language === 'En' ? 'Password' : 'كلمة المرور'}</label>
-                <input
-                    type="password"
-                    id="password"
-                    value={password}
-                    onChange={handlePasswordChange}
-                    placeholder={language === 'En' ? 'Enter new password' : 'أدخل كلمة مرور جديدة'}
-                    className="profile input_field"
-                />
-              </div>
-              <div className="profile form_group">
-                <label htmlFor="confirmPassword">{language === 'En' ? 'Confirm Password' : 'تأكيد كلمة المرور'}</label>
-                <input
-                    type="password"
-                    id="confirmPassword"
-                    value={confirmPassword}
-                    onChange={handleConfirmPasswordChange}
-                    placeholder={language === 'En' ? 'Enter new password again to confirm' : 'أدخل كلمة مرور جديدة'}
-                    className="profile input_field"
-                />
-              </div>
-              <div className="profile form_group">
-                <label htmlFor="image">{language === 'En' ? 'Profile Image' : 'صورة الملف الشخصي'}</label>
-                <input
-                    type="file"
-                    id="image"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="profile input_field"
-                />
-                {image && <img src={image} alt="Profile Preview" className="profile img_preview"/>}
-              </div>
-              <button onClick={handleSave} className="profile save_btn">
-                {language === 'En' ? 'Save Changes' : 'حفظ التغييرات'}
-              </button>
-              <button onClick={() => setIsEditing(false)} className="profile cancel_btn">
-                {language === 'En' ? 'Cancel' : 'إلغاء'}
-              </button>
-            </div>
-        )}
       </div>
   );
 };

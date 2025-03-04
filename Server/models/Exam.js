@@ -142,6 +142,30 @@ class ExamModel {
             });
         });
     }
+
+    static getExamQuestionsWithOptions(examId) {
+        return new Promise((resolve, reject) => {
+            const sql = `
+                SELECT 
+                    q.question_id,
+                    q.question_text,
+                    q.question_type,
+                    q.points,
+                    a.answer_id,
+                    a.answer_text,
+                    a.is_correct
+                FROM questions q
+                LEFT JOIN answers a ON q.question_id = a.question_id
+                WHERE q.exam_id = ?;
+            `;
+            conn.query(sql, [examId], (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(results);
+            });
+        });
+    }
 }
 
 module.exports = ExamModel;

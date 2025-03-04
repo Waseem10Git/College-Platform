@@ -62,7 +62,7 @@ class ExamController {
 
     static async editExam(req, res) {
         const { examId } = req.params;
-        const { instructor_id, exam_name, pre_course, new_course, duration, start_at, due_date, total_score, questions } = req.body;
+        const { instructor_id, exam_name, new_course, duration, start_at, due_date, total_score, questions } = req.body;
 
         conn.beginTransaction(async (err) => {
             if (err) {
@@ -71,24 +71,61 @@ class ExamController {
             }
 
             try {
+                // Fetch existing questions and options
+                const rawQuestions = await ExamModel.getExamQuestionsWithOptions(examId);
+                const existingQuestions = formatQuestions(rawQuestions);
+                console.log('Formatted Questions:', existingQuestions);
+
+                // Track if score update is needed
+                let scoreUpdateNeeded = false;
+
+                // Update exam details
                 await ExamModel.updateExam(examId, exam_name, duration, start_at, due_date, total_score);
 
                 if (new_course) {
-                    await InstructorCourseExamModel.deleteAssociationExamWithCourse(pre_course, instructor_id, examId);
+                    await InstructorCourseExamModel.deleteAssociationExamWithCourse(examId);
                     await InstructorCourseExamModel.associateExamWithCourse(new_course, instructor_id, examId);
-                    await EnrollmentExamModel.deleteAssociationExamWithEnrollment(pre_course, instructor_id, examId);
+                    await EnrollmentExamModel.deleteAssociationExamWithEnrollment(examId);
                     await EnrollmentExamModel.associateExamWithEnrollment(new_course, instructor_id, examId);
                 }
 
                 if (questions && questions.length > 0) {
                     for (const question of questions) {
-                        await ExamModel.updateQuestion(question);
-                        if (question.options && question.options.length > 0) {
-                            for (const option of question.options) {
-                                await ExamModel.updateOption(option);
+                        // Find the matching existing question
+                        const existingQuestion = existingQuestions.find(q => q.question_id === question.question_id);
+                        console.log(existingQuestion)
+                        if (existingQuestion) {
+                            // Check if points have changed
+                            if (existingQuestion.question_points !== question.question_points) {
+                                scoreUpdateNeeded = true;
+                            }
+
+                            // Update question
+                            await ExamModel.updateQuestion(question);
+
+                            if (question.options && question.options.length > 0) {
+                                for (const option of question.options) {
+                                    // Find the matching existing option
+                                    const existingOption = existingQuestion.options.find(o => o.answer_id === option.answer_id);
+
+                                    if (existingOption) {
+                                        // Check if correct answer has changed
+                                        if (existingOption.is_correct !== option.is_correct) {
+                                            scoreUpdateNeeded = true;
+                                        }
+                                    }
+
+                                    // Update option
+                                    await ExamModel.updateOption(option);
+                                }
                             }
                         }
                     }
+                }
+
+                // If changes affect total score, update students' scores
+                if (scoreUpdateNeeded) {
+                    await EnrollmentExamModel.editStudentTotalScore(examId);
                 }
 
                 conn.commit((err) => {
@@ -119,6 +156,36 @@ class ExamController {
             return res.status(500).send('Server error');
         }
     }
+}
+
+function formatQuestions(rawData) {
+    const questionsMap = {};
+
+    rawData.forEach(row => {
+        const { question_id, question_text, question_type, points, answer_id, answer_text, is_correct } = row;
+
+        if (!questionsMap[question_id]) {
+            // Initialize question structure
+            questionsMap[question_id] = {
+                question_id,
+                question_text,
+                question_type,
+                points,
+                options: []
+            };
+        }
+
+        // Add options only for MCQ questions
+        if (question_type === 'MCQ' && answer_id) {
+            questionsMap[question_id].options.push({
+                answer_id,
+                answer_text,
+                is_correct: Boolean(is_correct)
+            });
+        }
+    });
+
+    return Object.values(questionsMap); // Convert back to array
 }
 
 module.exports = ExamController;
