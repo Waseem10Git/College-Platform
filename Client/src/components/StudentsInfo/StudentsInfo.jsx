@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import UserContext from "../../context/UserContext";
 import "./StudentsInfo.css";
 import enrollmentsApi from "../../api/enrollmentsApi";
+import assignments from "../../Pages/Assignments/Assignments";
 
 function StudentsInfo({ selectedCourse, userId, language }) {
     const { isDarkMode } = useContext(UserContext); // Get dark mode from context
@@ -61,22 +62,22 @@ function StudentsInfo({ selectedCourse, userId, language }) {
                                     <td>{student.student_id}</td>
                                     <td>{`${student.first_name} ${student.last_name}`}</td>
                                     <td>
-                                        {exams.map((exam, i) => (
+                                        {!exams.some(exam => exam.name === "N/A") ? exams.map((exam, i) => (
                                             <div key={`exam-${i}`}>
                                                 <p className={'StudentsInfo_scores'}>
                                                     {`${exam.name}: ${exam.score}`}
                                                 </p>
                                             </div>
-                                        ))}
+                                        )) : <p> {language === 'En' ? 'There are no exams yet' : 'ليس هناك إمتحانات بعد'} </p> }
                                     </td>
                                     <td>
-                                        {assignments.map((assignment, i) => (
+                                        {!assignments.some(exam => exam.name === "N/A") ? assignments.map((assignment, i) => (
                                             <div key={`assignment-${i}`}>
                                                 <p className={'StudentsInfo_scores'}>
                                                     {`${assignment.name}: ${assignment.score}`}
                                                 </p>
                                             </div>
-                                        ))}
+                                        )) : <p>{language === 'En' ? 'There are no assignments yet' : 'ليس هناك تكاليف بعد'}</p>}
                                     </td>
                                 </tr>
                             );

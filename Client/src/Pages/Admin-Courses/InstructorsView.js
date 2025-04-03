@@ -156,14 +156,14 @@ const InstructorsView = () => {
                     filter={filter}
                     setFilter={setFilter}
                     searchText={language === "En"
-                        ? "Search by instructor first/last name, department name or course name"
+                        ? "Search by doctor first/last name, department name or course name"
                         : "البحث حسب الاسم الأول/الأخير للمدرس، أو اسم القسم أو اسم المادة"}
                 />
             </div>
             <table className="InstructorsView_course-table">
                 <thead>
                 <tr>
-                    <th>{language === 'En' ? 'Instructor Name' : 'اسم الدكتور'}</th>
+                    <th>{language === 'En' ? 'Doctor Name' : 'اسم الدكتور'}</th>
                     <th>{language === 'En' ? 'Department_Course' : 'القسم_المادة'}</th>
                     <th>{language === 'En' ? 'Actions' : 'الإجراءات'}</th>
                 </tr>
@@ -178,7 +178,7 @@ const InstructorsView = () => {
                         }}>{addingErrInstructorMessage}</p>
                     )}
                         <select value={selectedInstructor} onChange={(e) => setSelectedInstructor(e.target.value)}>
-                            <option value="">{language === 'En' ? 'Select Instructor' : 'اختر الدكتور'}</option>
+                            <option value="">{language === 'En' ? 'Select Doctor' : 'اختر الدكتور'}</option>
                             {instructors.map((instructor, index) => (
                                 <option key={index}
                                         value={instructor.id}>{instructor.first_name} {instructor.last_name}</option>

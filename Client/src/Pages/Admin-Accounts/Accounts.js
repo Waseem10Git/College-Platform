@@ -155,7 +155,13 @@ const Accounts = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error(language === 'En' ? 'Failed, Please use the right template' : 'فشل، يرجى استخدام القالب الصحيح');
+      if (error.response.data?.Status === 'Error') {
+        toast.error(language === 'En' ? error.response.data?.EnMessage : error.response.data?.ArMessage);
+        setUploadErrors(error.response.data.Errors);
+        setUploadSummaryError({EnMessage : error.response.data.EnMessage, ArMessage: error.response.data.ArMessage});
+      } else {
+        toast.error(language === 'En' ? 'Failed, Please use the right template' : 'فشل، يرجى استخدام القالب الصحيح');
+      }
     }
   };
 
@@ -323,7 +329,7 @@ const Accounts = () => {
                                     <td>{user.first_name}</td>
                                     <td>{user.last_name}</td>
                                     <td>{user.email}</td>
-                                    <td>{user.role}</td>
+                                    <td>{user.role === 'instructor' ? 'Doctor' : user.role}</td>
                                     <td>{department ? department.department_name : 'No Department'}</td>
                                   </tr>);
                                 })
@@ -411,7 +417,7 @@ const Accounts = () => {
                                   onChange={handleInputChange}>
                             <option value="">{language === 'En' ? 'Select Role' : 'حدد الدور'}</option>
                             {/*<option value="admin">{language === 'En' ? 'Admin' : 'مسؤل'}</option>*/}
-                            <option value="instructor">{language === 'En' ? 'Instructor' : 'مدرس'}</option>
+                            <option value="instructor">{language === 'En' ? 'Doctor' : 'مدرس'}</option>
                             <option value="student">{language === 'En' ? 'Student' : 'طالب'}</option>
                           </select>
                         </div>
@@ -488,7 +494,7 @@ const Accounts = () => {
                                   onChange={handleInputChange}>
                             <option value="">{language === 'En' ? 'Select Role' : 'حدد الدور'}</option>
                             {/*<option value="admin">{language === 'En' ? 'Admin' : 'مسؤل'}</option>*/}
-                            <option value="instructor">{language === 'En' ? 'Instructor' : 'مدرس'}</option>
+                            <option value="instructor">{language === 'En' ? 'Doctor' : 'مدرس'}</option>
                             <option value="student">{language === 'En' ? 'Student' : 'طالب'}</option>
                           </select>
                         </div>

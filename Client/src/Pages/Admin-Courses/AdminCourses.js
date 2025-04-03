@@ -73,7 +73,7 @@ const AdminCourses = () => {
                     className="AdminCourses_view-button"
                 >
                     {language === "En"
-                        ? "Add Instructors to Courses"
+                        ? "Add Doctor to Courses"
                         : "إضافة المدرسين الى المواد"}
                 </button>
                 <button

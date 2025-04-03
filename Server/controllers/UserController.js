@@ -157,114 +157,6 @@ class UserController {
         }
     }
 
-    // static async uploadAccounts(req, res) {
-    //     try {
-    //         console.log('file: ', req.file);
-    //         const filePath = req.file.path;
-    //         const workbook = XLSX.readFile(filePath);
-    //         const sheetName = workbook.SheetNames[0];
-    //         const sheet = workbook.Sheets[sheetName];
-    //         const allData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-    //         const header = allData[0]; // First row as headers
-    //         const data = allData.slice(1);
-    //         console.log('header: ', header);
-    //
-    //         const departments = await DepartmentModel.getAllDepartments();
-    //         const validDepartmentIDs = departments.map(dept => dept.department_id);
-    //
-    //         const errors = [];
-    //
-    //         for (let i = 0; i < data.length; i++) {
-    //             const account = data[i];
-    //             const rowNumber = i + 2;
-    //
-    //             const userID = account[0];
-    //             const firstName = account[1];
-    //             const lastName = account[2];
-    //             const email = account[3];
-    //             const password = account[4];
-    //             const role = account[5];
-    //             const departmentID = account[6];
-    //
-    //             const EnValidationErrors = [];
-    //             const ArValidationErrors = [];
-    //
-    //             if (!userID || userID.toString().length < 7) {
-    //                 EnValidationErrors.push("UserID is missing or less than 7 digit");
-    //                 ArValidationErrors.push("الرقم التعريفي ليس موجود أو أقل من 8 أرقام");
-    //             }
-    //             if (!firstName) {
-    //                 EnValidationErrors.push("FirstName is missing");
-    //                 ArValidationErrors.push("الرقم الأول غير موجود");
-    //             }
-    //             if (!lastName || !/^[a-zA-Z]*$/.test(lastName)) {
-    //                 EnValidationErrors.push("LastName is missing");
-    //                 ArValidationErrors.push("الرقم الأخير غير موجود");
-    //             }
-    //             if (!email || !/^[\w.-]+@fcai\.usc\.edu\.eg$/.test(email)) {
-    //                 EnValidationErrors.push("Invalid email or domain. Email must end with '@fcai.ucs.edu.eg'");
-    //                 ArValidationErrors.push("البريد الإلكتروني غير صحيح. يجب أن ينتهي البريد الإلكتروني بـ '@fcai.ucs.edu.eg'");
-    //             }
-    //             if (!password) {
-    //                 EnValidationErrors.push("Password is missing");
-    //                 ArValidationErrors.push("كلمة السر غير موجودة");
-    //             }
-    //             if (!role) {
-    //                 EnValidationErrors.push("Role is missing");
-    //                 ArValidationErrors.push("الدور غير موجود")
-    //             }
-    //             if (departmentID && !validDepartmentIDs.includes(departmentID)) {
-    //                 EnValidationErrors.push(`Invalid departmentID. It must be one of: ${validDepartmentIDs.join(', ')}`);
-    //                 ArValidationErrors.push(`رقم القسم غير صحيح. يجب أن يكون واحد من ${validDepartmentIDs.join(', ')}`);
-    //             }
-    //
-    //             const userIDExistence = await UserModel.getUserById(userID);
-    //             if (userIDExistence) {
-    //                 EnValidationErrors.push(`User id (${userID}) is exist before`);
-    //                 ArValidationErrors.push(`الرقم التعريفي (${userID}) موجود بالفعل`);
-    //             }
-    //
-    //             const userEmailExistence = await UserModel.getUserByEmail(email);
-    //             if (userEmailExistence.length > 0) {
-    //                 EnValidationErrors.push(`User email (${email}) is exist before`);
-    //                 ArValidationErrors.push(`الإيميل (${email}) موجود بالفعل`);
-    //             }
-    //
-    //             if (EnValidationErrors.length > 0 && ArValidationErrors.length > 0) {
-    //                 errors.push({ row: rowNumber, EnErrors: EnValidationErrors, ArErrors: ArValidationErrors });
-    //                 continue;
-    //             }
-    //
-    //             try {
-    //                 await UserModel.addAccount({
-    //                     userID,
-    //                     firstName,
-    //                     lastName,
-    //                     email,
-    //                     password,
-    //                     role,
-    //                     departmentID
-    //                 });
-    //             } catch (dbError) {
-    //                 errors.push({ row: rowNumber, errors: [`Database error: ${dbError.message}`] });
-    //             }
-    //         }
-    //
-    //         if (errors.length > 0) {
-    //             return res.status(200).json({
-    //                 Status: "Partial Success",
-    //                 EnMessage: "Some rows failed to process.",
-    //                 ArMessage: "فشلت معالجة بعض الصفوف.",
-    //                 Errors: errors
-    //             });
-    //         }
-    //
-    //         return res.status(200).json({ Status: "Success", Message: "All rows processed successfully." });
-    //     } catch (error) {
-    //         console.error("Error uploading accounts:", error);
-    //         return res.status(500).json({ Status: "Error", Error: error });
-    //     }
-    // }
     static async uploadAccounts(req, res) {
         try {
             if (!req.file || !req.file.mimetype.includes("spreadsheetml")) {
@@ -299,7 +191,6 @@ class UserController {
                 return JSON.stringify(requiredHeaders) === JSON.stringify(uploadedHeaders);
             };
 
-
             if (!isValidTemplate(header)) {
                 return res.status(400).json({
                     Status: "Error",
@@ -313,9 +204,9 @@ class UserController {
             const validDepartmentIDs = new Set(departments.map(dept => dept.department_id));
 
             const errors = [];
-            let successCount = 0;
+            const validatedRows = [];
 
-            const tasks = data.map(async (row, index) => {
+            for (let index = 0; index < data.length; index++) {
                 const rowNumber = index + 2;
 
                 const [
@@ -326,7 +217,7 @@ class UserController {
                     password,
                     role,
                     departmentID
-                ] = row;
+                ] = data[index];
 
                 const EnValidationErrors = [];
                 const ArValidationErrors = [];
@@ -374,19 +265,15 @@ class UserController {
                     ArValidationErrors.push(`البريد الإلكتروني (${email}) موجود بالفعل`);
                 }
 
-                // Handle errors
+                // If there are validation errors, store them and do NOT proceed with insertion
                 if (EnValidationErrors.length || ArValidationErrors.length) {
                     errors.push({
                         row: rowNumber,
                         EnErrors: EnValidationErrors,
                         ArErrors: ArValidationErrors
                     });
-                    return;
-                }
-
-                // Add account to database
-                try {
-                    await UserModel.addAccount({
+                } else {
+                    validatedRows.push({
                         userID,
                         firstName,
                         lastName,
@@ -395,40 +282,28 @@ class UserController {
                         role,
                         departmentID
                     });
-                    successCount++;
-                } catch (dbError) {
-                    errors.push({ row: rowNumber, errors: [`Database error: ${dbError.message}`] });
                 }
-            });
-
-            await Promise.all(tasks);
-
-            // Handle all rows failed scenario
-            if (successCount === 0) {
-                return res.status(200).json({
-                    Status: "Failure",
-                    EnMessage: "All rows failed to process",
-                    ArMessage: "فشلت معالجة جميع الصفوف",
-                    Errors: errors
-                });
             }
 
-            // Partial success scenario
+            // If any errors exist, stop and return failure response
             if (errors.length > 0) {
-                return res.status(200).json({
-                    Status: "Partial Success",
-                    EnMessage: "Some rows failed to process",
-                    ArMessage: "فشلت معالجة بعض الصفوف",
+                return res.status(400).json({
+                    Status: "Error",
+                    EnMessage: "File upload failed due to validation errors.",
+                    ArMessage: "فشل تحميل الملف بسبب أخطاء التحقق.",
                     Errors: errors
                 });
             }
 
-            // Full success scenario
+            // If no errors, insert all valid accounts
+            await Promise.all(validatedRows.map(user => UserModel.addAccount(user)));
+
             return res.status(200).json({
                 Status: "Success",
-                EnMessage: "All rows processed successfully",
-                ArMessage: "تمت إضافة جميع الصفوف"
+                EnMessage: "All accounts have been successfully uploaded.",
+                ArMessage: "تم تحميل جميع الحسابات بنجاح."
             });
+
         } catch (error) {
             console.error("Error uploading accounts:", error);
             return res.status(500).json({
@@ -439,6 +314,7 @@ class UserController {
             });
         }
     }
+
 
 
 }

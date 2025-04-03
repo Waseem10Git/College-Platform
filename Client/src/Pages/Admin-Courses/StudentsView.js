@@ -139,7 +139,7 @@ const InstructorsView = () => {
                     filter={filter}
                     setFilter={setFilter}
                     searchText={language === "En"
-                        ? "Search by students first/last name, instructor first/last name or course name"
+                        ? "Search by students first/last name, doctor first/last name or course name"
                         : "البحث حسب الاسم الأول/الأخير للطالب، أو الاسم الأول/الأخير للمدرس أو اسم المادة"}
                 />
             </div>
